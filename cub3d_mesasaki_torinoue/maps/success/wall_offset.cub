@@ -1,0 +1,15 @@
+NO assets/wall/north.xpm
+SO assets/wall/south.xpm
+WE assets/wall/west.xpm
+EA assets/wall/east.xpm
+WC assets/wall/collision.xpm
+
+F 220,100,0
+C 225,30,0
+ 11111 
+1000001
+1000001
+100E001
+1000001
+1000001
+ 11111
