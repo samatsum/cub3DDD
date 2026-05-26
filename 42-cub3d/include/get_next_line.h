@@ -6,7 +6,7 @@
 /*   By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/22 15:19:57 by samatsum          #+#    #+#             */
-/*   Updated: 2026/05/26 22:37:59 by samatsum         ###   ########.fr       */
+/*   Updated: 2026/05/26 22:43:53 by samatsum         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 
 # include <stdlib.h>
 # include <unistd.h>
-# include "include/utils.h"
+# include "utils.h"
 
 # define BUFFER_SIZE 128
 

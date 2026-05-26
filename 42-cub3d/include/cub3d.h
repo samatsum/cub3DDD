@@ -6,17 +6,17 @@
 /*   By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/29 12:44:11 by samatsum          #+#    #+#             */
-/*   Updated: 2026/05/26 22:38:30 by samatsum         ###   ########.fr       */
+/*   Updated: 2026/05/26 22:43:42 by samatsum         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef CUB3D_H
 # define CUB3D_H
 
-# include "include/engine.h"
-# include "include/config.h"
-# include "include/utils.h"
-# include "include/keymap.h"
+# include "engine.h"
+# include "config.h"
+# include "utils.h"
+# include "keymap.h"
 
 # define LEFT_CLICK 	1
 # define RIGHT_CLICK 	2

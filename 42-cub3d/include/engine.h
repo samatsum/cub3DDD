@@ -6,7 +6,7 @@
 /*   By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/31 11:55:59 by samatsum          #+#    #+#             */
-/*   Updated: 2026/05/26 22:38:52 by samatsum         ###   ########.fr       */
+/*   Updated: 2026/05/26 22:43:48 by samatsum         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,8 +14,8 @@
 # define ENGINE_H
 
 # include <math.h>
-# include "include/mlx.h"
-# include "include/config.h"
+# include "mlx.h"
+# include "config.h"
 
 # define X_EVENT_KEY_PRESS		2
 # define X_EVENT_KEY_RELEASE	3
