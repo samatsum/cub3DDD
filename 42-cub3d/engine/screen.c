@@ -3,14 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   screen.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ncolomer <ncolomer@student.42.fr>          +#+  +:+       +#+        */
+/*   By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2019/11/06 14:38:10 by ncolomer          #+#    #+#             */
-/*   Updated: 2019/11/09 14:58:46 by ncolomer         ###   ########.fr       */
+/*   Created: 2019/11/06 14:38:10 by samatsum          #+#    #+#             */
+/*   Updated: 2026/05/26 22:37:21 by samatsum         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "engine.h"
+#include "include/engine.h"
 
 void
 	update_screen(t_game *game)

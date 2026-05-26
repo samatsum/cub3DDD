@@ -3,14 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   ft_atoi.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ncolomer <ncolomer@student.42.fr>          +#+  +:+       +#+        */
+/*   By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2019/10/31 10:56:05 by ncolomer          #+#    #+#             */
-/*   Updated: 2019/10/31 12:32:06 by ncolomer         ###   ########.fr       */
+/*   Created: 2019/10/31 10:56:05 by samatsum          #+#    #+#             */
+/*   Updated: 2026/05/26 22:39:47 by samatsum         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "utils.h"
+#include "include/utils.h"
 
 int
 	ft_atoi(char const *str)

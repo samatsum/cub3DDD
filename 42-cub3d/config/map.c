@@ -3,14 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   map.c                                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ncolomer <ncolomer@student.42.fr>          +#+  +:+       +#+        */
+/*   By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2019/10/29 15:24:13 by ncolomer          #+#    #+#             */
-/*   Updated: 2019/11/09 13:28:13 by ncolomer         ###   ########.fr       */
+/*   Created: 2019/10/29 15:24:13 by samatsum          #+#    #+#             */
+/*   Updated: 2026/05/26 22:36:46 by samatsum         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "config.h"
+#include "include/config.h"
 
 int
 	copy_map(t_config *config, t_str *map_buffer, int *map)

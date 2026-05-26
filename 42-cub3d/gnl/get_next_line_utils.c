@@ -3,14 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   get_next_line_utils.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ncolomer <ncolomer@student.42.fr>          +#+  +:+       +#+        */
+/*   By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2019/10/14 16:00:46 by ncolomer          #+#    #+#             */
-/*   Updated: 2019/10/30 12:22:24 by ncolomer         ###   ########.fr       */
+/*   Created: 2019/10/14 16:00:46 by samatsum          #+#    #+#             */
+/*   Updated: 2026/05/26 22:40:50 by samatsum         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "get_next_line.h"
+#include "include/get_next_line.h"
 
 t_fd
 	*find_fd(t_fd **list, int fd, int *new)

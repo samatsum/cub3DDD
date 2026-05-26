@@ -3,14 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   window.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ncolomer <ncolomer@student.42.fr>          +#+  +:+       +#+        */
+/*   By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2019/11/08 14:59:23 by ncolomer          #+#    #+#             */
-/*   Updated: 2019/11/13 15:41:38 by ncolomer         ###   ########.fr       */
+/*   Created: 2019/11/08 14:59:23 by samatsum          #+#    #+#             */
+/*   Updated: 2026/05/26 22:37:44 by samatsum         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "engine.h"
+#include "include/engine.h"
 
 int
 	clear_window(t_window *window)

@@ -3,14 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   ft_strcmp.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ncolomer <ncolomer@student.42.fr>          +#+  +:+       +#+        */
+/*   By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2019/11/08 18:42:21 by ncolomer          #+#    #+#             */
-/*   Updated: 2019/11/08 18:45:44 by ncolomer         ###   ########.fr       */
+/*   Created: 2019/11/08 18:42:21 by samatsum          #+#    #+#             */
+/*   Updated: 2026/05/26 22:40:06 by samatsum         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "utils.h"
+#include "include/utils.h"
 
 int
 	ft_strcmp(const char *s1, const char *s2)

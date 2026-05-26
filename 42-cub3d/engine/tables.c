@@ -3,14 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   tables.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ncolomer <ncolomer@student.42.fr>          +#+  +:+       +#+        */
+/*   By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2019/11/07 00:33:00 by ncolomer          #+#    #+#             */
-/*   Updated: 2019/11/08 18:37:56 by ncolomer         ###   ########.fr       */
+/*   Created: 2019/11/07 00:33:00 by samatsum          #+#    #+#             */
+/*   Updated: 2026/05/26 22:37:34 by samatsum         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "engine.h"
+#include "include/engine.h"
 
 static void
 	calculate_camera_x(double width, double *r)

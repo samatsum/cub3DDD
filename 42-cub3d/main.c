@@ -3,18 +3,17 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ncolomer <ncolomer@student.42.fr>          +#+  +:+       +#+        */
+/*   By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2019/10/29 12:45:06 by ncolomer          #+#    #+#             */
-/*   Updated: 2019/11/09 17:37:35 by ncolomer         ###   ########.fr       */
+/*   Created: 2019/10/29 12:45:06 by samatsum          #+#    #+#             */
+/*   Updated: 2026/05/26 22:36:39 by samatsum         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <stdlib.h>
-#include "cub3d.h"
+#include "include/cub3d.h"
 
-int
-	exit_error(t_game *game, char const *str)
+int	exit_error(t_game *game, char const *str)
 {
 	if (str)
 		write(STDOUT_FILENO, str, ft_strlen(str));
@@ -22,8 +21,7 @@ int
 	return (EXIT_FAILURE);
 }
 
-int
-	main(int argc, char **argv)
+int	main(int argc, char **argv)
 {
 	t_game	game;
 	int		save_opt;

@@ -3,14 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   ft_memmove.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ncolomer <ncolomer@student.42.fr>          +#+  +:+       +#+        */
+/*   By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2019/11/08 18:21:51 by ncolomer          #+#    #+#             */
-/*   Updated: 2019/11/08 18:22:06 by ncolomer         ###   ########.fr       */
+/*   Created: 2019/11/08 18:21:51 by samatsum          #+#    #+#             */
+/*   Updated: 2026/05/26 22:40:01 by samatsum         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "utils.h"
+#include "include/utils.h"
 
 void
 	*ft_memmove(void *dst, const void *src, unsigned long len)

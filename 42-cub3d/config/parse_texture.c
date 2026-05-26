@@ -3,14 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   parse_texture.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ncolomer <ncolomer@student.42.fr>          +#+  +:+       +#+        */
+/*   By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2019/11/09 13:33:50 by ncolomer          #+#    #+#             */
-/*   Updated: 2019/11/10 18:00:01 by ncolomer         ###   ########.fr       */
+/*   Created: 2019/11/09 13:33:50 by samatsum          #+#    #+#             */
+/*   Updated: 2026/05/26 22:36:54 by samatsum         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "config.h"
+#include "include/config.h"
 
 static char
 	*path_from_line(int start, char const *line)

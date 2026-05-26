@@ -3,14 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   ft_substr.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ncolomer <ncolomer@student.42.fr>          +#+  +:+       +#+        */
+/*   By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2019/10/29 13:42:27 by ncolomer          #+#    #+#             */
-/*   Updated: 2019/10/31 11:50:07 by ncolomer         ###   ########.fr       */
+/*   Created: 2019/10/29 13:42:27 by samatsum          #+#    #+#             */
+/*   Updated: 2026/05/26 22:40:16 by samatsum         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "utils.h"
+#include "include/utils.h"
 
 char
 	*ft_substr(char const *s, int start, int len)

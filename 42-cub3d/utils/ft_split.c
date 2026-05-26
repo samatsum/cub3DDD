@@ -3,14 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   ft_split.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ncolomer <ncolomer@student.42.fr>          +#+  +:+       +#+        */
+/*   By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2019/10/31 10:43:10 by ncolomer          #+#    #+#             */
-/*   Updated: 2019/10/31 12:21:04 by ncolomer         ###   ########.fr       */
+/*   Created: 2019/10/31 10:43:10 by samatsum          #+#    #+#             */
+/*   Updated: 2026/05/26 22:40:04 by samatsum         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "utils.h"
+#include "include/utils.h"
 
 t_str
 	*ft_split(char const *org, char sep)

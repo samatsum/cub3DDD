@@ -3,14 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   game.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ncolomer <ncolomer@student.42.fr>          +#+  +:+       +#+        */
+/*   By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2019/10/31 12:51:35 by ncolomer          #+#    #+#             */
-/*   Updated: 2019/11/13 15:04:33 by ncolomer         ###   ########.fr       */
+/*   Created: 2019/10/31 12:51:35 by samatsum          #+#    #+#             */
+/*   Updated: 2026/05/26 22:36:36 by samatsum         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "cub3d.h"
+#include "include/cub3d.h"
 
 static int
 	find_sprites(t_game *game)

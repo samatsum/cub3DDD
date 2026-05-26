@@ -3,14 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   camera.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ncolomer <ncolomer@student.42.fr>          +#+  +:+       +#+        */
+/*   By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2019/10/31 13:24:41 by ncolomer          #+#    #+#             */
-/*   Updated: 2019/11/13 14:59:08 by ncolomer         ###   ########.fr       */
+/*   Created: 2019/10/31 13:24:41 by samatsum          #+#    #+#             */
+/*   Updated: 2026/05/26 22:36:57 by samatsum         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "engine.h"
+#include "include/engine.h"
 
 void
 	find_start_pos(t_config *config, t_camera *camera)

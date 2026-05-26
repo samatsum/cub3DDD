@@ -3,14 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   quest.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ncolomer <ncolomer@student.42.fr>          +#+  +:+       +#+        */
+/*   By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2019/11/10 13:18:01 by ncolomer          #+#    #+#             */
-/*   Updated: 2019/11/10 13:49:40 by ncolomer         ###   ########.fr       */
+/*   Created: 2019/11/10 13:18:01 by samatsum          #+#    #+#             */
+/*   Updated: 2026/05/26 22:37:16 by samatsum         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "engine.h"
+#include "include/engine.h"
 
 void
 	check_quest(t_game *game)

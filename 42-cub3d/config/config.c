@@ -3,14 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   config.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ncolomer <ncolomer@student.42.fr>          +#+  +:+       +#+        */
+/*   By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2019/10/29 12:51:45 by ncolomer          #+#    #+#             */
-/*   Updated: 2019/11/13 15:37:27 by ncolomer         ###   ########.fr       */
+/*   Created: 2019/10/29 12:51:45 by samatsum          #+#    #+#             */
+/*   Updated: 2026/05/26 22:36:42 by samatsum         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "config.h"
+#include "include/config.h"
 
 void
 	init_config(t_config *config)

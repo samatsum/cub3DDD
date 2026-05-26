@@ -3,14 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   get_next_line.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ncolomer <ncolomer@student.42.fr>          +#+  +:+       +#+        */
+/*   By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2019/10/22 15:19:29 by ncolomer          #+#    #+#             */
-/*   Updated: 2019/10/30 12:19:33 by ncolomer         ###   ########.fr       */
+/*   Created: 2019/10/22 15:19:29 by samatsum          #+#    #+#             */
+/*   Updated: 2026/05/26 22:40:53 by samatsum         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "get_next_line.h"
+#include "include/get_next_line.h"
 
 int
 	read_file_until_nl(t_str **str, int fd)

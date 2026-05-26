@@ -3,14 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   bmp.c                                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ncolomer <ncolomer@student.42.fr>          +#+  +:+       +#+        */
+/*   By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2019/11/10 18:13:15 by ncolomer          #+#    #+#             */
-/*   Updated: 2019/11/12 22:09:07 by ncolomer         ###   ########.fr       */
+/*   Created: 2019/11/10 18:13:15 by samatsum          #+#    #+#             */
+/*   Updated: 2026/05/26 22:36:07 by samatsum         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "cub3d.h"
+#include "include/cub3d.h"
 
 static void
 	set_int_in_char(unsigned char *start, int value)

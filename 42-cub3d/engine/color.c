@@ -3,14 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   color.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ncolomer <ncolomer@student.42.fr>          +#+  +:+       +#+        */
+/*   By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2019/11/06 12:33:48 by ncolomer          #+#    #+#             */
-/*   Updated: 2019/11/12 22:07:37 by ncolomer         ###   ########.fr       */
+/*   Created: 2019/11/06 12:33:48 by samatsum          #+#    #+#             */
+/*   Updated: 2026/05/26 22:37:00 by samatsum         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "engine.h"
+#include "include/engine.h"
 
 int
 	shade_color(int color, double divide)

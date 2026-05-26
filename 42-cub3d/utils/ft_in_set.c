@@ -3,14 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   ft_in_set.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ncolomer <ncolomer@student.42.fr>          +#+  +:+       +#+        */
+/*   By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2019/10/30 11:49:38 by ncolomer          #+#    #+#             */
-/*   Updated: 2019/10/31 11:50:18 by ncolomer         ###   ########.fr       */
+/*   Created: 2019/10/30 11:49:38 by samatsum          #+#    #+#             */
+/*   Updated: 2026/05/26 22:39:55 by samatsum         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "utils.h"
+#include "include/utils.h"
 
 int
 	ft_in_set(char c, char const *set)

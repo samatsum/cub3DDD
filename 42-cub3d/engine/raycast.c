@@ -3,14 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   raycast.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ncolomer <ncolomer@student.42.fr>          +#+  +:+       +#+        */
+/*   By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2019/11/04 16:50:30 by ncolomer          #+#    #+#             */
-/*   Updated: 2019/11/09 15:00:39 by ncolomer         ###   ########.fr       */
+/*   Created: 2019/11/04 16:50:30 by samatsum          #+#    #+#             */
+/*   Updated: 2026/05/26 22:37:19 by samatsum         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "engine.h"
+#include "include/engine.h"
 
 int
 	wall_direction(t_raysult *ray)

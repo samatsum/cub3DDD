@@ -3,14 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   shortcuts.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ncolomer <ncolomer@student.42.fr>          +#+  +:+       +#+        */
+/*   By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2019/10/31 16:25:20 by ncolomer          #+#    #+#             */
-/*   Updated: 2019/11/09 14:08:07 by ncolomer         ###   ########.fr       */
+/*   Created: 2019/10/31 16:25:20 by samatsum          #+#    #+#             */
+/*   Updated: 2026/05/26 22:37:25 by samatsum         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "engine.h"
+#include "include/engine.h"
 
 int
 	draw_string(t_window *window, t_pos *s_pos, char *str, int color)

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   config.h                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ncolomer <ncolomer@student.42.fr>          +#+  +:+       +#+        */
+/*   By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2019/10/29 12:51:26 by ncolomer          #+#    #+#             */
-/*   Updated: 2019/11/10 17:58:51 by ncolomer         ###   ########.fr       */
+/*   Created: 2019/10/29 12:51:26 by samatsum          #+#    #+#             */
+/*   Updated: 2026/05/26 22:40:40 by samatsum         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,8 +15,8 @@
 
 # include <fcntl.h>
 # include <unistd.h>
-# include "gnl/get_next_line.h"
-# include "utils/utils.h"
+# include "include/get_next_line.h"
+# include "include/utils.h"
 
 # define DIRECTIONS "NSEW"
 # define VALID_MAP_CHARACTERS " 01234NSEW"

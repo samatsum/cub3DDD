@@ -3,14 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   draw.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ncolomer <ncolomer@student.42.fr>          +#+  +:+       +#+        */
+/*   By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2019/11/06 00:05:58 by ncolomer          #+#    #+#             */
-/*   Updated: 2019/11/12 17:14:01 by ncolomer         ###   ########.fr       */
+/*   Created: 2019/11/06 00:05:58 by samatsum          #+#    #+#             */
+/*   Updated: 2026/05/26 22:37:13 by samatsum         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "engine.h"
+#include "include/engine.h"
 
 void
 	draw_pixel(t_window *w, t_pos *pos, int color)

@@ -3,14 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   ft_strlen.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ncolomer <ncolomer@student.42.fr>          +#+  +:+       +#+        */
+/*   By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2019/10/29 13:43:47 by ncolomer          #+#    #+#             */
-/*   Updated: 2019/10/29 13:44:06 by ncolomer         ###   ########.fr       */
+/*   Created: 2019/10/29 13:43:47 by samatsum          #+#    #+#             */
+/*   Updated: 2026/05/26 22:40:13 by samatsum         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "utils.h"
+#include "include/utils.h"
 
 int
 	ft_strlen(char const *str)

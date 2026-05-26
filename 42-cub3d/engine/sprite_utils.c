@@ -3,14 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   sprite_utils.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ncolomer <ncolomer@student.42.fr>          +#+  +:+       +#+        */
+/*   By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2019/11/08 12:54:59 by ncolomer          #+#    #+#             */
-/*   Updated: 2019/11/10 13:46:00 by ncolomer         ###   ########.fr       */
+/*   Created: 2019/11/08 12:54:59 by samatsum          #+#    #+#             */
+/*   Updated: 2026/05/26 22:37:27 by samatsum         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "engine.h"
+#include "include/engine.h"
 
 t_sprite
 	*add_front_sprite(t_sprite **sprites, double distance, t_pos *pos,

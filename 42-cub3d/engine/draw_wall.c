@@ -3,14 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   draw_wall.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ncolomer <ncolomer@student.42.fr>          +#+  +:+       +#+        */
+/*   By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2019/11/09 14:41:29 by ncolomer          #+#    #+#             */
-/*   Updated: 2019/11/12 16:56:47 by ncolomer         ###   ########.fr       */
+/*   Created: 2019/11/09 14:41:29 by samatsum          #+#    #+#             */
+/*   Updated: 2026/05/26 22:37:11 by samatsum         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "engine.h"
+#include "include/engine.h"
 
 static void
 	init_draw_wall(t_tex *tex, t_raysult *ray, t_pos *p_tex)

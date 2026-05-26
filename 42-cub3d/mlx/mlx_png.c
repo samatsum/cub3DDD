@@ -9,9 +9,9 @@
 #include <string.h>
 #include <arpa/inet.h>
 
-#include "zlib.h"
+#include "include/zlib.h"
 
-#include "mlx.h"
+#include "include/mlx.h"
 
 #define UNIQ_BPP 4
 

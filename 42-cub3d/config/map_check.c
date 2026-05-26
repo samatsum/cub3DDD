@@ -3,14 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   map_check.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ncolomer <ncolomer@student.42.fr>          +#+  +:+       +#+        */
+/*   By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2019/10/31 11:47:56 by ncolomer          #+#    #+#             */
-/*   Updated: 2019/10/31 11:48:27 by ncolomer         ###   ########.fr       */
+/*   Created: 2019/10/31 11:47:56 by samatsum          #+#    #+#             */
+/*   Updated: 2026/05/26 22:36:44 by samatsum         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "config.h"
+#include "include/config.h"
 
 int
 	count_check_columns(char const *line)
