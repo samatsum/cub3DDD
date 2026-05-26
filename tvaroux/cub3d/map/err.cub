@@ -1,0 +1,11 @@
+NO ./texture/brickwall.xpm
+SO ./texture/brickwall2.xpm
+WE ./texture/brickwall3.xpm
+EA ./texture/brickwall4.xpm
+
+F 0,222,0
+C 0,0,254
+
+11111
+11111
+11111111N11
