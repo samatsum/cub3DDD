@@ -6,20 +6,30 @@
 /*   By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/29 12:44:32 by samatsum          #+#    #+#             */
-/*   Updated: 2026/05/27 14:38:39 by samatsum         ###   ########.fr       */
+/*   Updated: 2026/05/27 15:10:28 by samatsum         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "include/cub3d.h"
 
-int
-	exit_hook(t_game *game)
+static void render_frame(t_game *game)
+{
+	update_screen(game);
+	update_window(game);
+}
+
+int	expose_hook(t_game *game)
+{
+	render_frame(game);
+	return (0);
+}
+
+int	exit_hook(t_game *game)
 {
 	return (exit_game(game, EXIT_SUCCESS));
 }
 
-int
-	key_press(int keycode, t_game *game)
+int	key_press(int keycode, t_game *game)
 {
 	if (keycode == KEY_W || keycode == KEY_FORWARD)
 		game->move.x = 1;
@@ -36,8 +46,7 @@ int
 	return (0);
 }
 
-int
-	key_release(int keycode, t_game *game)
+int	key_release(int keycode, t_game *game)
 {
 	if (keycode == KEY_W || keycode == KEY_FORWARD)
 		game->move.x = 0;
@@ -62,8 +71,7 @@ int
 	return (0);
 }
 
-int
-	main_loop(t_game *game)
+int	main_loop(t_game *game)
 {
 	static int	update = 1;
 	static int	last_opt = 0x00000111;
@@ -84,8 +92,7 @@ int
 		if (game->to_collect > 0)
 			check_quest(game);
 		MAP(game->camera.pos, game->config) = 'A';
-		update_screen(game);
-		update_window(game);
+		render_frame(game);
 	}
 	update = 0;
 	return (0);

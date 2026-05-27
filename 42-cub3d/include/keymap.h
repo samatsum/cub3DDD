@@ -25,11 +25,13 @@
 
 /* Events */
 #  define EVENT_CLOSE   33  /* X11 ClientMessage */
+#  define EVENT_EXPOSE  12  /* ← 追加: 画面の再描画要求イベント */
 
 /* Event Masks */
 #  define MASK_KEY_PRESS     (1L << 0)
 #  define MASK_KEY_RELEASE   (1L << 1)
 #  define MASK_CLOSE         (1L << 17)
+#  define MASK_EXPOSE        (1L << 15) /* ← 追加: Expose用マスク */
 
 # elif defined(__APPLE__)
 /* ========================================= */

@@ -6,7 +6,7 @@
 /*   By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/29 12:44:11 by samatsum          #+#    #+#             */
-/*   Updated: 2026/05/26 22:43:42 by samatsum         ###   ########.fr       */
+/*   Updated: 2026/05/27 15:11:49 by samatsum         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,6 +36,8 @@ int				exit_game(t_game *game, int code);
 int				screenshot(t_game *game);
 
 int				exit_hook(t_game *game);
+
+int				expose_hook(t_game *game);
 
 int				key_press(int keycode, t_game *game);
 
