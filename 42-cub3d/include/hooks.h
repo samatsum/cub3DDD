@@ -2,6 +2,7 @@
 # define HOOKS_H
 
 /* mlxのイベントフック関数群 */
+void            render_frame(t_game *game);//これは…utilsかも？
 int             main_loop(t_game *game);
 int             exit_hook(t_game *game);
 int             expose_hook(t_game *game);

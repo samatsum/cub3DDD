@@ -6,23 +6,12 @@
 /*   By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/29 12:45:06 by samatsum          #+#    #+#             */
-/*   Updated: 2026/05/27 19:54:51 by samatsum         ###   ########.fr       */
+/*   Updated: 2026/05/27 20:18:11 by samatsum         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <stdlib.h>
 #include "cub3d.h"
-
-int	exit_error(t_game *game, char const *str)
-{
-	int	unused;
-
-	if (str)
-		unused = write(STDOUT_FILENO, str, ft_strlen(str));
-	(void)unused;
-	exit_game(game, EXIT_FAILURE);
-	return (EXIT_FAILURE);
-}
 
 int	main(int argc, char **argv)
 {
