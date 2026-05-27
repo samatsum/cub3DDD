@@ -6,7 +6,7 @@
 /*   By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/29 12:45:06 by samatsum          #+#    #+#             */
-/*   Updated: 2026/05/27 14:38:38 by samatsum         ###   ########.fr       */
+/*   Updated: 2026/05/27 14:53:08 by samatsum         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,9 +39,9 @@ int	main(int argc, char **argv)
 		return (EXIT_FAILURE);
 	if (game.options & FLAG_SAVE)
 		return (screenshot(&game));
-	mlx_hook(game.window.win, X_EVENT_KEY_PRESS, 0, &key_press, &game);
-	mlx_hook(game.window.win, X_EVENT_KEY_RELEASE, 0, &key_release, &game);
-	mlx_hook(game.window.win, X_EVENT_EXIT, 0, &exit_hook, &game);
+	mlx_hook(game.window.win, X_EVENT_KEY_PRESS, MASK_KEY_PRESS, &key_press, &game);
+	mlx_hook(game.window.win, X_EVENT_KEY_RELEASE, MASK_KEY_RELEASE, &key_release, &game);
+	mlx_hook(game.window.win, X_EVENT_EXIT, MASK_CLOSE, &exit_hook, &game);
 	mlx_loop_hook(game.window.ptr, &main_loop, &game);
 	mlx_loop(game.window.ptr);
 	return (EXIT_SUCCESS);

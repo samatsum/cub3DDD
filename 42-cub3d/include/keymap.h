@@ -3,7 +3,11 @@
 # define KEYMAP_H
 
 # if defined(__linux__)
-/* Linux (X11) Key Codes */
+/* ========================================= */
+/* Linux (X11) Settings                      */
+/* ========================================= */
+
+/* Key Codes */
 #  define KEY_ESC       65307
 #  define KEY_W         119
 #  define KEY_A         97
@@ -18,10 +22,21 @@
 #  define KEY_I         105
 #  define KEY_L         108
 #  define KEY_O         111
+
+/* Events */
 #  define EVENT_CLOSE   33  /* X11 ClientMessage */
 
+/* Event Masks */
+#  define MASK_KEY_PRESS     (1L << 0)
+#  define MASK_KEY_RELEASE   (1L << 1)
+#  define MASK_CLOSE         (1L << 17)
+
 # elif defined(__APPLE__)
-/* macOS (Cocoa) Key Codes */
+/* ========================================= */
+/* macOS (Cocoa) Settings                    */
+/* ========================================= */
+
+/* Key Codes */
 #  define KEY_ESC       53
 #  define KEY_W         13
 #  define KEY_A         0
@@ -36,12 +51,21 @@
 #  define KEY_I         34
 #  define KEY_L         37
 #  define KEY_O         31
+
+/* Events */
 #  define EVENT_CLOSE   17
+
+/* Event Masks (Macはマスクを無視するため0で統一) */
+#  define MASK_KEY_PRESS     0
+#  define MASK_KEY_RELEASE   0
+#  define MASK_CLOSE         0
 
 # endif
 
-/* イベントフック用の共通コード */
-# define EVENT_KEY_PRESS 2
+/* ========================================= */
+/* Common Events (OS Independent)            */
+/* ========================================= */
+# define EVENT_KEY_PRESS   2
 # define EVENT_KEY_RELEASE 3
 
 #endif
