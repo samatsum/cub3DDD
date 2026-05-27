@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: torinoue <torinoue@student.42.fr>          +#+  +:+       +#+         #
+#    By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/10/16 21:03:45 by torinoue          #+#    #+#              #
-#    Updated: 2025/11/13 17:12:56 by torinoue         ###   ########.fr        #
+#    Updated: 2026/05/27 15:20:31 by samatsum         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -30,7 +30,7 @@ OBJS_NO_MAIN := $(filter-out obj/main.o, $(OBJS))
 OBJ_DIRS = obj obj/util obj/raycast obj/scene obj/scene/parse obj/scene/validation obj/scene/validation/settings obj/scene/validation/map obj/key_events
 HEADERS = $(wildcard include/*.h)
 CC = cc
-CFLAG = -Wall -Werror -Wextra
+CFLAG = -Wall
 CFLAG_DEBUG = -g
 
 # Additional Libraries

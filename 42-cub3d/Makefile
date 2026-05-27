@@ -6,9 +6,17 @@
 #    By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2019/10/29 12:45:02 by samatsum          #+#    #+#              #
-#    Updated: 2026/05/26 22:31:39 by samatsum         ###   ########.fr        #
+#    Updated: 2026/05/27 15:55:38 by samatsum         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
+
+NAME            = cub3D
+CC              = gcc
+RM              = rm -rf
+CFLAGS          = -O3 -Wall -Wextra -Werror -I.
+
+# オブジェクトファイルの出力先ディレクトリ
+OBJ_DIR         = obj
 
 SRCS            = main.c \
 				  cub3d.c \
@@ -51,42 +59,34 @@ SRCS            = main.c \
                   engine/sprite_utils.c \
 				  engine/crosshair.c \
 
-OBJS            = $(SRCS:.c=.o)
+# オブジェクトファイルのリストを作成
+OBJS            = $(addprefix $(OBJ_DIR)/, $(SRCS:.c=.o))
 
-CC              = gcc
-RM              = rm -f
-#-O は Optimization（最適化） の頭文字です。コンパイラが、人間が書いたC言語のコードを機械語のバイナリに変換する際、「いかに実行速度を速く、効率的にするか」 を突き詰める設定です。数字は、その最適化の度合い（0 〜 3）を表します。
-CFLAGS          = -O3 -Wall -Wextra -Werror
-
-NAME            = cub3D
-
-# ============================================================================
-# クロスプラットフォーム (OS判定とライブラリの動的切り替え)
-# ============================================================================
+# OS判定
 UNAME_S         := $(shell uname -s)
 
 ifeq ($(UNAME_S),Linux)
-    # Linux (X11) 環境
     MLX_DIR     = minilibx-linux
     LIBS        = -L$(MLX_DIR) -lmlx -L/usr/lib -lXext -lX11 -lm -lz
     MLX_TARGET  = $(MLX_DIR)/libmlx.a
     MLX_CLEAN   = 
 else
-    # macOS (Cocoa/AppKit) 環境
     MLX_DIR     = mlx
     LIBS        = -L$(MLX_DIR) -lmlx -framework OpenGL -framework AppKit -lm
     MLX_TARGET  = libmlx.dylib
     MLX_CLEAN   = $(RM) libmlx.dylib
 endif
 
-# ============================================================================
 # ビルドルール
-# ============================================================================
-
 all:            $(NAME)
 
 $(NAME):        $(MLX_TARGET) $(OBJS)
 				$(CC) $(CFLAGS) -o $(NAME) $(OBJS) $(LIBS)
+
+# オブジェクトファイルの生成ルール
+$(OBJ_DIR)/%.o: %.c
+				@mkdir -p $(@D)
+				$(CC) $(CFLAGS) -c $< -o $@
 
 $(MLX_TARGET):
 				@$(MAKE) -C $(MLX_DIR)
@@ -96,7 +96,7 @@ endif
 
 clean:
 				@$(MAKE) -C $(MLX_DIR) clean
-				$(RM) $(OBJS) $(BONUS_OBJS)
+				$(RM) $(OBJ_DIR) $(BONUS_OBJS)
 
 fclean:         clean
 				$(RM) $(NAME)
