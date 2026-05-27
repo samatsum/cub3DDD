@@ -6,7 +6,7 @@
 /*   By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/10 18:13:15 by samatsum          #+#    #+#             */
-/*   Updated: 2026/05/26 22:36:07 by samatsum         ###   ########.fr       */
+/*   Updated: 2026/05/27 14:38:36 by samatsum         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -96,7 +96,7 @@ int
 	pad = (4 - ((int)w->size.x * 3) % 4) % 4;
 	filesize = 54 + (3 * ((int)w->size.x + pad) * (int)w->size.y);
 	if ((file = open("screenshot.bmp", O_WRONLY | O_CREAT
-									| O_TRUNC | O_APPEND)) < 0)
+									| O_TRUNC | O_APPEND, 0644)) < 0)
 		return (0);
 	if (!write_bmp_header(file, filesize, game))
 		return (0);

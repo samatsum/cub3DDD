@@ -6,11 +6,11 @@
 /*   By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/31 16:11:36 by samatsum          #+#    #+#             */
-/*   Updated: 2026/05/26 22:39:59 by samatsum         ###   ########.fr       */
+/*   Updated: 2026/05/27 14:38:13 by samatsum         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "include/utils.h"
+#include "../include/utils.h"
 
 static int
 	ft_abs(int nbr)

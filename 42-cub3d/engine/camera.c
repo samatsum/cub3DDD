@@ -6,11 +6,11 @@
 /*   By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/31 13:24:41 by samatsum          #+#    #+#             */
-/*   Updated: 2026/05/26 22:36:57 by samatsum         ###   ########.fr       */
+/*   Updated: 2026/05/27 14:38:13 by samatsum         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "include/engine.h"
+#include "../include/engine.h"
 
 void
 	find_start_pos(t_config *config, t_camera *camera)

@@ -6,11 +6,11 @@
 /*   By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/31 16:25:20 by samatsum          #+#    #+#             */
-/*   Updated: 2026/05/26 22:37:25 by samatsum         ###   ########.fr       */
+/*   Updated: 2026/05/27 14:38:13 by samatsum         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "include/engine.h"
+#include "../include/engine.h"
 
 int
 	draw_string(t_window *window, t_pos *s_pos, char *str, int color)

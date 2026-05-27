@@ -6,11 +6,11 @@
 /*   By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/06 15:30:14 by samatsum          #+#    #+#             */
-/*   Updated: 2026/05/26 22:37:37 by samatsum         ###   ########.fr       */
+/*   Updated: 2026/05/27 14:38:13 by samatsum         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "include/engine.h"
+#include "../include/engine.h"
 
 static int
 	load_tex(t_window *window, t_tex *tex, char *path)

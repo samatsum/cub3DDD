@@ -6,11 +6,11 @@
 /*   By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/08 12:54:59 by samatsum          #+#    #+#             */
-/*   Updated: 2026/05/26 22:37:27 by samatsum         ###   ########.fr       */
+/*   Updated: 2026/05/27 14:38:13 by samatsum         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "include/engine.h"
+#include "../include/engine.h"
 
 t_sprite
 	*add_front_sprite(t_sprite **sprites, double distance, t_pos *pos,

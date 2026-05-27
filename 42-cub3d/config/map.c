@@ -6,11 +6,11 @@
 /*   By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/29 15:24:13 by samatsum          #+#    #+#             */
-/*   Updated: 2026/05/26 22:36:46 by samatsum         ###   ########.fr       */
+/*   Updated: 2026/05/27 14:38:13 by samatsum         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "include/config.h"
+#include "../include/config.h"
 
 int
 	copy_map(t_config *config, t_str *map_buffer, int *map)

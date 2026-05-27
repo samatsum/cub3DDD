@@ -6,7 +6,7 @@
 /*   By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/29 12:45:06 by samatsum          #+#    #+#             */
-/*   Updated: 2026/05/26 22:36:39 by samatsum         ###   ########.fr       */
+/*   Updated: 2026/05/27 14:38:38 by samatsum         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,8 +15,11 @@
 
 int	exit_error(t_game *game, char const *str)
 {
+	int	unused;
+
 	if (str)
-		write(STDOUT_FILENO, str, ft_strlen(str));
+		unused = write(STDOUT_FILENO, str, ft_strlen(str));
+	(void)unused;
 	exit_game(game, EXIT_FAILURE);
 	return (EXIT_FAILURE);
 }

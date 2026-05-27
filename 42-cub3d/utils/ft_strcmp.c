@@ -6,11 +6,11 @@
 /*   By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/08 18:42:21 by samatsum          #+#    #+#             */
-/*   Updated: 2026/05/26 22:40:06 by samatsum         ###   ########.fr       */
+/*   Updated: 2026/05/27 14:38:13 by samatsum         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "include/utils.h"
+#include "../include/utils.h"
 
 int
 	ft_strcmp(const char *s1, const char *s2)

@@ -6,7 +6,7 @@
 /*   By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/29 13:25:07 by samatsum          #+#    #+#             */
-/*   Updated: 2026/05/26 22:17:14 by samatsum         ###   ########.fr       */
+/*   Updated: 2026/05/27 14:40:26 by samatsum         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 # define UTILS_H
 
 # include <stdlib.h>
+# include <stdint.h>
 
 # define PTR_CAST(a)	(void*)((uintptr_t)(a))
 # define MAX(a, b)		((a > b) ? a : b)
