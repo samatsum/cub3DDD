@@ -1,15 +1,3 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   draw_sky_floor.c                                   :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2019/11/09 14:40:26 by samatsum          #+#    #+#             */
-/*   Updated: 2026/05/27 19:51:44 by samatsum         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #include "engine.h"
 
 static void
@@ -30,51 +18,51 @@ static void
 }
 
 static void
-	draw_sky_pixel(t_game *game, t_raysult *ray, t_pos *pixel, t_pos *p_tex)
+	draw_sky_pixel(t_render *rnd, t_raysult *ray, t_pos *pixel, t_pos *p_tex)
 {
 	t_tex	*tex;
 
-	tex = &game->tex[TEX_SKY];
-	if (!game->tex[TEX_SKY].tex)
+	tex = &rnd->tex[TEX_SKY];
+	if (!tex->tex)
 	{
-		draw_pixel(&game->window, pixel,
-			distance_shade(game->options, game->config.c[TEX_SKY],
-			game->sf_dist[ray->row]));
+		draw_pixel(rnd->w, pixel,
+			distance_shade(rnd->options, rnd->config->c[TEX_SKY],
+			rnd->sf_dist[ray->row]));
 	}
 	else
 	{
 		set_pos(p_tex, (int)(ray->c_floor.x * tex->width) % tex->width,
 					(int)(ray->c_floor.y * tex->height) % tex->height);
-		draw_pixel(&game->window, pixel,
-			distance_shade(game->options, get_tex_color(tex, p_tex),
-			game->sf_dist[ray->row]));
+		draw_pixel(rnd->w, pixel,
+			distance_shade(rnd->options, get_tex_color(tex, p_tex),
+			rnd->sf_dist[ray->row]));
 	}
 }
 
 static void
-	draw_floor_pixel(t_game *game, t_raysult *ray, t_pos *pixel, t_pos *p_tex)
+	draw_floor_pixel(t_render *rnd, t_raysult *ray, t_pos *pixel, t_pos *p_tex)
 {
 	t_tex	*tex;
 
-	tex = &game->tex[TEX_FLOOR];
+	tex = &rnd->tex[TEX_FLOOR];
 	if (!tex->tex)
 	{
-		draw_pixel(&game->window, pixel,
-			distance_shade(game->options, game->config.c[TEX_FLOOR],
-			game->sf_dist[ray->row]));
+		draw_pixel(rnd->w, pixel,
+			distance_shade(rnd->options, rnd->config->c[TEX_FLOOR],
+			rnd->sf_dist[ray->row]));
 	}
 	else
 	{
 		set_pos(p_tex, (int)(ray->c_floor.x * tex->width) % tex->width,
 					(int)(ray->c_floor.y * tex->height) % tex->height);
-		draw_pixel(&game->window, pixel,
-			distance_shade(game->options, get_tex_color(tex, p_tex),
-			game->sf_dist[ray->row]));
+		draw_pixel(rnd->w, pixel,
+			distance_shade(rnd->options, get_tex_color(tex, p_tex),
+			rnd->sf_dist[ray->row]));
 	}
 }
 
 void
-	draw_sky_floor(t_game *game, t_raysult *ray)
+	draw_sky_floor(t_render *rnd, t_raysult *ray)
 {
 	int		i;
 	t_pos	pixel;
@@ -83,17 +71,17 @@ void
 
 	init_draw_sky_floor(ray);
 	pixel.x = ray->column;
-	i = game->window.half.y + (ray->height / 2.);
-	while (i < game->window.size.y)
+	i = rnd->w->half.y + (ray->height / 2.);
+	while (i < rnd->w->size.y)
 	{
 		ray->row = (int)i;
-		weight = game->sf_dist[i] / ray->distance;
+		weight = rnd->sf_dist[i] / ray->distance;
 		set_pos(&ray->c_floor,
-			weight * ray->floor_wall.x + (1. - weight) * game->camera.pos.x,
-			weight * ray->floor_wall.y + (1. - weight) * game->camera.pos.y);
+			weight * ray->floor_wall.x + (1. - weight) * rnd->camera->pos.x,
+			weight * ray->floor_wall.y + (1. - weight) * rnd->camera->pos.y);
 		pixel.y = i;
-		draw_floor_pixel(game, ray, &pixel, &p_tex);
-		pixel.y = game->window.size.y - i++;
-		draw_sky_pixel(game, ray, &pixel, &p_tex);
+		draw_floor_pixel(rnd, ray, &pixel, &p_tex);
+		pixel.y = rnd->w->size.y - i++;
+		draw_sky_pixel(rnd, ray, &pixel, &p_tex);
 	}
 }

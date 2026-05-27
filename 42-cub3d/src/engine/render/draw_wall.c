@@ -1,15 +1,3 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   draw_wall.c                                        :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2019/11/09 14:41:29 by samatsum          #+#    #+#             */
-/*   Updated: 2026/05/27 19:51:48 by samatsum         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #include "engine.h"
 
 static void
@@ -34,30 +22,30 @@ static void
 }
 
 void
-	draw_wall(t_game *g, t_raysult *r)
+	draw_wall(t_render *rnd, t_raysult *r)
 {
 	int		i[2];
 	t_pos	p_tex;
 	t_tex	*tex;
 	t_pos	pixel;
 
-	tex = &g->tex[r->direction];
-	set_pos(&pixel, r->column, MAX(0, g->window.half.y - (r->height / 2.)));
+	tex = &rnd->tex[r->direction];
+	set_pos(&pixel, r->column, MAX(0, rnd->w->half.y - (r->height / 2.)));
 	if (!tex->tex)
 	{
-		draw_vertical_line(&g->window, &pixel, r->height,
-			distance_shade(g->options,
-			g->config.c[r->direction], r->distance));
+		draw_vertical_line(rnd->w, &pixel, r->height,
+			distance_shade(rnd->options,
+			rnd->config->c[r->direction], r->distance));
 		return ;
 	}
 	init_draw_wall(tex, r, &p_tex);
-	i[1] = MAX(0, g->window.half.y - (r->height / 2.));
+	i[1] = MAX(0, rnd->w->half.y - (r->height / 2.));
 	i[0] = 0;
-	while (i[0] < r->height && (pixel.y = i[1]++) < g->window.size.y)
+	while (i[0] < r->height && (pixel.y = i[1]++) < rnd->w->size.y)
 	{
-		p_tex.y = (int)((pixel.y * 2 - g->window.size.y + r->height)
+		p_tex.y = (int)((pixel.y * 2 - rnd->w->size.y + r->height)
 				* ((tex->height / 2.) / r->height));
-		draw_pixel(&g->window, &pixel, distance_shade(g->options,
+		draw_pixel(rnd->w, &pixel, distance_shade(rnd->options,
 			get_tex_color(tex, &p_tex), r->distance));
 		i[0]++;
 	}

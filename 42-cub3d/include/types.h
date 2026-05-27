@@ -102,6 +102,17 @@ typedef struct	s_camera
 	t_pos	plane;
 }				t_camera;
 
+typedef struct	s_render
+{
+	t_window	*w;
+	t_config	*config;
+	t_camera	*camera;
+	t_tex		*tex;
+	double		*depth;
+	double		*sf_dist;
+	int			options;
+}				t_render;
+
 typedef	struct	s_game
 {
 	t_config	config;

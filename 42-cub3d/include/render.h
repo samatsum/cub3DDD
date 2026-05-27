@@ -18,15 +18,15 @@ void			draw_pixel(t_window *w, t_pos *pos, int color);
 int				draw_vertical_line(t_window *window, t_pos *start, int length, int color);
 int				draw_rectangle(t_window *window, t_pos *p1, t_pos *p2, int color);
 int				draw_string(t_window *window, t_pos *s_pos, char *str, int color);
-void			draw_wall(t_game *game, t_raysult *ray);
-void			draw_sky_floor(t_game *game, t_raysult *ray);
+void			draw_wall(t_render *rnd, t_raysult *ray);          /* 修正 */
+void			draw_sky_floor(t_render *rnd, t_raysult *ray);     /* 修正 */
 
 /* sprite.c / sprite_utils.c */
 t_sprite		*add_front_sprite(t_sprite **sprites, double distance, t_pos *pos, t_tex *tex);
 t_sprite		*add_sorted_sprite(t_sprite **sprites, t_sprite *sprite);
-t_sprite		*sort_sprites(t_game *game, t_sprite *sprites);
+t_sprite		*sort_sprites(t_camera *camera, t_sprite *sprites); /* 修正 */
 void			delete_sprite(t_sprite **sprites, t_pos *pos);
-void			draw_sprites(t_game *game);
+void			draw_sprites(t_render *rnd, t_sprite *sprites);
 void			clear_sprites(t_sprite **sprites);
 
 #endif

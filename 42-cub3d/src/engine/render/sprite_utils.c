@@ -1,13 +1,13 @@
 /* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   sprite_utils.c                                     :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2019/11/08 12:54:59 by samatsum          #+#    #+#             */
-/*   Updated: 2026/05/27 19:52:08 by samatsum         ###   ########.fr       */
-/*                                                                            */
+/* */
+/* :::      ::::::::   */
+/* sprite_utils.c                                     :+:      :+:    :+:   */
+/* +:+ +:+         +:+     */
+/* By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
+/* +#+#+#+#+#+   +#+           */
+/* Created: 2019/11/08 12:54:59 by samatsum          #+#    #+#             */
+/* Updated: 2026/05/28 00:00:00 by samatsum         ###   ########.fr       */
+/* */
 /* ************************************************************************** */
 
 #include "engine.h"
@@ -58,13 +58,13 @@ t_sprite
 }
 
 t_sprite
-	*sort_sprites(t_game *game, t_sprite *sprites)
+	*sort_sprites(t_camera *camera, t_sprite *sprites)
 {
 	t_sprite	*sorted;
 	t_pos		p;
 
 	sorted = NULL;
-	copy_pos(&p, &game->camera.pos);
+	copy_pos(&p, &camera->pos);
 	while (sprites)
 	{
 		sprites->distance =
