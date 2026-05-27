@@ -5,7 +5,6 @@
 # include "config.h"
 # include "utils.h"
 # include "keymap.h"
-/* 追加: 新しく作るヘッダーを読み込む */
 # include "core.h"
 # include "hooks.h"
 
@@ -14,7 +13,5 @@
 # define MIDDLE_CLICK   3
 # define SCROLL_UP      4
 # define SCROLL_DOWN    5
-
-/* ここにあった関数宣言はすべて切り取りました */
 
 #endif
