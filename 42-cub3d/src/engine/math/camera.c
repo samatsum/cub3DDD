@@ -1,13 +1,13 @@
 /* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   camera.c                                           :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2019/10/31 13:24:41 by samatsum          #+#    #+#             */
-/*   Updated: 2026/05/27 19:51:28 by samatsum         ###   ########.fr       */
-/*                                                                            */
+/* */
+/* :::      ::::::::   */
+/* camera.c                                           :+:      :+:    :+:   */
+/* +:+ +:+         +:+     */
+/* By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
+/* +#+#+#+#+#+   +#+           */
+/* Created: 2019/10/31 13:24:41 by samatsum          #+#    #+#             */
+/* Updated: 2026/05/28 00:00:00 by samatsum         ###   ########.fr       */
+/* */
 /* ************************************************************************** */
 
 #include "engine.h"
@@ -66,64 +66,58 @@ void
 }
 
 int
-	move_camera(t_game *game, int direction)
+	move_camera(t_camera *c, t_config *config, int direction)
 {
-	t_camera	*c;
 	t_pos		n_pos;
 
-	c = &game->camera;
 	copy_pos(&n_pos, &c->pos);
 	n_pos.x += (((direction) ? -1 : 1) * (c->dir.x * .11));
-	if (IN_MAP(n_pos, game->config)
-		&& MAP(n_pos, game->config) != '1'
-		&& MAP(n_pos, game->config) != '2')
+	if (IN_MAP(n_pos, *config)
+		&& MAP(n_pos, *config) != '1'
+		&& MAP(n_pos, *config) != '2')
 		copy_pos(&c->pos, &n_pos);
 	copy_pos(&n_pos, &c->pos);
 	n_pos.y += (((direction) ? -1 : 1) * (c->dir.y * .11));
-	if (IN_MAP(n_pos, game->config)
-		&& MAP(n_pos, game->config) != '1'
-		&& MAP(n_pos, game->config) != '2')
+	if (IN_MAP(n_pos, *config)
+		&& MAP(n_pos, *config) != '1'
+		&& MAP(n_pos, *config) != '2')
 		copy_pos(&c->pos, &n_pos);
 	return (1);
 }
 
 int
-	move_perp_camera(t_game *game, int direction)
+	move_perp_camera(t_camera *c, t_config *config, int direction)
 {
-	t_camera	*c;
 	t_pos		n_pos;
 
-	c = &game->camera;
 	copy_pos(&n_pos, &c->pos);
 	n_pos.x += (((direction) ? -1 : 1) * (c->x_dir.x * .11) + 0.00001);
-	if (IN_MAP(n_pos, game->config)
-		&& MAP(n_pos, game->config) != '1'
-		&& MAP(n_pos, game->config) != '2')
+	if (IN_MAP(n_pos, *config)
+		&& MAP(n_pos, *config) != '1'
+		&& MAP(n_pos, *config) != '2')
 		copy_pos(&c->pos, &n_pos);
 	copy_pos(&n_pos, &c->pos);
 	n_pos.y += (((direction) ? -1 : 1) * (c->x_dir.y * .11) + 0.00001);
-	if (IN_MAP(n_pos, game->config)
-		&& MAP(n_pos, game->config) != '1'
-		&& MAP(n_pos, game->config) != '2')
+	if (IN_MAP(n_pos, *config)
+		&& MAP(n_pos, *config) != '1'
+		&& MAP(n_pos, *config) != '2')
 		copy_pos(&c->pos, &n_pos);
 	return (1);
 }
 
 int
-	rotate_camera(t_game *game, int dir)
+	rotate_camera(t_camera *c, double *cos_arr, double *sin_arr, int dir)
 {
-	t_camera	*c;
 	t_pos		old;
 
-	c = &game->camera;
 	copy_pos(&old, &c->dir);
-	c->dir.x = (c->dir.x * game->cos[dir]) - (c->dir.y * game->sin[dir]);
-	c->dir.y = (old.x * game->sin[dir]) + (c->dir.y * game->cos[dir]);
+	c->dir.x = (c->dir.x * cos_arr[dir]) - (c->dir.y * sin_arr[dir]);
+	c->dir.y = (old.x * sin_arr[dir]) + (c->dir.y * cos_arr[dir]);
 	copy_pos(&old, &c->plane);
-	c->plane.x = (c->plane.x * game->cos[dir]) - (c->plane.y * game->sin[dir]);
-	c->plane.y = (old.x * game->sin[dir]) + (c->plane.y * game->cos[dir]);
+	c->plane.x = (c->plane.x * cos_arr[dir]) - (c->plane.y * sin_arr[dir]);
+	c->plane.y = (old.x * sin_arr[dir]) + (c->plane.y * cos_arr[dir]);
 	copy_pos(&old, &c->x_dir);
-	c->x_dir.x = (c->x_dir.x * game->cos[dir]) - (c->x_dir.y * game->sin[dir]);
-	c->x_dir.y = (old.x * game->sin[dir]) + (c->x_dir.y * game->cos[dir]);
+	c->x_dir.x = (c->x_dir.x * cos_arr[dir]) - (c->x_dir.y * sin_arr[dir]);
+	c->x_dir.y = (old.x * sin_arr[dir]) + (c->x_dir.y * cos_arr[dir]);
 	return (1);
 }

@@ -1,15 +1,3 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   screen.c                                           :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2019/11/06 14:38:10 by samatsum          #+#    #+#             */
-/*   Updated: 2026/05/27 19:52:02 by samatsum         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #include "engine.h"
 
 void
@@ -26,7 +14,8 @@ void
 	i = 0;
 	while (i < w->size.x)
 	{
-		ray_cast(game, &ray, i);
+		ray.column = i; /* 引数削減に伴い、ここで列のインデックスをセットする */
+		ray_cast(&game->camera, &game->config, &ray, game->camera_x[i]);
 		game->depth[i] = ray.distance;
 		ray.height = fabs(w->size.y / ray.distance);
 		draw_wall(game, &ray);

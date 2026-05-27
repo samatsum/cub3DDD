@@ -7,7 +7,7 @@
 
 /* ** 分割された機能別レイヤー
 */
-# include "math.h"
+# include "math_engine.h"
 # include "render.h"
 # include "texture.h"
 # include "ui.h"
