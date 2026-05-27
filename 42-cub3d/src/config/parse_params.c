@@ -6,11 +6,11 @@
 /*   By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/31 12:00:15 by samatsum          #+#    #+#             */
-/*   Updated: 2026/05/27 14:38:13 by samatsum         ###   ########.fr       */
+/*   Updated: 2026/05/27 19:50:36 by samatsum         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../include/config.h"
+#include "config.h"
 
 int
 	parse_dimensions(t_config *config, char const *line)

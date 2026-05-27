@@ -6,11 +6,11 @@
 /*   By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/06 00:05:58 by samatsum          #+#    #+#             */
-/*   Updated: 2026/05/27 14:38:13 by samatsum         ###   ########.fr       */
+/*   Updated: 2026/05/27 19:51:54 by samatsum         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../include/engine.h"
+#include "engine.h"
 
 void
 	draw_pixel(t_window *w, t_pos *pos, int color)

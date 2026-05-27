@@ -6,12 +6,12 @@
 /*   By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/29 12:45:06 by samatsum          #+#    #+#             */
-/*   Updated: 2026/05/27 15:02:20 by samatsum         ###   ########.fr       */
+/*   Updated: 2026/05/27 19:54:51 by samatsum         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <stdlib.h>
-#include "include/cub3d.h"
+#include "cub3d.h"
 
 int	exit_error(t_game *game, char const *str)
 {

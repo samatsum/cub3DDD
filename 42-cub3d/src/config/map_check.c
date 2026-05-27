@@ -6,11 +6,11 @@
 /*   By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/31 11:47:56 by samatsum          #+#    #+#             */
-/*   Updated: 2026/05/27 14:38:13 by samatsum         ###   ########.fr       */
+/*   Updated: 2026/05/27 19:50:42 by samatsum         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../include/config.h"
+#include "config.h"
 
 int
 	count_check_columns(char const *line)

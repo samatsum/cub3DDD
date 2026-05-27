@@ -6,11 +6,11 @@
 /*   By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/04 16:50:30 by samatsum          #+#    #+#             */
-/*   Updated: 2026/05/27 14:38:13 by samatsum         ###   ########.fr       */
+/*   Updated: 2026/05/27 19:51:33 by samatsum         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../include/engine.h"
+#include "engine.h"
 
 int
 	wall_direction(t_raysult *ray)

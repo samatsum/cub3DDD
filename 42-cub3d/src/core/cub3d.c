@@ -6,11 +6,11 @@
 /*   By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/29 12:44:32 by samatsum          #+#    #+#             */
-/*   Updated: 2026/05/27 15:10:28 by samatsum         ###   ########.fr       */
+/*   Updated: 2026/05/27 19:50:34 by samatsum         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "include/cub3d.h"
+#include "cub3d.h"
 
 static void render_frame(t_game *game)
 {

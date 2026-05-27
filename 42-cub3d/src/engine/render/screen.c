@@ -6,11 +6,11 @@
 /*   By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/06 14:38:10 by samatsum          #+#    #+#             */
-/*   Updated: 2026/05/27 14:38:13 by samatsum         ###   ########.fr       */
+/*   Updated: 2026/05/27 19:52:02 by samatsum         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../include/engine.h"
+#include "engine.h"
 
 void
 	update_screen(t_game *game)
@@ -40,4 +40,15 @@ void
 		display_crosshair(game);
 	if (game->options & FLAG_UI)
 		update_ui(game);
+}
+
+void
+	update_window(t_game *game)
+{
+	t_window	*w;
+
+	w = &game->window;
+	mlx_put_image_to_window(w->ptr, w->win, w->screen.img, 0, 0);
+	if (game->options & FLAG_UI)
+		write_ui_text(game);
 }

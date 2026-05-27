@@ -6,11 +6,11 @@
 /*   By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/31 10:56:05 by samatsum          #+#    #+#             */
-/*   Updated: 2026/05/27 14:41:32 by samatsum         ###   ########.fr       */
+/*   Updated: 2026/05/27 19:53:37 by samatsum         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../include/utils.h"
+#include "utils.h"
 
 int	ft_atoi(char const *str)
 {

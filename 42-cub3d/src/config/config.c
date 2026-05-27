@@ -6,11 +6,11 @@
 /*   By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/29 12:51:45 by samatsum          #+#    #+#             */
-/*   Updated: 2026/05/27 14:38:52 by samatsum         ###   ########.fr       */
+/*   Updated: 2026/05/27 19:49:25 by samatsum         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../include/config.h"
+#include "config.h"
 
 void
 	init_config(t_config *config)

@@ -6,11 +6,11 @@
 /*   By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/10 18:13:15 by samatsum          #+#    #+#             */
-/*   Updated: 2026/05/27 14:38:36 by samatsum         ###   ########.fr       */
+/*   Updated: 2026/05/27 19:50:35 by samatsum         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "include/cub3d.h"
+#include "cub3d.h"
 
 static void
 	set_int_in_char(unsigned char *start, int value)

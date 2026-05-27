@@ -5,12 +5,12 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2019/11/08 17:37:31 by samatsum          #+#    #+#             */
-/*   Updated: 2026/05/27 14:38:13 by samatsum         ###   ########.fr       */
+/*   Created: 2025/12/06 13:23:13 by samatsum          #+#    #+#             */
+/*   Updated: 2026/05/27 19:53:13 by samatsum         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../include/engine.h"
+#include "engine.h"
 
 void
 	display_crosshair(t_game *game)

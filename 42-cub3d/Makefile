@@ -6,58 +6,60 @@
 #    By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2019/10/29 12:45:02 by samatsum          #+#    #+#              #
-#    Updated: 2026/05/27 15:55:38 by samatsum         ###   ########.fr        #
+#    Updated: 2026/05/27 19:56:59 by samatsum         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME            = cub3D
 CC              = gcc
 RM              = rm -rf
-CFLAGS          = -O3 -Wall -Wextra -Werror -I.
+CFLAGS          = -O3 -Wall -Wextra -Werror -I ./include
 
 # オブジェクトファイルの出力先ディレクトリ
 OBJ_DIR         = obj
 
-SRCS            = main.c \
-				  cub3d.c \
-				  game.c \
-				  bmp.c \
-                  config/config.c \
-				  config/map.c \
-				  config/map_check.c \
-                  config/parse_params.c \
-				  config/parse_texture.c \
-                  utils/ft_strlen.c \
-				  utils/ft_substr.c \
-				  utils/ft_in_set.c \
-                  utils/str.c \
-				  utils/ft_strdup.c \
-				  utils/ft_split.c \
-				  utils/ft_atoi.c \
-                  utils/pos.c \
-				  utils/ft_itoa.c \
-				  utils/ft_memmove.c \
-                  utils/ft_strcmp.c \
-				  utils/ft_write.c \
-				  utils/ft_endwith.c \
-                  gnl/get_next_line.c \
-				  gnl/get_next_line_utils.c \
-                  engine/window.c \
-				  engine/camera.c \
-				  engine/shortcuts.c \
-                  engine/raycast.c \
-				  engine/draw.c \
-				  engine/sprite.c \
-                  engine/color.c \
-				  engine/screen.c \
-				  engine/ui.c \
-                  engine/texture.c \
-				  engine/tables.c \
-				  engine/draw_wall.c \
-                  engine/draw_sky_floor.c \
-				  engine/quest.c \
-                  engine/sprite_utils.c \
-				  engine/crosshair.c \
+SRCS            = src/main.c \
+                  src/core/cub3d.c \
+                  src/core/game.c \
+                  src/core/bmp.c \
+                  src/core/init.c \
+                  src/core/exit.c \
+                  src/core/loop.c \
+                  src/config/config.c \
+                  src/config/map.c \
+                  src/config/map_check.c \
+                  src/config/parse_params.c \
+                  src/config/parse_texture.c \
+                  src/utils/ft_strlen.c \
+                  src/utils/ft_substr.c \
+                  src/utils/ft_in_set.c \
+                  src/utils/str.c \
+                  src/utils/ft_strdup.c \
+                  src/utils/ft_split.c \
+                  src/utils/ft_atoi.c \
+                  src/utils/pos.c \
+                  src/utils/ft_itoa.c \
+                  src/utils/ft_memmove.c \
+                  src/utils/ft_strcmp.c \
+                  src/utils/ft_write.c \
+                  src/utils/ft_endwith.c \
+                  src/gnl/get_next_line.c \
+                  src/gnl/get_next_line_utils.c \
+                  src/engine/math/camera.c \
+                  src/engine/math/raycast.c \
+                  src/engine/math/tables.c \
+                  src/engine/render/draw.c \
+                  src/engine/render/draw_wall.c \
+                  src/engine/render/draw_sky_floor.c \
+                  src/engine/render/screen.c \
+                  src/engine/render/sprite.c \
+                  src/engine/render/sprite_utils.c \
+                  src/engine/texture/color.c \
+                  src/engine/texture/texture.c \
+                  src/engine/input/hooks.c \
+                  src/ui/shortcuts.c \
+                  src/ui/ui.c \
+                  src/ui/crosshair.c
 
 # オブジェクトファイルのリストを作成
 OBJS            = $(addprefix $(OBJ_DIR)/, $(SRCS:.c=.o))
