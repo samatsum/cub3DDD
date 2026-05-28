@@ -6,11 +6,13 @@
 /*   By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/31 16:25:20 by samatsum          #+#    #+#             */
-/*   Updated: 2026/05/27 19:53:25 by samatsum         ###   ########.fr       */
+/*   Updated: 2026/05/28 17:26:40 by samatsum         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "engine.h"
+#include "types.h"
+#include "ui/ui.h"
+#include "core/core.h" /* screenshot関数などを呼び出すため */
 
 int
 	draw_string(t_window *window, t_pos *s_pos, char *str, int color)

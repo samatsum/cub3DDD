@@ -10,7 +10,10 @@
 /* */
 /* ************************************************************************** */
 
-#include "engine.h"
+#include "types.h"
+#include "ui/ui.h"
+#include "engine/render/render.h" /* draw_pixel関数のため */
+#include "utils/utils.h"          /* set_pos関数のため */
 
 void
 	display_crosshair(t_window *w)

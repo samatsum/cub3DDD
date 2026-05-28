@@ -10,7 +10,9 @@
 /* */
 /* ************************************************************************** */
 
-#include "engine.h"
+#include "types.h"
+#include "engine/raycast/raycast.h"
+#include "utils/utils.h" /* set_pos関数を使うため */
 
 void
 	find_start_pos(t_config *config, t_camera *camera)

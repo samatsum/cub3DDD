@@ -10,7 +10,8 @@
 /* */
 /* ************************************************************************** */
 
-#include "engine.h"
+#include "types.h"
+#include "engine/raycast/raycast.h"
 
 static void
 	calculate_camera_x(double width, double *r)

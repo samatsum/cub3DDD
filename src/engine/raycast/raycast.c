@@ -10,7 +10,8 @@
 /* */
 /* ************************************************************************** */
 
-#include "engine.h"
+#include "types.h"
+#include "engine/raycast/raycast.h"
 
 int
 	wall_direction(t_raysult *ray)

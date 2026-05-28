@@ -10,7 +10,10 @@
 /* */
 /* ************************************************************************** */
 
-#include "engine.h"
+#include "types.h"
+#include "ui/ui.h"
+#include "engine/render/render.h" /* draw_rectangle, draw_string等のため */
+#include "utils/utils.h"          /* ft_write_str等の文字列操作やset_posのため */
 
 #define SCALE 6
 
