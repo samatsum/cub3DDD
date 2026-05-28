@@ -17,31 +17,39 @@ int
 	init_window(t_window *window, t_config *config)
 {
 	set_pos(&window->size, config->requested_width, config->requested_height);
-	if (window->size.x > 1920)
-		window->size.x = 1920;
-	if (window->size.y > 1080)
-		window->size.y = 1080;
-	if (window->size.x < 848)
-		window->size.x = 848;
-	if (window->size.y < 480)
-		window->size.y = 480;
+	
+	/* 修正: マジックナンバーをマクロに置き換え */
+	if (window->size.x > MAX_WIDTH)
+		window->size.x = MAX_WIDTH;
+	if (window->size.y > MAX_HEIGHT)
+		window->size.y = MAX_HEIGHT;
+	if (window->size.x < MIN_WIDTH)
+		window->size.x = MIN_WIDTH;
+	if (window->size.y < MIN_HEIGHT)
+		window->size.y = MIN_HEIGHT;
+		
 	window->ptr = NULL;
 	window->win = NULL;
 	window->ratio = window->size.x / window->size.y;
 	window->screen.img = NULL;
+	
+	/* 修正: 謎の倍率 2.5 を FOV_SCALE に置き換え */
 	if (window->ratio < BEST_RATIO)
-		config->fov = config->fov / ((BEST_RATIO / config->fov) / 2.5);
+		config->fov = config->fov / ((BEST_RATIO / config->fov) / FOV_SCALE);
 	else if (window->ratio > BEST_RATIO)
-		config->fov = config->fov * ((config->fov / BEST_RATIO) * 2.5);
+		config->fov = config->fov * ((config->fov / BEST_RATIO) * FOV_SCALE);
+		
 	if (!(window->ptr = mlx_init())
 		|| !(window->win = mlx_new_window(
 			window->ptr, window->size.x, window->size.y, "cub3d")))
 		return (0);
+	// 中点を求めるための2
 	set_pos(&window->half, window->size.x / 2, window->size.y / 2);
 	if (!init_image(window, &window->screen))
 		return (0);
 	return (1);
 }
+
 
 void
 	init_game(t_game *game, int save_opt)

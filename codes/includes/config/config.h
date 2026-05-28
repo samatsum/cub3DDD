@@ -6,7 +6,7 @@
 /*   By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/29 12:51:26 by samatsum          #+#    #+#             */
-/*   Updated: 2026/05/28 21:10:25 by samatsum         ###   ########.fr       */
+/*   Updated: 2026/05/29 01:06:01 by samatsum         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,15 @@
 
 # define DIRECTIONS "NSEW"
 # define VALID_MAP_CHARACTERS " 01234NSEW"
+
+/* Window Resolution Limits */
+# define MAX_WIDTH		1920
+# define MAX_HEIGHT		1080
+# define MIN_WIDTH		848
+# define MIN_HEIGHT		480
+
+/* FOV Adjustment Factor */
+# define FOV_SCALE		2.5
 
 # define FINT(x)			((int)floor(x))
 # define CHECK_TOP(p)		(FINT(p.x) >= 0 && FINT(p.y) >= 0)

@@ -3,8 +3,6 @@
 
 # include "../../types.h"
 
-# define TEX_SIZE 64 /* 壁テクスチャの基本サイズ */
-
 /* 前方宣言 */
 struct s_window;
 struct s_config;

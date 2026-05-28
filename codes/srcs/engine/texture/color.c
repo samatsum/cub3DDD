@@ -6,7 +6,7 @@
 /*   By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/06 12:33:48 by samatsum          #+#    #+#             */
-/*   Updated: 2026/05/28 21:09:40 by samatsum         ###   ########.fr       */
+/*   Updated: 2026/05/29 01:07:55 by samatsum         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,7 @@ int
 {
 	if (divide <= 1.)
 		return (color);
+	//RGBの成分を取り出すためのビットシフト
 	return (((int)(((0xFF0000 & color) >> 16) / divide) << 16)
 		+ ((int)(((0x00FF00 & color) >> 8) / divide) << 8)
 		+ ((int)((0x0000FF & color) / divide)));
