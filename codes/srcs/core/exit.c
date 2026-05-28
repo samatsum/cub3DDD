@@ -22,14 +22,12 @@ int
     clear_textures(&game->window, game->tex);
     clear_sprites(&game->sprites);
 
-    /* 追加: Linux環境限定。必ず全ての破棄処理が終わった後に行う */
-#ifdef __linux__
+    /* ウィンドウとディスプレイ接続の破棄 */
     if (game->window.ptr)
     {
         mlx_destroy_display(game->window.ptr);
         free(game->window.ptr);
     }
-#endif
 
     exit(code);
     return (code);

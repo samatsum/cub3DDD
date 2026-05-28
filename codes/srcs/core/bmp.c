@@ -6,11 +6,16 @@
 /*   By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/10 18:13:15 by samatsum          #+#    #+#             */
-/*   Updated: 2026/05/28 21:09:40 by samatsum         ###   ########.fr       */
+/*   Updated: 2026/05/29 03:04:14 by samatsum         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "cub3d.h"
+#include <time.h>   /* time, localtime用 */
+#include <stdlib.h> /* getenv用 */
+#include <stdio.h>  /* snprintf用 */
+#include <fcntl.h>  /* open用 */
+#include <unistd.h> /* write, close用 */
 
 static void
 	set_int_in_char(unsigned char *start, int value)
@@ -106,10 +111,43 @@ int
 	return (1);
 }
 
-int
-	screenshot(t_game *game)
+/* 新規追加: ホームディレクトリと現在時刻からファイルパスを生成する関数 */
+static void get_screenshot_path(char *buffer, size_t size)
 {
-	/* 修正: ここをあなたが作成したラッパー関数に置き換えるだけ */
+    time_t      t;
+    struct tm   *tm_info;
+    char        *home;
+
+    t = time(NULL);
+    tm_info = localtime(&t);
+    home = "."; /* 安全のため、相対パスでホームディレクトリを指定 (例: ../../) */
+
+    /* フォーマット: ~/bmp/screenshot_YYYY_MMDD_HHMM.bmp */
+    snprintf(buffer, size, "%s/bmp/screenshot_%04d_%02d%02d_%02d%02d.bmp",
+             home,
+             tm_info->tm_year + 1900,
+             tm_info->tm_mon + 1,
+             tm_info->tm_mday,
+             tm_info->tm_hour,
+             tm_info->tm_min);
+}
+
+
+int screenshot(t_game *game)
+{
+    int     fd;
+    char    filepath[256]; /* パスを格納するバッファ */
+
+    /* 修正: 固定の "screenshot.bmp" ではなく、動的パスを取得する */
+    get_screenshot_path(filepath, sizeof(filepath));
+
+    /* 取得したパスでファイルを作成・オープン */
+    fd = open(filepath, O_CREAT | O_WRONLY | O_TRUNC, 0644);
+    if (fd < 0)
+    {
+        /* bmpディレクトリが存在しないなどの理由で失敗した場合の安全なエラー処理 */
+        return (exit_error(game, "Error\nFailed to create screenshot file in ~/bmp/.\n"));
+    }
 	render_frame(game);
 	if (!save_bmp(game))
 		exit_error(game, "Error:\nfailed to save screenshot.");

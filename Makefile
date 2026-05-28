@@ -3,8 +3,7 @@ CC              = gcc
 RM              = rm -rf
 
 # ==============================================================================
-# ディレクトリ設定（ここで名前を一括管理することでタイポを防ぐ）
-# ※もし実際のフォルダ名が「src」や「include」（sなし）の場合はここを修正する
+# ディレクトリ設定
 # ==============================================================================
 SRC_DIR         = codes/srcs
 INC_DIR         = codes/includes
@@ -13,7 +12,7 @@ OBJ_DIR         = codes/obj
 CFLAGS          = -O3 -Wall -Wextra -Werror -I $(INC_DIR)
 
 # ==============================================================================
-# ソースファイル定義（ディレクトリパスを分離し、ファイル名だけを列挙する）
+# ソースファイル定義
 # ==============================================================================
 SRCS_LIST       = main.c \
                   core/item.c \
@@ -57,26 +56,15 @@ SRCS_LIST       = main.c \
                   ui/ui.c \
                   ui/crosshair.c
 
-# フルパスの生成
 SRCS            = $(addprefix $(SRC_DIR)/, $(SRCS_LIST))
 OBJS            = $(addprefix $(OBJ_DIR)/, $(SRCS_LIST:.c=.o))
 
 # ==============================================================================
-# OS判定とライブラリ設定
+# Linux(X11) ライブラリ設定
 # ==============================================================================
-UNAME_S         := $(shell uname -s)
-
-ifeq ($(UNAME_S),Linux)
-    MLX_DIR     = codes/minilibx-linux
-    LIBS        = -L$(MLX_DIR) -lmlx -L/usr/lib -lXext -lX11 -lm -lz
-    MLX_TARGET  = $(MLX_DIR)/libmlx.a
-    MLX_CLEAN   = 
-else
-    MLX_DIR     = mlx
-    LIBS        = -L$(MLX_DIR) -lmlx -framework OpenGL -framework AppKit -lm
-    MLX_TARGET  = libmlx.dylib
-    MLX_CLEAN   = $(RM) libmlx.dylib
-endif
+MLX_DIR         = codes/minilibx-linux
+LIBS            = -L$(MLX_DIR) -lmlx -L/usr/lib -lXext -lX11 -lm -lz
+MLX_TARGET      = $(MLX_DIR)/libmlx.a
 
 # ==============================================================================
 # ビルドルール
@@ -86,17 +74,12 @@ all:            $(NAME)
 $(NAME):        $(MLX_TARGET) $(OBJS)
 				$(CC) $(CFLAGS) -o $(NAME) $(OBJS) $(LIBS)
 
-# オブジェクトファイルの生成ルール
-# obj/codes/srcs/... ではなく、obj/... となるようにパターンルールを最適化
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
 				@mkdir -p $(@D)
 				$(CC) $(CFLAGS) -c $< -o $@
 
 $(MLX_TARGET):
 				@$(MAKE) -C $(MLX_DIR)
-ifeq ($(UNAME_S),Darwin)
-				@mv $(MLX_DIR)/libmlx.dylib .
-endif
 
 clean:
 				@$(MAKE) -C $(MLX_DIR) clean
@@ -104,7 +87,6 @@ clean:
 
 fclean:         clean
 				$(RM) $(NAME)
-				$(MLX_CLEAN)
 
 re:             fclean all
 
