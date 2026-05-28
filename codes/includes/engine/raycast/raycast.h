@@ -3,6 +3,9 @@
 
 # include "../../types.h"
 
+# define MOVE_SPEED			0.11
+# define COLLISION_MARGIN	0.00001
+
 /* 前方宣言 */
 struct s_game;
 struct s_config;

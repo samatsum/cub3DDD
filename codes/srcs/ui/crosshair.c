@@ -21,17 +21,17 @@ void
 	t_pos	pixel;
 	int		i;
 
-	if (w->size.x < 11 || w->size.y < 11)
+	if (w->size.x < CH_OUTER || w->size.y < CH_OUTER)
 		return ;
-	i = -10;
-	while (i < 10)
+	i = -CH_LENGTH;
+	while (i < CH_LENGTH)
 	{
-		if (i < -4 || i > 4 || i == 0)
+		if (i < -CH_GAP || i > CH_GAP || i == 0)
 		{
 			set_pos(&pixel, w->half.x + i, w->half.y);
-			draw_pixel(w, &pixel, 0x9922FF44);
+			draw_pixel(w, &pixel, COLOR_CROSSHAIR);
 			set_pos(&pixel, w->half.x, w->half.y + i);
-			draw_pixel(w, &pixel, 0x9922FF44);
+			draw_pixel(w, &pixel, COLOR_CROSSHAIR);
 		}
 		i++;
 	}

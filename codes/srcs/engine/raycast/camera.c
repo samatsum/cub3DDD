@@ -74,13 +74,13 @@ int
 	t_pos		n_pos;
 
 	copy_pos(&n_pos, &c->pos);
-	n_pos.x += (((direction) ? -1 : 1) * (c->dir.x * .11));
+	n_pos.x += (((direction) ? -1 : 1) * (c->dir.x * MOVE_SPEED));
 	if (IN_MAP(n_pos, *config)
 		&& MAP(n_pos, *config) != '1'
 		&& MAP(n_pos, *config) != '2')
 		copy_pos(&c->pos, &n_pos);
 	copy_pos(&n_pos, &c->pos);
-	n_pos.y += (((direction) ? -1 : 1) * (c->dir.y * .11));
+	n_pos.y += (((direction) ? -1 : 1) * (c->dir.y * MOVE_SPEED));
 	if (IN_MAP(n_pos, *config)
 		&& MAP(n_pos, *config) != '1'
 		&& MAP(n_pos, *config) != '2')
@@ -97,13 +97,13 @@ int
 	t_pos		n_pos;
 
 	copy_pos(&n_pos, &c->pos);
-	n_pos.x += (((direction) ? -1 : 1) * (c->x_dir.x * .11) + 0.00001);
+	n_pos.x += (((direction) ? -1 : 1) * (c->x_dir.x * MOVE_SPEED) + COLLISION_MARGIN);
 	if (IN_MAP(n_pos, *config)
 		&& MAP(n_pos, *config) != '1'
 		&& MAP(n_pos, *config) != '2')
 		copy_pos(&c->pos, &n_pos);
 	copy_pos(&n_pos, &c->pos);
-	n_pos.y += (((direction) ? -1 : 1) * (c->x_dir.y * .11) + 0.00001);
+	n_pos.y += (((direction) ? -1 : 1) * (c->x_dir.y * MOVE_SPEED) + COLLISION_MARGIN);
 	if (IN_MAP(n_pos, *config)
 		&& MAP(n_pos, *config) != '1'
 		&& MAP(n_pos, *config) != '2')
