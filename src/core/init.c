@@ -101,7 +101,7 @@ int
 	}
 	find_start_pos(&game->config, &game->camera);
 	find_start_angle(&game->config, &game->camera);
-	if (!load_textures(game))
+	if (!load_textures(&game->window, game->tex, &game->config))
 		return (exit_error(game, "Error:\nfailed to load texture(s).\n"));
 	if (!find_sprites(game))
 		return (exit_error(game, "Error:\nfailed to malloc sprites.\n"));

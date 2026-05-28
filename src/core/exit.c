@@ -16,7 +16,7 @@ int
 {
 	clear_config(&game->config);
 	clear_window(&game->window);
-	clear_textures(game);
+	clear_textures(&game->window, game->tex);
 	clear_sprites(&game->sprites);
 	exit(code);
 	return (code);

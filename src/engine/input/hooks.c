@@ -1,10 +1,5 @@
 #include "cub3d.h"
 
-void render_frame(t_game *game)
-{
-	update_screen(game);
-	update_window(&game->window, game->options, game->collected, game->to_collect);
-}
 
 int	expose_hook(t_game *game)
 {

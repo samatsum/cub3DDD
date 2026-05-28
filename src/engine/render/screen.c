@@ -37,7 +37,7 @@ void
 	if (game->sprites)
 		draw_sprites(&rnd, game->sprites);
 	if (game->options & FLAG_CROSSHAIR)
-		display_crosshair(game);
+		display_crosshair(w);
 	if (game->options & FLAG_UI)
 		update_ui(&rnd);
 }

@@ -1,13 +1,13 @@
 /* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   game.c                                             :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2019/10/31 12:51:35 by samatsum          #+#    #+#             */
-/*   Updated: 2026/05/28 13:48:03 by samatsum         ###   ########.fr       */
-/*                                                                            */
+/* */
+/* :::      ::::::::   */
+/* game.c                                             :+:      :+:    :+:   */
+/* +:+ +:+         +:+     */
+/* By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
+/* +#+#+#+#+#+   +#+           */
+/* Created: 2019/10/31 12:51:35 by samatsum          #+#    #+#             */
+/* Updated: 2026/05/28 13:48:03 by samatsum         ###   ########.fr       */
+/* */
 /* ************************************************************************** */
 
 #include "cub3d.h"
@@ -15,21 +15,19 @@
 int
 	screenshot(t_game *game)
 {
-	update_screen(game);
-	update_ui(game);
-	update_window(&game->window, game->options, game->collected, game->to_collect);
+	/* 修正: ここをあなたが作成したラッパー関数に置き換えるだけ */
+	render_frame(game);
 	if (!save_bmp(game))
 		exit_error(game, "Error:\nfailed to save screenshot.");
 	return (exit_game(game, EXIT_SUCCESS));
 }
-
 
 void
 	check_quest(t_game *game)
 {
 	if (MAP(game->camera.pos, game->config) == '4')
 	{
-		MAP(game->camera.pos, game->config) = '0';
+		MAP(game->camera.pos, game->config) = 'A';
 		game->collected++;
 		delete_sprite(&game->sprites, &game->camera.pos);
 	}

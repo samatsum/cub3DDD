@@ -1,13 +1,13 @@
 /* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   texture.c                                          :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2019/11/06 15:30:14 by samatsum          #+#    #+#             */
-/*   Updated: 2026/05/27 19:52:23 by samatsum         ###   ########.fr       */
-/*                                                                            */
+/* */
+/* :::      ::::::::   */
+/* texture.c                                          :+:      :+:    :+:   */
+/* +:+ +:+         +:+     */
+/* By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
+/* +#+#+#+#+#+   +#+           */
+/* Created: 2019/11/06 15:30:14 by samatsum          #+#    #+#             */
+/* Updated: 2026/05/28 00:00:00 by samatsum         ###   ########.fr       */
+/* */
 /* ************************************************************************** */
 
 #include "engine.h"
@@ -29,17 +29,17 @@ static int
 }
 
 void
-	clear_textures(t_game *game)
+	clear_textures(t_window *window, t_tex *tex)
 {
 	int	i;
 
 	i = 0;
 	while (i < TEXTURES)
 	{
-		if (game->tex[i].tex)
-			mlx_destroy_image(game->window.ptr, game->tex[i].tex);
-		game->tex[i].tex = NULL;
-		game->tex[i].ptr = NULL;
+		if (tex[i].tex)
+			mlx_destroy_image(window->ptr, tex[i].tex);
+		tex[i].tex = NULL;
+		tex[i].ptr = NULL;
 		i++;
 	}
 }
@@ -81,7 +81,7 @@ static int
 }
 
 int
-	load_textures(t_game *game)
+	load_textures(t_window *window, t_tex *tex, t_config *config)
 {
 	int	i;
 	int	j;
@@ -89,22 +89,22 @@ int
 	i = 0;
 	while (i < TEXTURES)
 	{
-		if (!load_tex(&game->window, &game->tex[i], game->config.tex_path[i]))
+		if (!load_tex(window, &tex[i], config->tex_path[i]))
 			return (0);
 		j = 0;
-		while (j < game->tex[i].height && column_is_empty(&game->tex[i], j))
+		while (j < tex[i].height && column_is_empty(&tex[i], j))
 			j++;
-		game->tex[i].start.x = j;
-		while (j < game->tex[i].height && !column_is_empty(&game->tex[i], j))
+		tex[i].start.x = j;
+		while (j < tex[i].height && !column_is_empty(&tex[i], j))
 			j++;
-		game->tex[i].end.x = j;
+		tex[i].end.x = j;
 		j = 0;
-		while (j < game->tex[i].height && line_is_empty(&game->tex[i], j))
+		while (j < tex[i].height && line_is_empty(&tex[i], j))
 			j++;
-		game->tex[i].start.y = j;
-		while (j < game->tex[i].height && !line_is_empty(&game->tex[i], j))
+		tex[i].start.y = j;
+		while (j < tex[i].height && !line_is_empty(&tex[i], j))
 			j++;
-		game->tex[i].end.y = j;
+		tex[i].end.y = j;
 		i++;
 	}
 	return (1);

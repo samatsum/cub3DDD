@@ -31,6 +31,9 @@ int
 		update = 1;
 		last_opt = game->options;
 	}
+	/* 追加: 何らかの更新（特に移動）があった場合、クエスト（アイテム収集）の判定を行う */
+	if (update)
+		check_quest(game);
 	if (update || (FLAG_UI & game->options))
 		render_frame(game);
 	return (1);

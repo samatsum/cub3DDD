@@ -11,4 +11,7 @@ int             exit_error(t_game *game, char const *str);
 int             screenshot(t_game *game);
 int             save_bmp(t_game *game);
 
+void			check_quest(t_game *game);
+void			count_items(t_game *game);
+
 #endif

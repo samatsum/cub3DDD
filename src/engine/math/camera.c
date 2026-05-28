@@ -84,8 +84,8 @@ int
 		&& MAP(n_pos, *config) != '2')
 		copy_pos(&c->pos, &n_pos);
 		
-	/* 追加: 移動が完了した現在地を 'A' (訪問済み) でマーキング */
-	MAP(c->pos, *config) = 'A';
+	if (MAP(c->pos, *config) != '4')
+		MAP(c->pos, *config) = 'A';
 	return (1);
 }
 
@@ -108,7 +108,8 @@ int
 		copy_pos(&c->pos, &n_pos);
 		
 	/* 追加: 横移動が完了した現在地を 'A' (訪問済み) でマーキング */
-	MAP(c->pos, *config) = 'A';
+	if (MAP(c->pos, *config) != '4')
+		MAP(c->pos, *config) = 'A';
 	return (1);
 }
 
