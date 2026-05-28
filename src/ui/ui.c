@@ -1,13 +1,13 @@
 /* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   ui.c                                               :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2019/11/06 14:40:14 by samatsum          #+#    #+#             */
-/*   Updated: 2026/05/27 19:53:30 by samatsum         ###   ########.fr       */
-/*                                                                            */
+/* */
+/* :::      ::::::::   */
+/* ui.c                                               :+:      :+:    :+:   */
+/* +:+ +:+         +:+     */
+/* By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
+/* +#+#+#+#+#+   +#+           */
+/* Created: 2019/11/06 14:40:14 by samatsum          #+#    #+#             */
+/* Updated: 2026/05/28 00:00:00 by samatsum         ###   ########.fr       */
+/* */
 /* ************************************************************************** */
 
 #include "engine.h"
@@ -15,15 +15,15 @@
 #define SCALE 6
 
 static int
-	case_color(t_game *game, int x, int y)
+	case_color(t_config *config, t_camera *camera, int x, int y)
 {
 	char	c;
 
-	c = MAP_XY(x, y, game->config);
+	c = MAP_XY(x, y, *config);
 	if (c == '1' || c == '2')
 		return (0x0);
-	else if (y == (int)game->camera.pos.y
-			&& x == (int)game->camera.pos.x)
+	else if (y == (int)camera->pos.y
+			&& x == (int)camera->pos.x)
 		return (0x10CC10);
 	else if (c == 'A')
 		return (0xCCCCCC);
@@ -31,27 +31,27 @@ static int
 }
 
 static void
-	draw_minimap(t_game *game, t_window *w, t_pos *start, t_pos *end)
+	draw_minimap(t_render *rnd, t_pos *start, t_pos *end)
 {
 	int			i;
 	int			j;
 	int			color;
 
 	i = 0;
-	while (i < game->config.rows)
+	while (i < rnd->config->rows)
 	{
 		j = 0;
-		while (j < game->config.columns)
+		while (j < rnd->config->columns)
 		{
-			if ((color = case_color(game, j, i)) >= 0)
+			if ((color = case_color(rnd->config, rnd->camera, j, i)) >= 0)
 			{
 				set_pos(start,
-					w->size.x - (game->config.columns * 5) - 5 + (j * 5),
-					w->size.y - (game->config.rows * 5) - 5 + (i * 5));
+					rnd->w->size.x - (rnd->config->columns * 5) - 5 + (j * 5),
+					rnd->w->size.y - (rnd->config->rows * 5) - 5 + (i * 5));
 				set_pos(end,
-					w->size.x - (game->config.columns * 5) + (j * 5),
-					w->size.y - (game->config.rows * 5) + (i * 5));
-				draw_rectangle(w, start, end, color);
+					rnd->w->size.x - (rnd->config->columns * 5) + (j * 5),
+					rnd->w->size.y - (rnd->config->rows * 5) + (i * 5));
+				draw_rectangle(rnd->w, start, end, color);
 			}
 			j++;
 		}
@@ -60,21 +60,19 @@ static void
 }
 
 void
-	update_ui(t_game *game)
+	update_ui(t_render *rnd)
 {
-	t_window	*w;
 	t_pos		start;
 	t_pos		end;
 
-	w = &game->window;
-	set_pos(&start, 2, w->size.y - 27);
-	set_pos(&end, 210, w->size.y - 2);
-	draw_rectangle(w, &start, &end, 0xFFFFFF);
-	draw_minimap(game, w, &start, &end);
+	set_pos(&start, 2, rnd->w->size.y - 27);
+	set_pos(&end, 210, rnd->w->size.y - 2);
+	draw_rectangle(rnd->w, &start, &end, 0xFFFFFF);
+	draw_minimap(rnd, &start, &end);
 }
 
 void
-	write_ui_text(t_game *game)
+	write_ui_text(t_window *w, int collected, int to_collect)
 {
 	static char	buf[100];
 	t_pos		start;
@@ -83,16 +81,16 @@ void
 	i = 0;
 	while (i < 100)
 		buf[i++] = 0;
-	if (game->to_collect > 0 && game->to_collect == game->collected)
+	if (to_collect > 0 && to_collect == collected)
 		ft_write_str(buf, "GG !", 0);
-	else if (game->to_collect > 0)
+	else if (to_collect > 0)
 	{
 		i = ft_write_str(buf, "Collect: ", 0);
-		i = ft_write_str(buf, " / ", ft_write_int(buf, game->collected, i));
-		i = ft_write_int(buf, game->to_collect, i);
+		i = ft_write_str(buf, " / ", ft_write_int(buf, collected, i));
+		i = ft_write_int(buf, to_collect, i);
 	}
 	else
 		ft_write_str(buf, "Nothing to collect !", 0);
-	set_pos(&start, 5, game->window.size.y - 25);
-	draw_string(&game->window, &start, buf, 0x000000);
+	set_pos(&start, 5, w->size.y - 25);
+	draw_string(w, &start, buf, 0x000000);
 }

@@ -39,16 +39,19 @@ void
 	if (game->options & FLAG_CROSSHAIR)
 		display_crosshair(game);
 	if (game->options & FLAG_UI)
-		update_ui(game);
+		update_ui(&rnd);
 }
 
 void
-	update_window(t_game *game)
+	update_window(t_window *w, int options, int collected, int to_collect)
 {
-	t_window	*w;
-
-	w = &game->window;
 	mlx_put_image_to_window(w->ptr, w->win, w->screen.img, 0, 0);
-	if (game->options & FLAG_UI)
-		write_ui_text(game);
+	if (options & FLAG_UI)
+		write_ui_text(w, collected, to_collect);
+}
+
+void render_frame(t_game *game)
+{
+	update_screen(game);
+	update_window(&game->window, game->options, game->collected, game->to_collect);
 }

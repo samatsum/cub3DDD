@@ -6,7 +6,7 @@
 /* screen.c / window management */
 int				init_window(t_window *window, t_config *config);
 int				clear_window(t_window *window);
-void			update_window(t_game *game);
+void			update_window(t_window *w, int options, int collected, int to_collect);
 void			update_screen(t_game *game);
 
 /* image operations */

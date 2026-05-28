@@ -6,7 +6,7 @@
 /*   By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/31 12:51:35 by samatsum          #+#    #+#             */
-/*   Updated: 2026/05/27 20:24:48 by samatsum         ###   ########.fr       */
+/*   Updated: 2026/05/28 13:48:03 by samatsum         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@ int
 {
 	update_screen(game);
 	update_ui(game);
-	update_window(game);
+	update_window(&game->window, game->options, game->collected, game->to_collect);
 	if (!save_bmp(game))
 		exit_error(game, "Error:\nfailed to save screenshot.");
 	return (exit_game(game, EXIT_SUCCESS));
