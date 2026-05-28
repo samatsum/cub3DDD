@@ -124,6 +124,7 @@ typedef	struct	s_game
 	t_pos		x_move;
 	t_pos		rotate;
 	int			options;
+	int			last_options;
 	int			to_collect;
 	int			collected;
 	double		camera_x[1920];

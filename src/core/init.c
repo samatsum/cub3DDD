@@ -53,6 +53,7 @@ void
 	set_pos(&game->rotate, 0, 0);
 	game->collected = 0;
 	game->options = 0x11111110;
+	game->last_options = 0x00000111;
 	game->sprites = NULL;
 	if (save_opt)
 		game->options = game->options | FLAG_SAVE;

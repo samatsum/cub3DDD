@@ -1,23 +1,11 @@
+/* src/core/loop.c の main_loop 関数（全文上書き） */
 #include "cub3d.h"
-#include "engine/raycast/raycast.h"
+#include "engine/raycast/raycast.h" /* 名前を変更している場合 */
 
 int
 	main_loop(t_game *game)
 {
-//補足：現在の課題（静的変数の依存解消）へのアプローチ
-// 現在のコードでは static int last_opt によって前回の状態を保持している。これは資料の「⚠️ 現在の課題」にある「静的変数への依存（状態管理のアンチパターン）」そのものである。複数回の状態遷移や、ゲームの再初期化が行われた際に、この静的変数が初期化されずに古い状態を引きずり、予期せぬ挙動を生むリスクがある。
-
-// これを根本的に解決（Phase 2の完了）するためには、将来的に t_game 構造体（または t_window などの適切な構造体）のメンバに変数を移行することが望ましい。
-
-// 移行する場合の設計案：
-
-// t_game 構造体に int last_options; を追加する。
-
-// init_game 時に game->last_options = 0x00000111; で初期化する。
-
-// main_loop 内では if (game->options != game->last_options) として比較・更新を行う。
-	static int	last_opt = 0x00000111;
-	int			update;
+	int	update;
 
 	update = 0;
 	if (game->move.x || game->move.y)
@@ -26,14 +14,17 @@ int
 		update = move_perp_camera(&game->camera, &game->config, (game->x_move.x) ? 0 : 1);
 	if (game->rotate.x || game->rotate.y)
 		update = rotate_camera(&game->camera, game->cos, game->sin, (game->rotate.x) ? 0 : 1);
-	if (game->options != last_opt)
+	
+	/* 修正: static変数を廃止し、構造体の状態を比較する */
+	if (game->options != game->last_options)
 	{
 		update = 1;
-		last_opt = game->options;
+		game->last_options = game->options;
 	}
-	/* 追加: 何らかの更新（特に移動）があった場合、クエスト（アイテム収集）の判定を行う */
+
 	if (update)
 		check_quest(game);
+
 	if (update || (FLAG_UI & game->options))
 		render_frame(game);
 	return (1);

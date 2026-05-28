@@ -1,16 +1,6 @@
-/* ************************************************************************** */
-/* */
-/* :::      ::::::::   */
-/* sprite.c                                           :+:      :+:    :+:   */
-/* +:+ +:+         +:+     */
-/* By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
-/* +#+#+#+#+#+   +#+           */
-/* Created: 2019/11/07 23:18:31 by samatsum          #+#    #+#             */
-/* Updated: 2026/05/28 00:00:00 by samatsum         ###   ########.fr       */
-/* */
-/* ************************************************************************** */
-
-#include "engine.h"
+#include "types.h"
+#include "engine/render/render.h"   /* スプライト描画関数の宣言 */
+#include "engine/texture/texture.h" /* get_tex_color, distance_shade 等に必要 */
 
 static void
 	init_draw_sprite(t_render *rnd, t_sprite *sprite, double inv_det,

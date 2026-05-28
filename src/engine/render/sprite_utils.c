@@ -1,16 +1,5 @@
-/* ************************************************************************** */
-/* */
-/* :::      ::::::::   */
-/* sprite_utils.c                                     :+:      :+:    :+:   */
-/* +:+ +:+         +:+     */
-/* By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
-/* +#+#+#+#+#+   +#+           */
-/* Created: 2019/11/08 12:54:59 by samatsum          #+#    #+#             */
-/* Updated: 2026/05/28 00:00:00 by samatsum         ###   ########.fr       */
-/* */
-/* ************************************************************************** */
-
-#include "engine.h"
+#include "types.h"
+#include "engine/render/render.h" /* 補助関数の宣言 */
 
 t_sprite
 	*add_front_sprite(t_sprite **sprites, double distance, t_pos *pos,

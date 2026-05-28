@@ -6,14 +6,15 @@
 /*   By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/29 12:45:06 by samatsum          #+#    #+#             */
-/*   Updated: 2026/05/27 20:18:11 by samatsum         ###   ########.fr       */
+/*   Updated: 2026/05/28 17:15:02 by samatsum         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <stdlib.h>
 #include "cub3d.h"
 
-int	main(int argc, char **argv)
+int
+	main(int argc, char **argv)
 {
 	t_game	game;
 	int		save_opt;
