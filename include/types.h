@@ -2,7 +2,7 @@
 # define TYPES_H
 
 # include <math.h>
-# include "mlx.h"
+# include "../minilibx-linux/mlx.h"
 # include "config.h"
 /* 注: t_pos などの定義がある utils.h 等が必要な場合は適宜インクルードする */
 

@@ -6,7 +6,7 @@
 #    By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2019/10/29 12:45:02 by samatsum          #+#    #+#              #
-#    Updated: 2026/05/27 19:56:59 by samatsum         ###   ########.fr        #
+#    Updated: 2026/05/28 15:37:42 by samatsum         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -19,15 +19,14 @@ CFLAGS          = -O3 -Wall -Wextra -Werror -I ./include
 OBJ_DIR         = obj
 
 SRCS            = src/main.c \
-                  src/core/cub3d.c \
-                  src/core/game.c \
+                  src/core/item.c \
                   src/core/bmp.c \
                   src/core/init.c \
                   src/core/exit.c \
                   src/core/loop.c \
                   src/config/config.c \
-                  src/config/map.c \
-                  src/config/map_check.c \
+                  src/config/parse_map.c \
+                  src/config/check_map.c \
                   src/config/parse_params.c \
                   src/config/parse_texture.c \
                   src/utils/ft_strlen.c \
@@ -45,9 +44,9 @@ SRCS            = src/main.c \
                   src/utils/ft_endwith.c \
                   src/gnl/get_next_line.c \
                   src/gnl/get_next_line_utils.c \
-                  src/engine/math/camera.c \
-                  src/engine/math/raycast.c \
-                  src/engine/math/tables.c \
+                  src/engine/raycast/camera.c \
+                  src/engine/raycast/raycast.c \
+                  src/engine/raycast/tables.c \
                   src/engine/render/draw.c \
                   src/engine/render/draw_wall.c \
                   src/engine/render/draw_sky_floor.c \
@@ -56,7 +55,7 @@ SRCS            = src/main.c \
                   src/engine/render/sprite_utils.c \
                   src/engine/texture/color.c \
                   src/engine/texture/texture.c \
-                  src/engine/input/hooks.c \
+                  src/engine/input/input.c \
                   src/ui/shortcuts.c \
                   src/ui/ui.c \
                   src/ui/crosshair.c

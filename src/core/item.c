@@ -12,16 +12,6 @@
 
 #include "cub3d.h"
 
-int
-	screenshot(t_game *game)
-{
-	/* 修正: ここをあなたが作成したラッパー関数に置き換えるだけ */
-	render_frame(game);
-	if (!save_bmp(game))
-		exit_error(game, "Error:\nfailed to save screenshot.");
-	return (exit_game(game, EXIT_SUCCESS));
-}
-
 void
 	check_quest(t_game *game)
 {

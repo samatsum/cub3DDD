@@ -1,5 +1,5 @@
 #include "cub3d.h"
-#include "math_engine.h"
+#include "raycast.h"
 
 int
 	init_image(t_window *window, t_image *img)

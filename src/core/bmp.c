@@ -6,7 +6,7 @@
 /*   By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/10 18:13:15 by samatsum          #+#    #+#             */
-/*   Updated: 2026/05/27 19:50:35 by samatsum         ###   ########.fr       */
+/*   Updated: 2026/05/28 15:00:11 by samatsum         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -104,4 +104,14 @@ int
 		return (0);
 	close(file);
 	return (1);
+}
+
+int
+	screenshot(t_game *game)
+{
+	/* 修正: ここをあなたが作成したラッパー関数に置き換えるだけ */
+	render_frame(game);
+	if (!save_bmp(game))
+		exit_error(game, "Error:\nfailed to save screenshot.");
+	return (exit_game(game, EXIT_SUCCESS));
 }

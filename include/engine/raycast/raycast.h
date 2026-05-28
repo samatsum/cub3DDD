@@ -1,5 +1,5 @@
-#ifndef MATH_ENGINE_H
-# define MATH_ENGINE_H
+#ifndef RAYCAST_H
+# define RAYCAST_H
 
 # include "types.h"
 

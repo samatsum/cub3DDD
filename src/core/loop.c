@@ -1,5 +1,5 @@
 #include "cub3d.h"
-#include "math_engine.h"
+#include "raycast.h"
 
 int
 	main_loop(t_game *game)

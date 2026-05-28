@@ -6,7 +6,7 @@
 # include "utils.h"
 # include "keymap.h"
 # include "core.h"
-# include "hooks.h"
+# include "input.h"
 
 # define LEFT_CLICK     1
 # define RIGHT_CLICK    2
