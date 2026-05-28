@@ -62,7 +62,8 @@ void
 		set_pos(&camera->plane, 0., -config->fov);
 	}
 	set_pos(&camera->x_dir, camera->dir.y, -camera->dir.x);
-	MAP(camera->pos, *config) = '0';
+	/* 修正: 初期スポーン地点を '0' ではなく 'A' (訪問済み) にする */
+	MAP(camera->pos, *config) = 'A';
 }
 
 int
@@ -82,6 +83,9 @@ int
 		&& MAP(n_pos, *config) != '1'
 		&& MAP(n_pos, *config) != '2')
 		copy_pos(&c->pos, &n_pos);
+		
+	/* 追加: 移動が完了した現在地を 'A' (訪問済み) でマーキング */
+	MAP(c->pos, *config) = 'A';
 	return (1);
 }
 
@@ -102,6 +106,9 @@ int
 		&& MAP(n_pos, *config) != '1'
 		&& MAP(n_pos, *config) != '2')
 		copy_pos(&c->pos, &n_pos);
+		
+	/* 追加: 横移動が完了した現在地を 'A' (訪問済み) でマーキング */
+	MAP(c->pos, *config) = 'A';
 	return (1);
 }
 
