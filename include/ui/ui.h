@@ -1,7 +1,7 @@
 #ifndef UI_H
 # define UI_H
 
-# include "types.h"
+# include "../types.h"
 
 void			update_ui(t_render *rnd);
 void			write_ui_text(t_window *w, int collected, int to_collect);

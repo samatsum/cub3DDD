@@ -2,11 +2,11 @@
 # define CUB3D_H
 
 # include "engine.h"
-# include "config.h"
-# include "utils.h"
-# include "keymap.h"
-# include "core.h"
-# include "input.h"
+# include "config/config.h"
+# include "utils/utils.h"
+# include "engine/input/keymap.h" /* 移動した場合 */
+# include "core/core.h"
+# include "engine/input/input.h"
 
 # define LEFT_CLICK     1
 # define RIGHT_CLICK    2

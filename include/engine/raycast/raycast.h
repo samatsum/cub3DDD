@@ -1,7 +1,7 @@
 #ifndef RAYCAST_H
 # define RAYCAST_H
 
-# include "types.h"
+# include "../../types.h"
 
 /* 前方宣言 */
 struct s_game;

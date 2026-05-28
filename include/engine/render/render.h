@@ -1,7 +1,7 @@
 #ifndef RENDER_H
 # define RENDER_H
 
-# include "types.h"
+# include "../../types.h"
 
 /* screen.c / window management */
 int				init_window(t_window *window, t_config *config);

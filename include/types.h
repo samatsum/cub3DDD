@@ -3,7 +3,7 @@
 
 # include <math.h>
 # include "../minilibx-linux/mlx.h"
-# include "config.h"
+# include "config/config.h"
 /* 注: t_pos などの定義がある utils.h 等が必要な場合は適宜インクルードする */
 
 # define X_EVENT_KEY_PRESS		2

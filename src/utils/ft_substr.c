@@ -6,11 +6,11 @@
 /*   By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/29 13:42:27 by samatsum          #+#    #+#             */
-/*   Updated: 2026/05/27 19:54:28 by samatsum         ###   ########.fr       */
+/*   Updated: 2026/05/28 15:59:01 by samatsum         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "utils.h"
+#include "utils/utils.h"
 
 char
 	*ft_substr(char const *s, int start, int len)

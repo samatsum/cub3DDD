@@ -1,7 +1,7 @@
 #ifndef TEXTURE_H
 # define TEXTURE_H
 
-# include "types.h"
+# include "../../types.h"
 
 /* 前方宣言 */
 struct s_window;

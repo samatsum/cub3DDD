@@ -6,7 +6,7 @@
 /*   By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/29 12:51:26 by samatsum          #+#    #+#             */
-/*   Updated: 2026/05/26 22:43:31 by samatsum         ###   ########.fr       */
+/*   Updated: 2026/05/28 15:59:58 by samatsum         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,8 +15,8 @@
 
 # include <fcntl.h>
 # include <unistd.h>
-# include "get_next_line.h"
-# include "utils.h"
+# include "gnl/get_next_line.h"
+# include "utils/utils.h"
 
 # define DIRECTIONS "NSEW"
 # define VALID_MAP_CHARACTERS " 01234NSEW"

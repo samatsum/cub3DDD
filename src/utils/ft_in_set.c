@@ -6,11 +6,11 @@
 /*   By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/30 11:49:38 by samatsum          #+#    #+#             */
-/*   Updated: 2026/05/27 19:53:50 by samatsum         ###   ########.fr       */
+/*   Updated: 2026/05/28 15:59:01 by samatsum         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "utils.h"
+#include "utils/utils.h"
 
 int
 	ft_in_set(char c, char const *set)

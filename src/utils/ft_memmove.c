@@ -6,11 +6,11 @@
 /*   By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/08 18:21:51 by samatsum          #+#    #+#             */
-/*   Updated: 2026/05/27 19:54:00 by samatsum         ###   ########.fr       */
+/*   Updated: 2026/05/28 15:59:01 by samatsum         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "utils.h"
+#include "utils/utils.h"
 
 void
 	*ft_memmove(void *dst, const void *src, unsigned long len)

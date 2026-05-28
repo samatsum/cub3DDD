@@ -6,11 +6,11 @@
 /*   By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/09 13:33:50 by samatsum          #+#    #+#             */
-/*   Updated: 2026/05/27 19:50:36 by samatsum         ###   ########.fr       */
+/*   Updated: 2026/05/28 15:55:35 by samatsum         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "config.h"
+#include "config/config.h"
 
 static char
 	*path_from_line(int start, char const *line)

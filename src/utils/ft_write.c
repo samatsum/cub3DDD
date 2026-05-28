@@ -6,11 +6,11 @@
 /*   By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/10 15:22:02 by samatsum          #+#    #+#             */
-/*   Updated: 2026/05/27 19:54:33 by samatsum         ###   ########.fr       */
+/*   Updated: 2026/05/28 15:59:01 by samatsum         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "utils.h"
+#include "utils/utils.h"
 
 int
 	ft_write_int(char *buf, int val, int start)

@@ -6,11 +6,11 @@
 /*   By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/30 12:22:09 by samatsum          #+#    #+#             */
-/*   Updated: 2026/05/27 19:54:18 by samatsum         ###   ########.fr       */
+/*   Updated: 2026/05/28 15:59:01 by samatsum         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "utils.h"
+#include "utils/utils.h"
 
 char
 	*ft_strdup(char const *s1)
