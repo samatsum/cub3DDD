@@ -6,12 +6,12 @@
 /*   By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/06 12:33:48 by samatsum          #+#    #+#             */
-/*   Updated: 2026/05/28 17:30:52 by samatsum         ###   ########.fr       */
+/*   Updated: 2026/05/28 20:05:51 by samatsum         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "types.h"
-#include "engine/texture/texture.h"
+#include "engine/texture/engine_texture.h"
 
 int
 	shade_color(int color, double divide)

@@ -1,6 +1,6 @@
 #include "types.h"
-#include "engine/render/render.h"
-#include "engine/texture/texture.h" /* shade_color 関数を使うため */
+#include "engine/render/engine_render.h"
+#include "engine/texture/engine_texture.h" /* shade_color 関数を使うため */
 
 static void
 	init_draw_sky_floor(t_raysult *ray)

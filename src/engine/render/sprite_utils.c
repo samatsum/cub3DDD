@@ -1,5 +1,5 @@
 #include "types.h"
-#include "engine/render/render.h" /* 補助関数の宣言 */
+#include "engine/render/engine_render.h" /* 補助関数の宣言 */
 
 t_sprite
 	*add_front_sprite(t_sprite **sprites, double distance, t_pos *pos,

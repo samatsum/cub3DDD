@@ -1,5 +1,5 @@
-#ifndef HOOKS_H
-# define HOOKS_H
+#ifndef ENGINE_INPUT_HOOKS_H
+# define ENGINE_INPUT_HOOKS_H
 
 /* mlxのイベントフック関数群 */
 int             main_loop(t_game *game);

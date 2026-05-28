@@ -11,7 +11,7 @@
 /* ************************************************************************** */
 
 #include "types.h"
-#include "engine/texture/texture.h"
+#include "engine/texture/engine_texture.h"
 
 static int
 	load_tex(t_window *window, t_tex *tex, char *path)

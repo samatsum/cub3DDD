@@ -1,6 +1,6 @@
 #include "types.h"
-#include "engine/render/render.h"
-#include "engine/texture/texture.h" /* get_tex_color, distance_shade 等を使うため */
+#include "engine/render/engine_render.h"
+#include "engine/texture/engine_texture.h" /* get_tex_color, distance_shade 等を使うため */
 
 static void
 	init_draw_wall(t_tex *tex, t_raysult *ray, t_pos *p_tex)

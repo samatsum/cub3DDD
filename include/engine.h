@@ -6,9 +6,9 @@
 
 /* ** 分割された機能別レイヤー */
 /* 修正: サブディレクトリへのパスを明記する */
-# include "engine/raycast/raycast.h"
-# include "engine/render/render.h"
-# include "engine/texture/texture.h"
+# include "engine/raycast/engine_raycast.h"
+# include "engine/render/engine_render.h"
+# include "engine/texture/engine_texture.h"
 # include "ui/ui.h"
 
 #endif

@@ -1,6 +1,6 @@
 /* src/core/loop.c の main_loop 関数（全文上書き） */
 #include "cub3d.h"
-#include "engine/raycast/raycast.h" /* 名前を変更している場合 */
+#include "engine/raycast/engine_raycast.h" /* 名前を変更している場合 */
 
 int
 	main_loop(t_game *game)

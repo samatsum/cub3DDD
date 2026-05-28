@@ -1,6 +1,6 @@
 #include "types.h"
-#include "engine/render/render.h"   /* スプライト描画関数の宣言 */
-#include "engine/texture/texture.h" /* get_tex_color, distance_shade 等に必要 */
+#include "engine/render/engine_render.h"   /* スプライト描画関数の宣言 */
+#include "engine/texture/engine_texture.h" /* get_tex_color, distance_shade 等に必要 */
 
 static void
 	init_draw_sprite(t_render *rnd, t_sprite *sprite, double inv_det,

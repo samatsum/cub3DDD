@@ -1,8 +1,8 @@
+#include "core/core.h"  
 #include "types.h"
-#include "engine/input/input.h"
-#include "engine/input/keymap.h"  /* キーコード（X_EVENT_KEY_PRESS等）を使うため */
-#include "core/core.h"            /* exit_game関数などを呼び出すため */
-#include "engine/render/render.h" /* render_frame関数を呼び出すため */
+#include "engine/input/engine_input_hooks.h" /* フック関数のプロトタイプを使うため */
+#include "engine/input/engine_input_keymap.h" /* キーコード（KEY_W等*/
+#include "engine/render/engine_render.h" /* render_frame関数を呼び出すため */
 #include "ui/ui.h"                /* shortcuts.c の関数などを呼び出している場合 */
 
 int	expose_hook(t_game *game)

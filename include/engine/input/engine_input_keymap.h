@@ -1,8 +1,21 @@
-/* keymap.h */
-#ifndef KEYMAP_H
-# define KEYMAP_H
+#ifndef ENGINE_INPUT_KEYMAP_H
+# define ENGINE_INPUT_KEYMAP_H
 
-# if defined(__linux__)
+/* X11 Events (types.h から移動) */
+# define X_EVENT_KEY_PRESS		2
+# define X_EVENT_KEY_RELEASE	3
+# define X_EVENT_MOUSE_PRESS	4
+# define X_EVENT_MOUSE_RELEASE	5
+# define X_EVENT_MOUSE_MOVE		6
+# define X_EVENT_EXIT			17
+
+/* Mouse Buttons (cub3d.h から移動) */
+# define LEFT_CLICK     1
+# define RIGHT_CLICK    2
+# define MIDDLE_CLICK   3
+# define SCROLL_UP      4
+# define SCROLL_DOWN    5
+
 /* ========================================= */
 /* Linux (X11) Settings                      */
 /* ========================================= */
@@ -32,37 +45,6 @@
 #  define MASK_KEY_RELEASE   (1L << 1)
 #  define MASK_CLOSE         (1L << 17)
 #  define MASK_EXPOSE        (1L << 15) /* ← 追加: Expose用マスク */
-
-# elif defined(__APPLE__)
-/* ========================================= */
-/* macOS (Cocoa) Settings                    */
-/* ========================================= */
-
-/* Key Codes */
-#  define KEY_ESC       53
-#  define KEY_W         13
-#  define KEY_A         0
-#  define KEY_S         1
-#  define KEY_D         2
-#  define KEY_LEFT      123
-#  define KEY_RIGHT     124
-#  define KEY_FORWARD   126
-#  define KEY_BACKWARD  125
-#  define KEY_Q         12
-#  define KEY_E         14
-#  define KEY_I         34
-#  define KEY_L         37
-#  define KEY_O         31
-
-/* Events */
-#  define EVENT_CLOSE   17
-
-/* Event Masks (Macはマスクを無視するため0で統一) */
-#  define MASK_KEY_PRESS     0
-#  define MASK_KEY_RELEASE   0
-#  define MASK_CLOSE         0
-
-# endif
 
 /* ========================================= */
 /* Common Events (OS Independent)            */

@@ -4,9 +4,10 @@
 # include "engine.h"
 # include "config/config.h"
 # include "utils/utils.h"
-# include "engine/input/keymap.h" /* 移動した場合 */
+# include "engine/input/engine_input_keymap.h" /* 移動した場合 */
+# include "engine/input/engine_input_hooks.h"
 # include "core/core.h"
-# include "engine/input/input.h"
+
 
 # define LEFT_CLICK     1
 # define RIGHT_CLICK    2

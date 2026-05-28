@@ -1,6 +1,6 @@
 #include "types.h"
-#include "engine/raycast/raycast.h"
-#include "engine/render/render.h" /* 描画関数群の呼び出しに必要 */
+#include "engine/raycast/engine_raycast.h"
+#include "engine/render/engine_render.h" /* 描画関数群の呼び出しに必要 */
 #include "ui/ui.h"                /* update_ui, display_crosshair に必要 */
 
 void

@@ -1,5 +1,5 @@
-#ifndef RAYCAST_H
-# define RAYCAST_H
+#ifndef ENGINE_RAYCAST_H
+# define ENGINE_RAYCAST_H
 
 # include "../../types.h"
 

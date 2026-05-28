@@ -12,7 +12,7 @@
 
 #include "types.h"
 #include "ui/ui.h"
-#include "engine/render/render.h" /* draw_pixel関数のため */
+#include "engine/render/engine_render.h" /* draw_pixel関数のため */
 #include "utils/utils.h"          /* set_pos関数のため */
 
 void

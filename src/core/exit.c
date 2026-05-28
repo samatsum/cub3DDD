@@ -1,4 +1,5 @@
 #include "cub3d.h"
+#include "core/core.h"
 
 int	exit_error(t_game *game, char const *str)
 {
