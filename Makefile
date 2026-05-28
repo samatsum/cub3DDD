@@ -1,73 +1,73 @@
-# **************************************************************************** #
-#                                                                              #
-#                                                         :::      ::::::::    #
-#    Makefile                                           :+:      :+:    :+:    #
-#                                                     +:+ +:+         +:+      #
-#    By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+         #
-#                                                 +#+#+#+#+#+   +#+            #
-#    Created: 2019/10/29 12:45:02 by samatsum          #+#    #+#              #
-#    Updated: 2026/05/28 15:37:42 by samatsum         ###   ########.fr        #
-#                                                                              #
-# **************************************************************************** #
-
 NAME            = cub3D
 CC              = gcc
 RM              = rm -rf
-CFLAGS          = -O3 -Wall -Wextra -Werror -I ./include
 
-# オブジェクトファイルの出力先ディレクトリ
-OBJ_DIR         = obj
+# ==============================================================================
+# ディレクトリ設定（ここで名前を一括管理することでタイポを防ぐ）
+# ※もし実際のフォルダ名が「src」や「include」（sなし）の場合はここを修正する
+# ==============================================================================
+SRC_DIR         = codes/srcs
+INC_DIR         = codes/includes
+OBJ_DIR         = codes/obj
 
-SRCS            = src/main.c \
-                  src/core/item.c \
-                  src/core/bmp.c \
-                  src/core/init.c \
-                  src/core/exit.c \
-                  src/core/loop.c \
-                  src/config/config.c \
-                  src/config/parse_map.c \
-                  src/config/check_map.c \
-                  src/config/parse_params.c \
-                  src/config/parse_texture.c \
-                  src/utils/ft_strlen.c \
-                  src/utils/ft_substr.c \
-                  src/utils/ft_in_set.c \
-                  src/utils/str.c \
-                  src/utils/ft_strdup.c \
-                  src/utils/ft_split.c \
-                  src/utils/ft_atoi.c \
-                  src/utils/pos.c \
-                  src/utils/ft_itoa.c \
-                  src/utils/ft_memmove.c \
-                  src/utils/ft_strcmp.c \
-                  src/utils/ft_write.c \
-                  src/utils/ft_endwith.c \
-                  src/gnl/get_next_line.c \
-                  src/gnl/get_next_line_utils.c \
-                  src/engine/raycast/camera.c \
-                  src/engine/raycast/raycast.c \
-                  src/engine/raycast/tables.c \
-                  src/engine/render/draw.c \
-                  src/engine/render/draw_wall.c \
-                  src/engine/render/draw_sky_floor.c \
-                  src/engine/render/screen.c \
-                  src/engine/render/sprite.c \
-                  src/engine/render/sprite_utils.c \
-                  src/engine/texture/color.c \
-                  src/engine/texture/texture.c \
-                  src/engine/input/input.c \
-                  src/ui/shortcuts.c \
-                  src/ui/ui.c \
-                  src/ui/crosshair.c
+CFLAGS          = -O3 -Wall -Wextra -Werror -I $(INC_DIR)
 
-# オブジェクトファイルのリストを作成
-OBJS            = $(addprefix $(OBJ_DIR)/, $(SRCS:.c=.o))
+# ==============================================================================
+# ソースファイル定義（ディレクトリパスを分離し、ファイル名だけを列挙する）
+# ==============================================================================
+SRCS_LIST       = main.c \
+                  core/item.c \
+                  core/bmp.c \
+                  core/init.c \
+                  core/exit.c \
+                  core/loop.c \
+                  config/config.c \
+                  config/parse_map.c \
+                  config/check_map.c \
+                  config/parse_params.c \
+                  config/parse_texture.c \
+                  utils/ft_strlen.c \
+                  utils/ft_substr.c \
+                  utils/ft_in_set.c \
+                  utils/str.c \
+                  utils/ft_strdup.c \
+                  utils/ft_split.c \
+                  utils/ft_atoi.c \
+                  utils/pos.c \
+                  utils/ft_itoa.c \
+                  utils/ft_memmove.c \
+                  utils/ft_strcmp.c \
+                  utils/ft_write.c \
+                  utils/ft_endwith.c \
+                  gnl/get_next_line.c \
+                  gnl/get_next_line_utils.c \
+                  engine/raycast/camera.c \
+                  engine/raycast/raycast.c \
+                  engine/raycast/tables.c \
+                  engine/render/draw.c \
+                  engine/render/draw_wall.c \
+                  engine/render/draw_sky_floor.c \
+                  engine/render/screen.c \
+                  engine/render/sprite.c \
+                  engine/render/sprite_utils.c \
+                  engine/texture/color.c \
+                  engine/texture/texture.c \
+                  engine/input/input.c \
+                  ui/shortcuts.c \
+                  ui/ui.c \
+                  ui/crosshair.c
 
-# OS判定
+# フルパスの生成
+SRCS            = $(addprefix $(SRC_DIR)/, $(SRCS_LIST))
+OBJS            = $(addprefix $(OBJ_DIR)/, $(SRCS_LIST:.c=.o))
+
+# ==============================================================================
+# OS判定とライブラリ設定
+# ==============================================================================
 UNAME_S         := $(shell uname -s)
 
 ifeq ($(UNAME_S),Linux)
-    MLX_DIR     = minilibx-linux
+    MLX_DIR     = codes/minilibx-linux
     LIBS        = -L$(MLX_DIR) -lmlx -L/usr/lib -lXext -lX11 -lm -lz
     MLX_TARGET  = $(MLX_DIR)/libmlx.a
     MLX_CLEAN   = 
@@ -78,14 +78,17 @@ else
     MLX_CLEAN   = $(RM) libmlx.dylib
 endif
 
+# ==============================================================================
 # ビルドルール
+# ==============================================================================
 all:            $(NAME)
 
 $(NAME):        $(MLX_TARGET) $(OBJS)
 				$(CC) $(CFLAGS) -o $(NAME) $(OBJS) $(LIBS)
 
 # オブジェクトファイルの生成ルール
-$(OBJ_DIR)/%.o: %.c
+# obj/codes/srcs/... ではなく、obj/... となるようにパターンルールを最適化
+$(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
 				@mkdir -p $(@D)
 				$(CC) $(CFLAGS) -c $< -o $@
 
@@ -97,7 +100,7 @@ endif
 
 clean:
 				@$(MAKE) -C $(MLX_DIR) clean
-				$(RM) $(OBJ_DIR) $(BONUS_OBJS)
+				$(RM) $(OBJ_DIR)
 
 fclean:         clean
 				$(RM) $(NAME)
