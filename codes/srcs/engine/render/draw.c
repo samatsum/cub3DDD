@@ -6,7 +6,7 @@
 /*   By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/06 00:05:58 by samatsum          #+#    #+#             */
-/*   Updated: 2026/05/28 21:09:40 by samatsum         ###   ########.fr       */
+/*   Updated: 2026/05/28 23:16:27 by samatsum         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,11 +16,19 @@
 void
 	draw_pixel(t_window *w, t_pos *pos, int color)
 {
+	int	offset;
+
 	if (pos->x >= 0 && pos->x < w->size.x
 		&& pos->y >= 0 && pos->y < w->size.y)
-		*(int*)(w->screen.ptr
-			+ (4 * (int)w->size.x * (int)pos->y)
-			+ ((int)pos->x * 4)) = color;
+	{
+		/* 修正: マジックナンバーを排除し、構造体の size_line と bpp を用いて計算 */
+		//bpp は「Bits Per Pixel（1ピクセルあたりのビット数）」である。
+		//通常は 32（32ビットカラー）が返ってくる。
+		//メモリアドレスは「バイト（8ビット）」単位で計算しなければならないため、32 / 8 = 4バイト
+		offset = ((int)pos->y * w->screen.size_line) + ((int)pos->x * (w->screen.bpp / 8));
+		
+		*(int *)(w->screen.ptr + offset) = color;
+	}
 }
 
 int

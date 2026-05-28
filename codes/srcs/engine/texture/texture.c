@@ -92,20 +92,23 @@ int
 	{
 		if (!load_tex(window, &tex[i], config->tex_path[i]))
 			return (0);
-		j = 0;
-		while (j < tex[i].height && column_is_empty(&tex[i], j))
-			j++;
-		tex[i].start.x = j;
-		while (j < tex[i].height && !column_is_empty(&tex[i], j))
-			j++;
-		tex[i].end.x = j;
-		j = 0;
-		while (j < tex[i].height && line_is_empty(&tex[i], j))
-			j++;
-		tex[i].start.y = j;
-		while (j < tex[i].height && !line_is_empty(&tex[i], j))
-			j++;
-		tex[i].end.y = j;
+		if (tex[i].tex)
+		{
+			j = 0;
+			while (j < tex[i].height && column_is_empty(&tex[i], j))
+				j++;
+			tex[i].start.x = j;
+			while (j < tex[i].height && !column_is_empty(&tex[i], j))
+				j++;
+			tex[i].end.x = j;
+			j = 0;
+			while (j < tex[i].height && line_is_empty(&tex[i], j))
+				j++;
+			tex[i].start.y = j;
+			while (j < tex[i].height && !line_is_empty(&tex[i], j))
+				j++;
+			tex[i].end.y = j;
+		}
 		i++;
 	}
 	return (1);

@@ -1,5 +1,6 @@
 #include "cub3d.h"
 #include "engine/raycast/raycast.h"
+#include "core/core.h"
 
 int
 	init_image(t_window *window, t_image *img)
@@ -52,8 +53,13 @@ void
 	set_pos(&game->x_move, 0, 0);
 	set_pos(&game->rotate, 0, 0);
 	game->collected = 0;
-	game->options = 0x11111110;
-	game->last_options = 0x00000111;
+	
+	/* 修正: マジックナンバーを排除し、マクロの論理和で初期化する */
+	game->options = FLAG_UI | FLAG_SHADOWS | FLAG_CROSSHAIR;
+	
+	/* 修正: 初回ループで確実に画面を更新させるため、optionsと異なる値(0)を設定 */
+	game->last_options = 0;
+	
 	game->sprites = NULL;
 	if (save_opt)
 		game->options = game->options | FLAG_SAVE;
