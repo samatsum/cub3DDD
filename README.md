@@ -3,6 +3,8 @@
 
 *本プロジェクトは、42カリキュラムの一環として samatsum によって作成されました。*
 
+<img align="center" src="screenshot.png" alt="Screenshot of the game" />
+
 ## 概要 (Description)
 
 cub3Dは、C言語とMinilibX（X11）を用いて構築された、レイキャスティングベースの3Dレンダリングエンジンです。
