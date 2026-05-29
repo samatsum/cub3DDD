@@ -6,7 +6,7 @@
 /*   By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/29 12:51:26 by samatsum          #+#    #+#             */
-/*   Updated: 2026/05/29 01:06:01 by samatsum         ###   ########.fr       */
+/*   Updated: 2026/05/29 11:07:20 by samatsum         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,17 +38,21 @@
 # define MAP_XY(x, y, c) 	(c).map[(FINT(y) * (c).columns) + FINT(x)]
 
 # define C_R				0
+
 # define C_NO				1
 # define C_SO				2
 # define C_WE				3
 # define C_EA				4
-# define C_S				5
-# define C_SU				6
-# define C_SC				7
+
+# define C_OI				5
+# define C_OP				6
+# define C_OC				7
+
 # define C_FT				8
 # define C_ST				9
 # define C_F				10
 # define C_C				11
+
 # define C_MAP				12
 # define C_LAST				13
 

@@ -6,7 +6,7 @@
 /*   By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/09 13:33:50 by samatsum          #+#    #+#             */
-/*   Updated: 2026/05/28 21:09:40 by samatsum         ###   ########.fr       */
+/*   Updated: 2026/05/29 11:24:21 by samatsum         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,9 +48,11 @@ static int
 		return (TEX_SKY);
 	else if (key == C_FT)
 		return (TEX_FLOOR);
-	else if (key == C_SU)
+	else if (key == C_OI)
+		return (TEX_SPRITE);
+	else if (key == C_OP)
 		return (TEX_SPRITE_UP);
-	else if (key == C_SC)
+	else if (key == C_OC)
 		return (TEX_SPRITE_C);
 	return (TEX_SPRITE);
 }
@@ -67,8 +69,9 @@ int
 		free(config->tex_path[index]);
 		config->tex_path[index] = NULL;
 	}
-	if (!(path = path_from_line((index == TEX_SPRITE) ? 1 : 2, line)))
-		return (0);
+	// 常に「先頭から2文字飛ばした先」からパスを取得
+	if (!(path = path_from_line(2, line)))
+        return (0);
 	config->tex_path[index] = path;
 	return (1);
 }

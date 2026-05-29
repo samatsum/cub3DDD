@@ -6,7 +6,7 @@
 /*   By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/29 12:51:45 by samatsum          #+#    #+#             */
-/*   Updated: 2026/05/28 21:10:25 by samatsum         ###   ########.fr       */
+/*   Updated: 2026/05/29 11:15:07 by samatsum         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,6 +64,7 @@ static int
 {
 	if (line[0] == 'R' && line[1] == ' ')
 		return (C_R);
+	
 	else if (line[0] == 'N' && line[1] == 'O')
 		return (C_NO);
 	else if (line[0] == 'S' && line[1] == 'O')
@@ -72,20 +73,22 @@ static int
 		return (C_WE);
 	else if (line[0] == 'E' && line[1] == 'A')
 		return (C_EA);
+	
 	else if (line[0] == 'S' && line[1] == 'T')
 		return (C_ST);
 	else if (line[0] == 'F' && line[1] == 'T')
 		return (C_FT);
-	else if (line[0] == 'S' && line[1] == ' ')
-		return (C_S);
-	else if (line[0] == 'S' && line[1] == 'U')
-		return (C_SU);
-	else if (line[0] == 'S' && line[1] == 'C')
-		return (C_SC);
 	else if (line[0] == 'F' && line[1] == ' ')
 		return (C_F);
 	else if (line[0] == 'C' && line[1] == ' ')
 		return (C_C);
+	
+	else if (line[0] == 'O' && line[1] == 'I')
+		return (C_OI);
+	else if (line[0] == 'O' && line[1] == 'P')
+		return (C_OP);
+	else if (line[0] == 'O' && line[1] == 'C')
+		return (C_OC);
 	return (C_MAP);
 }
 
@@ -118,32 +121,51 @@ int
 		content_after = 1;
 	return (!!str_add_back(map_buffer, ft_strdup(line)));
 }
+#include <stdio.h> /* デバッグ用 printf のために追加 */
 
 int
-	parse_config(t_config *config, char const *conf_path)
+    parse_config(t_config *config, char const *conf_path)
 {
-	int			c_fd;
-	char		*line;
-	int			r;
-	t_str		*map_buffer;
+    int         c_fd;
+    char        *line;
+    int         r;
+    t_str       *map_buffer;
 
-	if (!ft_endwith(conf_path, ".cub"))
-		return (0);
-	if ((c_fd = open(conf_path, O_RDONLY)) < 0)
-		return (0);
-	map_buffer = NULL;
-	r = 1;
-	while (get_next_line(c_fd, &line))
-	{
-		r = (r && parse_line(config, line, &map_buffer));
-		free(line);
-	}
-	if (r && ft_strlen(line) > 0)
-		r = !!str_add_back(&map_buffer, ft_strdup(line));
-	free(line);
-	close(c_fd);
-	if (!r || !parse_map(config, map_buffer))
-		return (str_clear(&map_buffer));
-	str_clear(&map_buffer);
-	return (1);
+    if (!ft_endwith(conf_path, ".cub"))
+    {
+        printf("DEBUG: File extension is not .cub\n");
+        return (0);
+    }
+    if ((c_fd = open(conf_path, O_RDONLY)) < 0)
+    {
+        printf("DEBUG: Failed to open file: %s\n", conf_path);
+        return (0);
+    }
+    map_buffer = NULL;
+    r = 1;
+    while (get_next_line(c_fd, &line))
+    {
+        r = (r && parse_line(config, line, &map_buffer));
+        if (!r)
+            printf("DEBUG: parse_line failed at line: [%s]\n", line);
+        free(line);
+    }
+    if (r && ft_strlen(line) > 0)
+        r = !!str_add_back(&map_buffer, ft_strdup(line));
+    free(line);
+    close(c_fd);
+    
+    if (!r)
+    {
+        printf("DEBUG: parse_line returned 0 during file reading.\n");
+        return (str_clear(&map_buffer));
+    }
+    if (!parse_map(config, map_buffer))
+    {
+        printf("DEBUG: parse_map failed (Invalid map structure).\n");
+        return (str_clear(&map_buffer));
+    }
+    
+    str_clear(&map_buffer);
+    return (1);
 }
