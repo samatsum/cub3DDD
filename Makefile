@@ -82,7 +82,7 @@ $(MLX_TARGET):
 				@$(MAKE) -C $(MLX_DIR)
 
 clean:
-				@$(MAKE) -C $(MLX_DIR) clean
+				-@$(MAKE) -C $(MLX_DIR) clean  # 行頭にハイフン(-)を追加
 				$(RM) $(OBJ_DIR)
 
 fclean:         clean
