@@ -6,7 +6,7 @@
 /*   By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: Invalid date        by samatsum          #+#    #+#             */
-/*   Updated: 2026/05/28 21:10:25 by samatsum         ###   ########.fr       */
+/*   Updated: 2026/05/31 05:20:28 by samatsum         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,6 +80,6 @@ int
 		return (str_clear(&str[0]) || str_clear(&str[1]));
 	if ((int)((color = str_to_color(str[1]))) < 0)
 		return (str_clear(&str[0]) || str_clear(&str[1]));
-	config->c[(key == C_F) ? TEX_FLOOR : TEX_SKY] = color;
+	config->colors[(key == C_F) ? TEX_FLOOR : TEX_SKY] = color;
 	return ((str_clear(&str[0]) || str_clear(&str[1])) | 1);
 }

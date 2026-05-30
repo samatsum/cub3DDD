@@ -6,7 +6,7 @@
 /*   By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/29 12:51:26 by samatsum          #+#    #+#             */
-/*   Updated: 2026/05/29 11:07:20 by samatsum         ###   ########.fr       */
+/*   Updated: 2026/05/31 05:41:44 by samatsum         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,10 +32,10 @@
 
 # define FINT(x)			((int)floor(x))
 # define CHECK_TOP(p)		(FINT(p.x) >= 0 && FINT(p.y) >= 0)
-# define CHECK_BOT(p, c)	(FINT(p.x) < (c).columns && FINT(p.y) < (c).rows)
+# define CHECK_BOT(p, c) (FINT(p.x) < (c).map.columns && FINT(p.y) < (c).map.rows)
 # define IN_MAP(p, c)		(CHECK_TOP(p) && CHECK_BOT(p, c))
-# define MAP(p, c) 			(c).map[(FINT(p.y) * (c).columns) + FINT(p.x)]
-# define MAP_XY(x, y, c) 	(c).map[(FINT(y) * (c).columns) + FINT(x)]
+# define MAP(p, c)    (c).map.data[(FINT(p.y) * (c).map.columns) + FINT(p.x)]
+# define MAP_XY(x, y, c)  (c).map.data[(FINT(y) * (c).map.columns) + FINT(x)]
 
 # define C_R				0
 
@@ -67,21 +67,26 @@
 # define TEX_SPRITE_UP		7
 # define TEX_SPRITE_C		8
 
-typedef struct	s_config
+typedef struct s_map
 {
-	int			requested_height;
-	int			requested_width;
-	int			*map;
-	int			rows;
-	int			columns;
-	int			save_arg;
-	double		rotate_speed;
-	double		move_speed;
-	char		*tex_path[TEXTURES];
-	unsigned	c[TEXTURES];
-	int			set[C_LAST];
-	double		fov;
-}				t_config;
+	int				*data;      // 1次元配列化されたマップデータ (元の map)
+	int	columns;    // 幅
+	int	rows;       // 高さ
+}	t_map;
+
+typedef struct s_config
+{
+	char			*tex_path[TEXTURES];
+	double			rotate_speed;
+	double			move_speed;
+	double			fov;
+	unsigned int	requested_width;
+	unsigned int	requested_height;
+	unsigned int	colors[TEXTURES];
+	int				set[C_LAST]; // パース完了フラグ群
+	t_map		map;
+}	t_config;
+
 
 void			init_config(t_config *config);
 

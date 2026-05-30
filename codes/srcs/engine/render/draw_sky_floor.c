@@ -28,7 +28,7 @@ static void
 	if (!tex->tex)
 	{
 		draw_pixel(rnd->w, pixel,
-			distance_shade(rnd->options, rnd->config->c[TEX_SKY],
+			distance_shade(rnd->options, rnd->config->colors[TEX_SKY],
 			rnd->sf_dist[ray->row]));
 	}
 	else
@@ -50,7 +50,7 @@ static void
 	if (!tex->tex)
 	{
 		draw_pixel(rnd->w, pixel,
-			distance_shade(rnd->options, rnd->config->c[TEX_FLOOR],
+			distance_shade(rnd->options, rnd->config->colors[TEX_FLOOR],
 			rnd->sf_dist[ray->row]));
 	}
 	else

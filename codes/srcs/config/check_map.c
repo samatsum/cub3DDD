@@ -6,7 +6,7 @@
 /*   By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: Invalid date        by samatsum          #+#    #+#             */
-/*   Updated: 2026/05/28 21:10:25 by samatsum         ###   ########.fr       */
+/*   Updated: 2026/05/31 05:38:13 by samatsum         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -96,7 +96,7 @@ int
 			if (map_buffer->content[i++] != ' ')
 				col++;
 		}
-		if (col != config->columns)
+		if (col != config->map.columns)
 			return (0);
 		map_buffer = (map_buffer)->next;
 	}

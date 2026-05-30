@@ -21,10 +21,10 @@ void
 
 	stop = 0;
 	camera->pos.y = 0;
-	while (!stop && camera->pos.y < config->rows)
+	while (!stop && camera->pos.y < config->map.rows)
 	{
 		camera->pos.x = 0;
-		while (!stop && camera->pos.x < config->columns)
+		while (!stop && camera->pos.x < config->map.columns)
 		{
 			if (ft_in_set(MAP(camera->pos, *config), DIRECTIONS))
 			{

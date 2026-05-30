@@ -6,7 +6,7 @@
 /*   By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/29 15:24:13 by samatsum          #+#    #+#             */
-/*   Updated: 2026/05/28 21:10:25 by samatsum         ###   ########.fr       */
+/*   Updated: 2026/05/31 05:22:31 by samatsum         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,7 @@ int
 		{
 			while (map_buffer->content[j] == ' ')
 				j++;
-			map[(i * config->columns) + line++] = map_buffer->content[j];
+			map[(i * config->map.columns) + line++] = map_buffer->content[j];
 			if (ft_in_set(map_buffer->content[j], DIRECTIONS))
 				has_camera++;
 			j++;
@@ -47,14 +47,14 @@ int
 	int		*map;
 
 	map = NULL;
-	if ((config->columns = check_top_bottom_borders(map_buffer)) <= 2
-		|| (config->rows = check_left_right_borders(map_buffer)) <= 2
+	if ((config->map.columns = check_top_bottom_borders(map_buffer)) <= 2
+		|| (config->map.rows = check_left_right_borders(map_buffer)) <= 2
 		|| !check_valid(config, map_buffer))
 		return (0);
-	if (!(map = (int*)malloc(sizeof(*map) * (config->rows * config->columns))))
+	if (!(map = (int*)malloc(sizeof(*map) * (config->map.rows * config->map.columns))))
 		return (0);
 	if (copy_map(config, map_buffer, map) != 1)
 		return (0);
-	config->map = map;
+	config->map.data = map;
 	return (1);
 }

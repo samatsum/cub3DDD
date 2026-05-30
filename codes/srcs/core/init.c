@@ -84,10 +84,10 @@ static int
 
 	game->sprites = NULL;
 	i = 0;
-	while (i < game->config.rows)
+	while (i < game->config.map.rows)
 	{
 		j = 0;
-		while (j < game->config.columns)
+		while (j < game->config.map.columns)
 		{
 			set_pos(&pos, j + .5, i + .5);
 			c = MAP(pos, game->config);

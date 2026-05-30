@@ -39,19 +39,19 @@ static void
 	int			color;
 
 	i = 0;
-	while (i < rnd->config->rows)
+	while (i < rnd->config->map.rows)
 	{
 		j = 0;
-		while (j < rnd->config->columns)
+		while (j < rnd->config->map.columns)
 		{
 			if ((color = case_color(rnd->config, rnd->camera, j, i)) >= 0)
 			{
 				set_pos(start,
-					rnd->w->size.x - (rnd->config->columns * MAP_TILE_SIZE) - SCALE + (j * MAP_TILE_SIZE),
-					rnd->w->size.y - (rnd->config->rows * MAP_TILE_SIZE) - SCALE + (i * MAP_TILE_SIZE));
+					rnd->w->size.x - (rnd->config->map.columns * MAP_TILE_SIZE) - SCALE + (j * MAP_TILE_SIZE),
+					rnd->w->size.y - (rnd->config->map.rows * MAP_TILE_SIZE) - SCALE + (i * MAP_TILE_SIZE));
 				set_pos(end,
-					rnd->w->size.x - (rnd->config->columns * MAP_TILE_SIZE) + (j * MAP_TILE_SIZE),
-					rnd->w->size.y - (rnd->config->rows * MAP_TILE_SIZE) + (i * MAP_TILE_SIZE));
+					rnd->w->size.x - (rnd->config->map.columns * MAP_TILE_SIZE) + (j * MAP_TILE_SIZE),
+					rnd->w->size.y - (rnd->config->map.rows * MAP_TILE_SIZE) + (i * MAP_TILE_SIZE));
 				draw_rectangle(rnd->w, start, end, color);
 			}
 			j++;

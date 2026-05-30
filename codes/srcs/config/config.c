@@ -6,7 +6,7 @@
 /*   By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/29 12:51:45 by samatsum          #+#    #+#             */
-/*   Updated: 2026/05/29 11:15:07 by samatsum         ###   ########.fr       */
+/*   Updated: 2026/05/31 05:22:53 by samatsum         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,16 +22,15 @@ void
 	i = 0;
 	while (i < TEXTURES)
 		config->tex_path[i++] = NULL;
-	config->c[TEX_NORTH] = 0xFFFFFF;
-	config->c[TEX_SOUTH] = 0xCCCCCC;
-	config->c[TEX_WEST] = 0xFF44FF;
-	config->c[TEX_EAST] = 0x44FF44;
-	config->c[TEX_SKY] = 0x33C6E3;
-	config->c[TEX_FLOOR] = 0xA0764C;
-	config->map = NULL;
-	config->rows = 0;
-	config->columns = 0;
-	config->save_arg = 0;
+	config->colors[TEX_NORTH] = 0xFFFFFF;
+	config->colors[TEX_SOUTH] = 0xCCCCCC;
+	config->colors[TEX_WEST] = 0xFF44FF;
+	config->colors[TEX_EAST] = 0x44FF44;
+	config->colors[TEX_SKY] = 0x33C6E3;
+	config->colors[TEX_FLOOR] = 0xA0764C;
+	config->map.data = NULL;
+	config->map.rows = 0;
+	config->map.columns = 0;
 	config->rotate_speed = .11;
 	config->move_speed = .11;
 	config->fov = .66;
@@ -53,9 +52,9 @@ int
 		config->tex_path[i] = NULL;
 		i++;
 	}
-	if (config->map)
-		free(config->map);
-	config->map = NULL;
+	if (config->map.data)
+		free(config->map.data);
+	config->map.data = NULL;
 	return (0);
 }
 

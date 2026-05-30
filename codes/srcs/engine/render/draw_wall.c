@@ -37,7 +37,7 @@ void
 	{
 		draw_vertical_line(rnd->w, &pixel, r->height,
 			distance_shade(rnd->options,
-			rnd->config->c[r->direction], r->distance));
+			rnd->config->colors[r->direction], r->distance));
 		return ;
 	}
 	init_draw_wall(tex, r, &p_tex);

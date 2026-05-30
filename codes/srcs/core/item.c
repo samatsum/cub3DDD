@@ -31,10 +31,10 @@ void
 
 	game->to_collect = 0;
 	i = 0;
-	while (i < game->config.rows)
+	while (i < game->config.map.rows)
 	{
 		j = 0;
-		while (j < game->config.columns)
+		while (j < game->config.map.columns)
 		{
 			if (MAP_XY(j, i, game->config) == '4')
 				game->to_collect++;
