@@ -52,11 +52,10 @@ int
 
 
 void
-	init_game(t_game *game, int save_opt)
+	init_game(t_game *game)
 {
 	int	i;
 
-	init_config(&game->config);
 	set_pos(&game->move, 0, 0);
 	set_pos(&game->x_move, 0, 0);
 	set_pos(&game->rotate, 0, 0);
@@ -69,8 +68,6 @@ void
 	game->last_options = 0;
 	
 	game->sprites = NULL;
-	if (save_opt)
-		game->options = game->options | FLAG_SAVE;
 	i = 0;
 	while (i < TEXTURES)
 		game->tex[i++].tex = NULL;

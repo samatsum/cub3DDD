@@ -11,7 +11,7 @@
 struct s_game;
 
 int		main_loop(struct s_game *game);
-void	init_game(struct s_game *game, int save_opt);
+void	init_game(struct s_game *game);
 int		finish_init(struct s_game *game);
 int		exit_game(struct s_game *game, int code);
 int		exit_error(struct s_game *game, const char *str);
