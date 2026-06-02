@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   draw_wall.c                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: samatsum  <samatsum@student.42.jp   >      +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/06/03 07:32:33 by samatsum          #+#    #+#             */
+/*   Updated: 2026/06/03 07:32:33 by samatsum         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "types.h"
 #include "engine/render/render.h"
 #include "engine/texture/texture.h" /* get_tex_color, distance_shade 等を使うため */
