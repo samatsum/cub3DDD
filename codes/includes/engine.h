@@ -6,7 +6,7 @@
 /*   By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/28 13:16:59 by samatsum          #+#    #+#             */
-/*   Updated: 2026/06/03 10:37:17 by samatsum         ###   ########.fr       */
+/*   Updated: 2026/06/03 14:35:30 by samatsum         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,6 @@
 # define ENGINE_H
 
 /* ** 構造体とマクロの基盤 */
-# include "types.h"
 
 # include "engine/raycast/raycast.h"
 # include "engine/render/render.h"

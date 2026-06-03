@@ -6,11 +6,12 @@
 /*   By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/28 13:16:59 by samatsum          #+#    #+#             */
-/*   Updated: 2026/06/03 09:25:50 by samatsum         ###   ########.fr       */
+/*   Updated: 2026/06/03 15:13:43 by samatsum         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "types.h"
+#include <math.h>
+#include "core/core.h"            /* ゲーム設定の取得に必要 */
 #include "engine/render/render.h"   /* スプライト描画関数の宣言 */
 #include "engine/texture/texture.h" /* get_tex_color, distance_shade 等に必要 */
 

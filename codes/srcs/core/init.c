@@ -6,13 +6,14 @@
 /*   By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/03 07:32:33 by samatsum          #+#    #+#             */
-/*   Updated: 2026/06/03 08:51:13 by samatsum         ###   ########.fr       */
+/*   Updated: 2026/06/03 14:42:11 by samatsum         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "cub3d.h"
+
 #include "engine/raycast/raycast.h"
 #include "core/core.h"
+#include "../minilibx-linux/mlx.h"
 
 /* ************************************************************************** */
 int

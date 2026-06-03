@@ -6,13 +6,14 @@
 /*   By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/03 07:32:33 by samatsum          #+#    #+#             */
-/*   Updated: 2026/06/03 09:21:20 by samatsum         ###   ########.fr       */
+/*   Updated: 2026/06/03 15:06:56 by samatsum         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "types.h"
+
 #include "engine/raycast/raycast.h"
 #include "utils/utils.h" /* set_pos関数を使うため */
+#include "config/config.h"
 
 /* ************************************************************************** */
 void

@@ -6,11 +6,11 @@
 /*   By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/27 14:24:58 by samatsum          #+#    #+#             */
-/*   Updated: 2026/06/03 09:42:54 by samatsum         ###   ########.fr       */
+/*   Updated: 2026/06/03 14:33:39 by samatsum         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "types.h"
+
 #include "ui/ui.h"
 #include "engine/render/render.h" /* draw_pixel関数のため */
 #include "utils/utils.h"          /* set_pos関数のため */

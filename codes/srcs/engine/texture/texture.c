@@ -6,12 +6,14 @@
 /*   By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/27 14:24:58 by samatsum          #+#    #+#             */
-/*   Updated: 2026/06/03 09:34:39 by samatsum         ###   ########.fr       */
+/*   Updated: 2026/06/03 15:17:04 by samatsum         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "types.h"
+#include "engine/render/render.h"
 #include "engine/texture/texture.h"
+#include "config/config.h"
+#include "../minilibx-linux/mlx.h"
 
 /* ************************************************************************** */
 int

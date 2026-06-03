@@ -6,14 +6,15 @@
 /*   By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/27 19:25:55 by samatsum          #+#    #+#             */
-/*   Updated: 2026/06/03 08:50:44 by samatsum         ###   ########.fr       */
+/*   Updated: 2026/06/03 15:00:54 by samatsum         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "cub3d.h"
+
 #include "core/core.h"
 #include <stdlib.h> /* free関数を使用するために追加 */
 #include <unistd.h> /* write関数, STDOUT_FILENO用に追加 */
+#include "../minilibx-linux/mlx.h"
 
 /* ************************************************************************** */
 int

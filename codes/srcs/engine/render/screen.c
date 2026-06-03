@@ -6,14 +6,15 @@
 /*   By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/28 13:16:59 by samatsum          #+#    #+#             */
-/*   Updated: 2026/06/03 09:26:08 by samatsum         ###   ########.fr       */
+/*   Updated: 2026/06/03 15:12:56 by samatsum         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "types.h"
+#include "core/core.h"            /* ゲーム設定の取得に必要 */
 #include "engine/raycast/raycast.h"
 #include "engine/render/render.h" /* 描画関数群の呼び出しに必要 */
 #include "ui/ui.h"                /* update_ui, display_crosshair に必要 */
+#include "../minilibx-linux/mlx.h"
 
 /* ************************************************************************** */
 void

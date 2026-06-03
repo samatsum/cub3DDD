@@ -3,15 +3,18 @@
 /*                                                        :::      ::::::::   */
 /*   config.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: samatsum  <samatsum@student.42.jp   >      +#+  +:+       +#+        */
+/*   By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/03 07:32:33 by samatsum          #+#    #+#             */
-/*   Updated: 2026/06/03 08:23:42 by samatsum         ###   ########.fr       */
+/*   Updated: 2026/06/03 15:04:05 by samatsum         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "gnl/get_next_line.h"
 #include "config/config.h"
 #include <stdio.h>
+#include <fcntl.h>  /* open, O_RDONLY 用 */
+#include <unistd.h> /* close 用 */
 
 /* ************************************************************************** */
 void

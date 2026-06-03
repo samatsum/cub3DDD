@@ -6,13 +6,15 @@
 /*   By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/12 02:23:13 by samatsum          #+#    #+#             */
-/*   Updated: 2026/06/03 08:54:20 by samatsum         ###   ########.fr       */
+/*   Updated: 2026/06/03 14:40:33 by samatsum         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <stdbool.h>
-#include "cub3d.h"
+#include "engine/input/input.h"
+#include "engine/input/keymap.h"
 #include "core/core.h"
+#include "../minilibx-linux/mlx.h"
 
 /* ************************************************************************** */
 int

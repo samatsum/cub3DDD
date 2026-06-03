@@ -6,17 +6,15 @@
 /*   By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/29 12:51:26 by samatsum          #+#    #+#             */
-/*   Updated: 2026/06/03 10:42:04 by samatsum         ###   ########.fr       */
+/*   Updated: 2026/06/03 15:00:24 by samatsum         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef CONFIG_H
 # define CONFIG_H
 
-# include <fcntl.h>
-# include <unistd.h>
-# include "gnl/get_next_line.h"
 # include "utils/utils.h"
+# include <math.h> /* floor関数を使用するマクロ(FINT)のため追加 */
 
 /* ************************************************************************** */
 # define DIRECTIONS				"NSEW"
@@ -37,16 +35,13 @@
 # define MAP_XY(x, y, c)		(c).map.data[(FINT(y) * (c).map.columns) + FINT(x)]
 
 # define C_R					0
-
 # define C_NO					1
 # define C_SO					2
 # define C_WE					3
 # define C_EA					4
-
 # define C_OI					5
 # define C_OP					6
 # define C_OC					7
-
 # define C_FT					8
 # define C_ST					9
 # define C_F					10
@@ -65,6 +60,8 @@
 # define TEX_SPRITE				6
 # define TEX_SPRITE_UP			7
 # define TEX_SPRITE_C			8
+
+# define BEST_RATIO				1.7777777778
 
 /* ************************************************************************** */
 typedef struct s_map

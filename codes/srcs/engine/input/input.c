@@ -6,12 +6,12 @@
 /*   By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/27 19:31:08 by samatsum          #+#    #+#             */
-/*   Updated: 2026/06/03 09:19:24 by samatsum         ###   ########.fr       */
+/*   Updated: 2026/06/03 14:33:39 by samatsum         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "core/core.h"  
-#include "types.h"
+
 #include "engine/input/input.h" /* フック関数のプロトタイプを使うため */
 #include "engine/input/keymap.h" /* キーコード（KEY_W等*/
 #include "engine/render/render.h" /* render_frame関数を呼び出すため */

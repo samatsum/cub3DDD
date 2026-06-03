@@ -6,16 +6,17 @@
 /*   By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/10 18:13:15 by samatsum          #+#    #+#             */
-/*   Updated: 2026/06/03 08:50:10 by samatsum         ###   ########.fr       */
+/*   Updated: 2026/06/03 14:44:09 by samatsum         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "cub3d.h"
+
 #include <time.h>   /* time, localtime用 */
 #include <stdlib.h> /* getenv用 */
 #include <stdio.h>  /* snprintf用 */
 #include <fcntl.h>  /* open用 */
 #include <unistd.h> /* write, close用 */
+#include "core/core.h"
 
 /* ************************************************************************** */
 int

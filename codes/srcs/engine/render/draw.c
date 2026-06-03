@@ -6,12 +6,12 @@
 /*   By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/06 00:05:58 by samatsum          #+#    #+#             */
-/*   Updated: 2026/06/03 09:27:24 by samatsum         ###   ########.fr       */
+/*   Updated: 2026/06/03 14:42:29 by samatsum         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "types.h"                 /* t_window や t_pos の構造体定義 */
 #include "engine/render/render.h"  /* 自身の関数宣言 (draw_rectangle 等) */
+#include "../minilibx-linux/mlx.h"
 
 /* ************************************************************************** */
 void

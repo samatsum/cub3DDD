@@ -6,12 +6,14 @@
 /*   By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/28 13:16:59 by samatsum          #+#    #+#             */
-/*   Updated: 2026/06/03 09:21:46 by samatsum         ###   ########.fr       */
+/*   Updated: 2026/06/03 15:08:29 by samatsum         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "types.h"
+
 #include "engine/raycast/raycast.h"
+#include "config/config.h"
+#include <math.h>
 
 /* ************************************************************************** */
 void

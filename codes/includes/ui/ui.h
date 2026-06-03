@@ -6,14 +6,14 @@
 /*   By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/28 13:16:59 by samatsum          #+#    #+#             */
-/*   Updated: 2026/06/03 10:53:24 by samatsum         ###   ########.fr       */
+/*   Updated: 2026/06/03 14:32:09 by samatsum         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef UI_H
 # define UI_H
 
-# include "../types.h"
+# include "engine/render/render.h"
 
 /* ************************************************************************** */
 # define MAP_TILE_SIZE			5

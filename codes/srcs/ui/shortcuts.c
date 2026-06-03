@@ -6,13 +6,14 @@
 /*   By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: Invalid date        by samatsum          #+#    #+#             */
-/*   Updated: 2026/06/03 09:43:28 by samatsum         ###   ########.fr       */
+/*   Updated: 2026/06/03 15:17:32 by samatsum         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "types.h"
+
 #include "ui/ui.h"
 #include "core/core.h" /* screenshot関数などを呼び出すため */
+#include "../minilibx-linux/mlx.h"
 
 /* ************************************************************************** */
 int

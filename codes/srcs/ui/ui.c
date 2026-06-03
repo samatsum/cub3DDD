@@ -6,12 +6,13 @@
 /*   By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/03 07:32:33 by samatsum          #+#    #+#             */
-/*   Updated: 2026/06/03 09:43:47 by samatsum         ###   ########.fr       */
+/*   Updated: 2026/06/03 15:18:01 by samatsum         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "types.h"
+
 #include "ui/ui.h"
+#include "config/config.h" /* マップ情報の取得に必要 */
 #include "engine/render/render.h" /* draw_rectangle, draw_string等のため */
 #include "utils/utils.h"          /* ft_write_str等の文字列操作やset_posのため */
 
