@@ -6,15 +6,15 @@
 /*   By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/27 19:25:55 by samatsum          #+#    #+#             */
-/*   Updated: 2026/06/03 15:00:54 by samatsum         ###   ########.fr       */
+/*   Updated: 2026/06/04 02:49:47 by samatsum         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-
 #include "core/core.h"
-#include <stdlib.h> /* free関数を使用するために追加 */
-#include <unistd.h> /* write関数, STDOUT_FILENO用に追加 */
-#include "../minilibx-linux/mlx.h"
+#include "gnl/get_next_line.h"     /* 追加: GNLの強制クリーンアップ呼び出しのため */
+#include "../minilibx-linux/mlx.h" /* mlx_destroy_display 等のため */
+#include <stdlib.h>                /* free, exit 関数を使用するため */
+#include <unistd.h>                /* write 関数, STDOUT_FILENO用 */
 
 /* ************************************************************************** */
 int
@@ -44,6 +44,10 @@ int
 int
 	exit_game(t_game* game, int code)
 {
+	/* 修正2: プログラム終了時に、GNL(get_next_line)の静的バッファに
+	   読みかけのデータが残っていた場合(Still Reachable)のメモリリークを完全に防ぐ */
+	get_next_line(-1, NULL);
+
 	clear_config(&game->config);
 	clear_window(&game->window);
 	clear_textures(&game->window, game->tex);

@@ -6,12 +6,11 @@
 /*   By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/06 00:05:58 by samatsum          #+#    #+#             */
-/*   Updated: 2026/06/03 14:42:29 by samatsum         ###   ########.fr       */
+/*   Updated: 2026/06/04 02:50:06 by samatsum         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "engine/render/render.h"  /* 自身の関数宣言 (draw_rectangle 等) */
-#include "../minilibx-linux/mlx.h"
 
 /* ************************************************************************** */
 void
@@ -28,15 +27,13 @@ static void
 void
 	draw_pixel(t_window* w, t_pos* pos, int color)
 {
-	int	offset;
+	unsigned int*	dst;
 
 	if (pos->x >= 0 && pos->x < w->size.x && pos->y >= 0 && pos->y < w->size.y) {
-		/* 修正: マジックナンバーを排除し、構造体の size_line と bpp を用いて計算 */
-		//bpp は「Bits Per Pixel（1ピクセルあたりのビット数）」である。
-		//通常は 32（32ビットカラー）が返ってくる。
-		//メモリアドレスは「バイト（8ビット）」単位で計算しなければならないため、32 / 8 = 4バイト
-		offset = ((int)pos->y * w->screen.size_line) + ((int)pos->x * (w->screen.bpp / 8));
-		*(int*)(w->screen.ptr + offset) = color;
+		/* 修正1: 1バイト単位(char*)で計算した後に4バイト強引に書き込むと、画面右端ギリギリでバッファオーバーフローの危険がある。
+		   MiniLibXのbppが32(4バイト)であることを前提に、最初から unsigned int* 型の配列として扱うことで安全にメモリアクセスする */
+		dst = (unsigned int*)w->screen.ptr;
+		dst[(int)pos->y * (w->screen.size_line / 4) + (int)pos->x] = (unsigned int)color;
 	}
 }
 
