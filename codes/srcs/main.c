@@ -6,7 +6,7 @@
 /*   By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/12 02:23:13 by samatsum          #+#    #+#             */
-/*   Updated: 2026/06/03 08:04:29 by samatsum         ###   ########.fr       */
+/*   Updated: 2026/06/03 08:54:20 by samatsum         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,12 +35,10 @@ int
 	if (!validate_check(argc, argv, &game)) {
 		return (EXIT_FAILURE);
 	}
-
 	// 初期化処理
 	if (!setup_inits(&game)) {
 		return (EXIT_FAILURE);
 	}
-
 	// イベントフックの設定とメインループ
 	setup_hooks(&game);
 	mlx_loop(game.window.ptr);

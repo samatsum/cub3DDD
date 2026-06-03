@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   input.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: samatsum  <samatsum@student.42.jp   >      +#+  +:+       +#+        */
+/*   By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/27 19:31:08 by samatsum          #+#    #+#             */
-/*   Updated: 2026/05/28 21:07:36 by samatsum         ###   ########.fr       */
+/*   Updated: 2026/06/03 09:19:24 by samatsum         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,55 +17,81 @@
 #include "engine/render/render.h" /* render_frame関数を呼び出すため */
 #include "ui/ui.h"                /* shortcuts.c の関数などを呼び出している場合 */
 
-int	expose_hook(t_game *game)
+/* ************************************************************************** */
+int
+	expose_hook(t_game* game);
+int
+	exit_hook(t_game* game);
+int
+	key_press(int keycode, t_game* game);
+int
+	key_release(int keycode, t_game* game);
+
+/* ************************************************************************** */
+// ウィンドウが再描画されるべきタイミングで画面を更新する
+int
+	expose_hook(t_game* game)
 {
 	render_frame(game);
 	return (0);
 }
 
-int	exit_hook(t_game *game)
+/* ************************************************************************** */
+// ウィンドウの×ボタンなどが押された際にゲームを終了させる
+int
+	exit_hook(t_game* game)
 {
 	return (exit_game(game, EXIT_SUCCESS));
 }
 
-int	key_press(int keycode, t_game *game)
+/* ************************************************************************** */
+// キーが押された際に、ゲーム内の移動フラグや回転フラグをオンにする
+int
+	key_press(int keycode, t_game* game)
 {
-	if (keycode == KEY_W || keycode == KEY_FORWARD)
+	if (keycode == KEY_W || keycode == KEY_FORWARD) {
 		game->move.x = 1;
-	else if (keycode == KEY_S || keycode == KEY_BACKWARD)
+	} else if (keycode == KEY_S || keycode == KEY_BACKWARD) {
 		game->move.y = 1;
-	if (keycode == KEY_A)
+	}
+	if (keycode == KEY_A) {
 		game->x_move.x = 1;
-	else if (keycode == KEY_D)
+	} else if (keycode == KEY_D) {
 		game->x_move.y = 1;
-	if (keycode == KEY_Q || keycode == KEY_LEFT)
+	}
+	if (keycode == KEY_Q || keycode == KEY_LEFT) {
 		game->rotate.x = 1;
-	else if (keycode == KEY_E || keycode == KEY_RIGHT)
+	} else if (keycode == KEY_E || keycode == KEY_RIGHT) {
 		game->rotate.y = 1;
+	}
 	return (0);
 }
 
-int	key_release(int keycode, t_game *game)
+/* ************************************************************************** */
+// キーが離された際に、移動フラグのオフやオプションの切り替えを行う
+int
+	key_release(int keycode, t_game* game)
 {
-	if (keycode == KEY_W || keycode == KEY_FORWARD)
+	if (keycode == KEY_W || keycode == KEY_FORWARD) {
 		game->move.x = 0;
-	else if (keycode == KEY_S || keycode == KEY_BACKWARD)
+	} else if (keycode == KEY_S || keycode == KEY_BACKWARD) {
 		game->move.y = 0;
-	else if (keycode == KEY_A)
+	} else if (keycode == KEY_A) {
 		game->x_move.x = 0;
-	else if (keycode == KEY_D)
+	} else if (keycode == KEY_D) {
 		game->x_move.y = 0;
-	else if (keycode == KEY_Q || keycode == KEY_LEFT)
+	} else if (keycode == KEY_Q || keycode == KEY_LEFT) {
 		game->rotate.x = 0;
-	else if (keycode == KEY_E || keycode == KEY_RIGHT)
+	} else if (keycode == KEY_E || keycode == KEY_RIGHT) {
 		game->rotate.y = 0;
-	else if (keycode == KEY_ESC)
+	} else if (keycode == KEY_ESC) {
 		return (exit_game(game, EXIT_SUCCESS));
-	else if (keycode == KEY_I)
+	} else if (keycode == KEY_I) {
 		game->options = game->options ^ FLAG_UI;
-	else if (keycode == KEY_L)
+	} else if (keycode == KEY_L) {
 		game->options = game->options ^ FLAG_SHADOWS;
-	else if (keycode == KEY_O)
+	} else if (keycode == KEY_O) {
 		game->options = game->options ^ FLAG_CROSSHAIR;
+	}
 	return (0);
 }

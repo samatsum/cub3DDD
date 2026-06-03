@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   init.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: samatsum  <samatsum@student.42.jp   >      +#+  +:+       +#+        */
+/*   By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/03 07:32:33 by samatsum          #+#    #+#             */
-/*   Updated: 2026/06/03 07:32:33 by samatsum         ###   ########.fr       */
+/*   Updated: 2026/06/03 08:51:13 by samatsum         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,57 +14,43 @@
 #include "engine/raycast/raycast.h"
 #include "core/core.h"
 
+/* ************************************************************************** */
 int
-	init_image(t_window *window, t_image *img)
-{
-	if (!(img->img =
-		mlx_new_image(window->ptr, window->size.x, window->size.y)))
-		return (0);
-	img->ptr = mlx_get_data_addr(
-		img->img, &img->bpp, &img->size_line, &img->endian);
-	return (1);
-}
-
-int
-	init_window(t_window *window, t_config *config)
-{
-	set_pos(&window->size, config->requested_width, config->requested_height);
-	
-	/* 修正: マジックナンバーをマクロに置き換え */
-	if (window->size.x > MAX_WIDTH)
-		window->size.x = MAX_WIDTH;
-	if (window->size.y > MAX_HEIGHT)
-		window->size.y = MAX_HEIGHT;
-	if (window->size.x < MIN_WIDTH)
-		window->size.x = MIN_WIDTH;
-	if (window->size.y < MIN_HEIGHT)
-		window->size.y = MIN_HEIGHT;
-		
-	window->ptr = NULL;
-	window->win = NULL;
-	window->ratio = window->size.x / window->size.y;
-	window->screen.img = NULL;
-	
-	/* 修正: 謎の倍率 2.5 を FOV_SCALE に置き換え */
-	if (window->ratio < BEST_RATIO)
-		config->fov = config->fov / ((BEST_RATIO / config->fov) / FOV_SCALE);
-	else if (window->ratio > BEST_RATIO)
-		config->fov = config->fov * ((config->fov / BEST_RATIO) * FOV_SCALE);
-		
-	if (!(window->ptr = mlx_init())
-		|| !(window->win = mlx_new_window(
-			window->ptr, window->size.x, window->size.y, "cub3d")))
-		return (0);
-	// 中点を求めるための2
-	set_pos(&window->half, window->size.x / 2, window->size.y / 2);
-	if (!init_image(window, &window->screen))
-		return (0);
-	return (1);
-}
-
-
+	finish_init(t_game* game);
 void
-	init_game(t_game *game)
+	init_game(t_game* game);
+int
+	init_window(t_window* window, t_config* config);
+int
+	init_image(t_window* window, t_image* img);
+static int
+	find_sprites(t_game* game);
+
+/* ************************************************************************** */
+// ゲームの初期化処理を完了させ、必要なリソースを準備する
+int
+	finish_init(t_game* game)
+{
+	if (!init_window(&game->window, &game->config)) {
+		return (exit_error(game, "Error:\nmlx failed to create window or image.\n"));
+	}
+	find_start_pos(&game->config, &game->camera);
+	find_start_angle(&game->config, &game->camera);
+	if (!load_textures(&game->window, game->tex, &game->config)) {
+		return (exit_error(game, "Error:\nfailed to load texture(s).\n"));
+	}
+	if (!find_sprites(game)) {
+		return (exit_error(game, "Error:\nfailed to malloc sprites.\n"));
+	}
+	count_items(game);
+	make_tables(game);
+	return (1);
+}
+
+/* ************************************************************************** */
+// ゲームの内部状態（移動量、オプションフラグ、テクスチャ等）を初期化する
+void
+	init_game(t_game* game)
 {
 	int	i;
 
@@ -72,64 +58,95 @@ void
 	set_pos(&game->x_move, 0, 0);
 	set_pos(&game->rotate, 0, 0);
 	game->collected = 0;
-	
-	/* 修正: マジックナンバーを排除し、マクロの論理和で初期化する */
 	game->options = FLAG_UI | FLAG_SHADOWS | FLAG_CROSSHAIR;
-	
-	/* 修正: 初回ループで確実に画面を更新させるため、optionsと異なる値(0)を設定 */
 	game->last_options = 0;
-	
 	game->sprites = NULL;
 	i = 0;
-	while (i < TEXTURES)
+	while (i < TEXTURES) {
 		game->tex[i++].tex = NULL;
+	}
 }
 
-static int
-	find_sprites(t_game *game)
+/* ************************************************************************** */
+// ウィンドウを作成し、画面サイズやFOVの設定を行う
+int
+	init_window(t_window* window, t_config* config)
 {
-	int		i;
-	int		j;
-	t_pos	pos;
-	char	c;
-	t_tex	*tex;
-
-	game->sprites = NULL;
-	i = 0;
-	while (i < game->config.map.rows)
-	{
-		j = 0;
-		while (j < game->config.map.columns)
-		{
-			set_pos(&pos, j + .5, i + .5);
-			c = MAP(pos, game->config);
-			tex = &game->tex[TEX_SPRITE + (c - '0' - 2)];
-			if (c >= '2' && c <= '4' && tex->tex
-				&& !add_front_sprite(&game->sprites, 0., &pos, tex))
-				return (0);
-			j++;
-		}
-		i++;
+	set_pos(&window->size, config->requested_width, config->requested_height);
+	if (window->size.x > MAX_WIDTH) {
+		window->size.x = MAX_WIDTH;
+	}
+	if (window->size.y > MAX_HEIGHT) {
+		window->size.y = MAX_HEIGHT;
+	}
+	if (window->size.x < MIN_WIDTH) {
+		window->size.x = MIN_WIDTH;
+	}
+	if (window->size.y < MIN_HEIGHT) {
+		window->size.y = MIN_HEIGHT;
+	}
+	window->ptr = NULL;
+	window->win = NULL;
+	window->ratio = window->size.x / window->size.y;
+	window->screen.img = NULL;
+	if (window->ratio < BEST_RATIO) {
+		config->fov = config->fov / ((BEST_RATIO / config->fov) / FOV_SCALE);
+	} else if (window->ratio > BEST_RATIO) {
+		config->fov = config->fov * ((config->fov / BEST_RATIO) * FOV_SCALE);
+	}
+	window->ptr = mlx_init();
+	if (!window->ptr) {
+		return (0);
+	}
+	window->win = mlx_new_window(window->ptr, window->size.x, window->size.y, "cub3d");
+	if (!window->win) {
+		return (0);
+	}
+	set_pos(&window->half, window->size.x / 2, window->size.y / 2);
+	if (!init_image(window, &window->screen)) {
+		return (0);
 	}
 	return (1);
 }
 
-
+/* ************************************************************************** */
+// メモリ上に描画用のイメージ領域を確保し、データアドレスを取得する
 int
-	finish_init(t_game *game)
+	init_image(t_window* window, t_image* img)
 {
-	if (!init_window(&game->window, &game->config))
-	{
-		return (exit_error(game,
-			"Error:\nmlx failed to create window or image.\n"));
+	img->img = mlx_new_image(window->ptr, window->size.x, window->size.y);
+	if (!img->img) {
+		return (0);
 	}
-	find_start_pos(&game->config, &game->camera);
-	find_start_angle(&game->config, &game->camera);
-	if (!load_textures(&game->window, game->tex, &game->config))
-		return (exit_error(game, "Error:\nfailed to load texture(s).\n"));
-	if (!find_sprites(game))
-		return (exit_error(game, "Error:\nfailed to malloc sprites.\n"));
-	count_items(game);
-	make_tables(game);
+	img->ptr = mlx_get_data_addr(img->img, &img->bpp, &img->size_line, &img->endian);
+	return (1);
+}
+
+/* ************************************************************************** */
+// マップ上のスプライトを検索し、リストに登録する
+static int
+	find_sprites(t_game* game)
+{
+	int		i;
+	int		j;
+	char	c;
+	t_pos	pos;
+	t_tex*	tex;
+
+	game->sprites = NULL;
+	i = 0;
+	while (i < game->config.map.rows) {
+		j = 0;
+		while (j < game->config.map.columns) {
+			set_pos(&pos, j + .5, i + .5);
+			c = MAP(pos, game->config);
+			tex = &game->tex[TEX_SPRITE + (c - '0' - 2)];
+			if (c >= '2' && c <= '4' && tex->tex && !add_front_sprite(&game->sprites, 0., &pos, tex)) {
+				return (0);
+			}
+			j++;
+		}
+		i++;
+	}
 	return (1);
 }
