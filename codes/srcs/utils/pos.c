@@ -6,21 +6,31 @@
 /*   By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: Invalid date        by samatsum          #+#    #+#             */
-/*   Updated: 2026/05/28 21:10:25 by samatsum         ###   ########.fr       */
+/*   Updated: 2026/06/03 09:56:45 by samatsum         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "utils/utils.h"
 
+/* ************************************************************************** */
 void
-	set_pos(t_pos *pos, double x, double y)
+	set_pos(t_pos* pos, double x, double y);
+void
+	copy_pos(t_pos* pos, t_pos* org);
+
+/* ************************************************************************** */
+// 座標構造体にxとyの値を設定する
+void
+	set_pos(t_pos* pos, double x, double y)
 {
 	pos->x = x;
 	pos->y = y;
 }
 
+/* ************************************************************************** */
+// 座標構造体の値を別の座標構造体にコピーする
 void
-	copy_pos(t_pos *pos, t_pos *org)
+	copy_pos(t_pos* pos, t_pos* org)
 {
 	pos->x = org->x;
 	pos->y = org->y;

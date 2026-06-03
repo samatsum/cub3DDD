@@ -6,19 +6,26 @@
 /*   By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/29 13:43:47 by samatsum          #+#    #+#             */
-/*   Updated: 2026/05/28 21:10:25 by samatsum         ###   ########.fr       */
+/*   Updated: 2026/06/03 09:56:12 by samatsum         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "utils/utils.h"
 
+/* ************************************************************************** */
 int
-	ft_strlen(char const *str)
+	ft_strlen(char const* str);
+
+/* ************************************************************************** */
+// 文字列の長さを返す
+int
+	ft_strlen(char const* str)
 {
 	size_t	i;
 
 	i = 0;
-	while (str[i])
+	while (str[i]) {
 		i++;
+	}
 	return (i);
 }

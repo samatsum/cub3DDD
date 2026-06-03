@@ -6,31 +6,37 @@
 /*   By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/30 12:22:09 by samatsum          #+#    #+#             */
-/*   Updated: 2026/05/28 21:10:25 by samatsum         ###   ########.fr       */
+/*   Updated: 2026/06/03 09:55:43 by samatsum         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "utils/utils.h"
 
-char
-	*ft_strdup(char const *s1)
+/* ************************************************************************** */
+char*
+	ft_strdup(char const* s1);
+
+/* ************************************************************************** */
+// 文字列を複製し、新しく割り当てられたメモリ領域を返す
+char*
+	ft_strdup(char const* s1)
 {
-	char	*str;
+	char*	str;
 	size_t	i;
 
-	if (!s1)
+	if (!s1) {
 		return (NULL);
+	}
 	i = 0;
-	while (s1[i])
-	{
+	while (s1[i]) {
 		i++;
 	}
 	str = (char*)malloc(sizeof(*str) * (i + 1));
-	if (!str)
+	if (!str) {
 		return (NULL);
+	}
 	i = 0;
-	while (s1[i])
-	{
+	while (s1[i]) {
 		str[i] = s1[i];
 		i++;
 	}
