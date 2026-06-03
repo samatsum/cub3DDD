@@ -6,15 +6,15 @@
 /*   By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/03 07:32:33 by samatsum          #+#    #+#             */
-/*   Updated: 2026/06/03 15:04:05 by samatsum         ###   ########.fr       */
+/*   Updated: 2026/06/04 02:14:52 by samatsum         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "gnl/get_next_line.h"
 #include "config/config.h"
 #include <stdio.h>
 #include <fcntl.h>  /* open, O_RDONLY 用 */
 #include <unistd.h> /* close 用 */
+#include "gnl/get_next_line.h" /* get_next_line 用 */
 
 /* ************************************************************************** */
 void
@@ -23,8 +23,8 @@ int
 	clear_config(t_config* config);
 int
 	parse_config(t_config* config, char const* conf_path);
-int
-	parse_line(t_config* config, char const* line, t_str** map_buffer);
+static int
+	parse_line(t_config* config, char const* line, t_str** map_buffer, int* empty_map, int* cont_after);
 static int
 	config_key(char const* line);
 
@@ -33,7 +33,7 @@ static int
 void
 	init_config(t_config* config)
 {
-	int i;
+	int	i;
 
 	config->requested_width = 848;
 	config->requested_height = 480;
@@ -64,7 +64,7 @@ void
 int
 	clear_config(t_config* config)
 {
-	int i;
+	int	i;
 
 	i = 0;
 	while (i < TEXTURES) {
@@ -87,9 +87,11 @@ int
 	parse_config(t_config* config, char const* conf_path)
 {
 	int		c_fd;
-	int		r;
 	char*	line;
+	int		r;
 	t_str*	map_buffer;
+	int		empty_map;
+	int		cont_after;
 
 	if (!ft_endwith(conf_path, ".cub")) {
 		printf("DEBUG: File extension is not .cub\n");
@@ -102,8 +104,12 @@ int
 	}
 	map_buffer = NULL;
 	r = 1;
+	
+	/* 修正1: パース状態をローカル変数として管理。これにより、エラー後の再実行時などでも状態がリセットされ、バグを防げる */
+	empty_map = 0;
+	cont_after = 0;
 	while (get_next_line(c_fd, &line)) {
-		r = (r && parse_line(config, line, &map_buffer));
+		r = (r && parse_line(config, line, &map_buffer, &empty_map, &cont_after));
 		if (!r) {
 			printf("DEBUG: parse_line failed at line: [%s]\n", line);
 		}
@@ -128,19 +134,19 @@ int
 
 /* ************************************************************************** */
 // 読み込んだ行を解析し、適切な処理に振り分ける
-int
-	parse_line(t_config* config, char const* line, t_str** map_buffer)
+static int
+	parse_line(t_config* config, char const* line, t_str** map_buffer, int* empty_map, int* cont_after)
 {
-	static int	empty_in_map = 0;
-	static int	content_after = 0;
-	int			length;
-	int			key;
+	int	length;
+	int	key;
 
 	length = ft_strlen(line);
+	
+	/*static変数を廃止し、引数で状態ポインタを受け取るように変更（状態依存バグの回避） */
 	if (length == 0 && config->set[C_MAP]) {
-		empty_in_map = 1;
+		*empty_map = 1;
 	}
-	if (empty_in_map && content_after) {
+	if (*empty_map && *cont_after) {
 		return (0);
 	}
 	if (length == 0) {
@@ -158,8 +164,8 @@ int
 		return (parse_color(config, key, line));
 	}
 	config->set[key] = 1;
-	if (empty_in_map) {
-		content_after = 1;
+	if (*empty_map) {
+		*cont_after = 1;
 	}
 	return (!!str_add_back(map_buffer, ft_strdup(line)));
 }

@@ -6,7 +6,7 @@
 /*   By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/29 15:25:21 by samatsum          #+#    #+#             */
-/*   Updated: 2026/06/03 08:35:20 by samatsum         ###   ########.fr       */
+/*   Updated: 2026/06/04 02:13:51 by samatsum         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,21 +39,28 @@ int
 	str = NULL;
 	str = ft_split(line, ' ');
 	if (!str || str_length(str) != 3) {
-		return (str_clear(&str));
+		/* 修正2: ショートサーキット (||) や (|) による str_clear の実行漏れ・可読性低下を防ぐため、明示的に処理を分割 */
+		str_clear(&str);
+		return (0);
 	}
 	param = str->next;
 	tmp = ft_atoi(param->content);
 	if (tmp <= 1) {
-		return (str_clear(&str));
+		str_clear(&str);
+		return (0);
 	}
 	config->requested_width = tmp;
 	param = param->next;
 	tmp = ft_atoi(param->content);
 	if (tmp <= 1) {
-		return (str_clear(&str));
+		str_clear(&str);
+		return (0);
 	}
 	config->requested_height = tmp;
-	return (str_clear(&str) | 1);
+	
+	/* 成功時も確実にメモリを解放して 1 を返す */
+	str_clear(&str);
+	return (1);
 }
 
 /* ************************************************************************** */
@@ -75,22 +82,32 @@ int
 	str_arr[1] = NULL;
 	str_arr[0] = ft_split(line, ' ');
 	if (!str_arr[0] || str_length(str_arr[0]) != 2) {
-		return (str_clear(&str_arr[0]) || str_clear(&str_arr[1]));
+		/* 修正2: str_clear(&str_arr[0]) が true的評価をされた場合に str_arr[1] が解放されないリークバグを修正 */
+		str_clear(&str_arr[0]);
+		str_clear(&str_arr[1]);
+		return (0);
 	}
 	str_arr[1] = ft_split(str_arr[0]->next->content, ',');
 	if (!str_arr[1] || str_length(str_arr[1]) != 3) {
-		return (str_clear(&str_arr[0]) || str_clear(&str_arr[1]));
+		str_clear(&str_arr[0]);
+		str_clear(&str_arr[1]);
+		return (0);
 	}
 	color = (unsigned int)str_to_color(str_arr[1]);
 	if ((int)color < 0) {
-		return (str_clear(&str_arr[0]) || str_clear(&str_arr[1]));
+		str_clear(&str_arr[0]);
+		str_clear(&str_arr[1]);
+		return (0);
 	}
 	if (key == C_F) {
 		config->colors[TEX_FLOOR] = color;
 	} else {
 		config->colors[TEX_SKY] = color;
 	}
-	return ((str_clear(&str_arr[0]) || str_clear(&str_arr[1])) | 1);
+	
+	str_clear(&str_arr[0]);
+	str_clear(&str_arr[1]);
+	return (1);
 }
 
 /* ************************************************************************** */
@@ -98,9 +115,9 @@ int
 static int
 	str_to_color(t_str* str)
 {
-	int i;
-	int color;
-	int tmp;
+	int	i;
+	int	color;
+	int	tmp;
 
 	i = 0;
 	color = 0;

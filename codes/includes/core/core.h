@@ -6,13 +6,14 @@
 /*   By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/03 07:32:33 by samatsum          #+#    #+#             */
-/*   Updated: 2026/06/03 14:31:50 by samatsum         ###   ########.fr       */
+/*   Updated: 2026/06/04 02:34:10 by samatsum         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef CORE_H
 # define CORE_H
 
+# include <sys/time.h> /* 追加: gettimeofday 等による時間計測のため */
 # include "config/config.h"
 # include "engine/render/render.h"
 # include "engine/raycast/raycast.h"
@@ -26,23 +27,24 @@
 /* ************************************************************************** */
 typedef struct s_game
 {
-	t_config	config;
-	t_window	window;
-	t_camera	camera;
-	t_sprite*	sprites;
-	t_tex		tex[TEXTURES];
-	t_pos		move;
-	t_pos		x_move;
-	t_pos		rotate;
-	int			options;
-	int			last_options;
-	int			to_collect;
-	int			collected;
-	double		camera_x[1920];
-	double		depth[1920];
-	double		sf_dist[1080];
-	double		cos[2];
-	double		sin[2];
+	t_config		config;
+	t_window		window;
+	t_camera		camera;
+	t_sprite*		sprites;
+	t_tex			tex[TEXTURES];
+	t_pos			move;
+	t_pos			x_move;
+	t_pos			rotate;
+	int				options;
+	int				last_options;
+	int				to_collect;
+	int				collected;
+	long long		last_time; /* 追加: 前回のフレームの時刻(ミリ秒)を保持 */
+	double			camera_x[1920];
+	double			depth[1920];
+	double			sf_dist[1080];
+	double			cos[2];
+	double			sin[2];
 }				t_game;
 
 /* ************************************************************************** */

@@ -6,7 +6,7 @@
 /*   By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/22 15:19:29 by samatsum          #+#    #+#             */
-/*   Updated: 2026/06/03 09:38:34 by samatsum         ###   ########.fr       */
+/*   Updated: 2026/06/04 02:23:45 by samatsum         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,6 +35,11 @@ int
 	char*			buffer;
 	int				r;
 
+	/* 修正4: fdが負の値の場合などに、静的バッファ(list)を明示的に解放できるガード節を追加。
+	   パース中断時などに get_next_line(-1, NULL) と呼ぶことでメモリリークを防げる設計とした。 */
+	if (fd < 0 || !line || BUFFER_SIZE <= 0) {
+		return (free_all(&list, fd, NULL) | -1);
+	}
 	current = find_fd(&list, fd, &read_rem);
 	if (!current) {
 		return (free_all(&list, -1, NULL) | -1);

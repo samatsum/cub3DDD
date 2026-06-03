@@ -6,7 +6,7 @@
 /*   By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/28 13:16:59 by samatsum          #+#    #+#             */
-/*   Updated: 2026/06/03 14:31:10 by samatsum         ###   ########.fr       */
+/*   Updated: 2026/06/04 02:35:35 by samatsum         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,11 +56,11 @@ void
 void
 	find_start_angle(struct s_config* config, t_camera* camera);
 int
-	move_camera(t_camera* c, struct s_config* config, int direction);
+	move_camera(t_camera* c, struct s_config* config, int direction, double time_mult);
 int
-	move_perp_camera(t_camera* c, struct s_config* config, int direction);
+	move_perp_camera(t_camera* c, struct s_config* config, int direction, double time_mult);
 int
-	rotate_camera(t_camera* c, double* cos_arr, double* sin_arr, int dir);
+	rotate_camera(t_camera* c, struct s_config* config, int dir, double time_mult);
 int
 	wall_direction(t_raysult* ray);
 void
