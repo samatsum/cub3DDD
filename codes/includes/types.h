@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   types.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: samatsum  <samatsum@student.42.jp   >      +#+  +:+       +#+        */
+/*   By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/28 13:16:59 by samatsum          #+#    #+#             */
-/*   Updated: 2026/05/28 17:11:10 by samatsum         ###   ########.fr       */
+/*   Updated: 2026/06/03 10:33:49 by samatsum         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,7 @@
 # include "config/config.h"
 /* 注: t_pos などの定義がある utils.h 等が必要な場合は適宜インクルードする */
 
+/* ************************************************************************** */
 # define X_EVENT_KEY_PRESS		2
 # define X_EVENT_KEY_RELEASE	3
 # define X_EVENT_MOUSE_PRESS	4
@@ -25,14 +26,15 @@
 # define X_EVENT_MOUSE_MOVE		6
 # define X_EVENT_EXIT			17
 
-# define FLAG_UI			0x00000010
-# define FLAG_SHADOWS		0x00000100
-# define FLAG_CROSSHAIR		0x00001000
-# define FLAG_SAVE			0x00000001
+# define FLAG_UI				0x00000010
+# define FLAG_SHADOWS			0x00000100
+# define FLAG_CROSSHAIR			0x00001000
+# define FLAG_SAVE				0x00000001
 
-# define BEST_RATIO			1.7777777778
+# define BEST_RATIO				1.7777777778
 
-typedef struct	s_raysult
+/* ************************************************************************** */
+typedef struct s_raysult
 {
 	int			column;
 	int			row;
@@ -51,30 +53,30 @@ typedef struct	s_raysult
 	t_pos		c_floor;
 }				t_raysult;
 
-typedef struct	s_image
+typedef struct s_image
 {
-	void	*img;
-	void	*ptr;
-	int		bpp;
-	int		size_line;
-	int		endian;
+	void*		img;
+	void*		ptr;
+	int			bpp;
+	int			size_line;
+	int			endian;
 }				t_image;
 
-typedef struct	s_tex
+typedef struct s_tex
 {
-	char	*path;
-	void	*tex;
-	void	*ptr;
-	t_pos	start;
-	t_pos	end;
-	int		width;
-	int		height;
-	int		bpp;
-	int		size_line;
-	int		endian;
+	char*		path;
+	void*		tex;
+	void*		ptr;
+	t_pos		start;
+	t_pos		end;
+	int			width;
+	int			height;
+	int			bpp;
+	int			size_line;
+	int			endian;
 }				t_tex;
 
-typedef struct	s_sprite_draw
+typedef struct s_sprite_draw
 {
 	int			sprite_screen;
 	t_pos		pos;
@@ -87,50 +89,50 @@ typedef struct	s_sprite_draw
 	int			draw_y_org;
 }				t_sprite_draw;
 
-typedef struct	s_sprite
+typedef struct s_sprite
 {
-	t_pos			pos;
-	double			distance;
-	t_tex			*tex;
-	struct s_sprite	*next;
-	struct s_sprite	*sorted;
+	t_pos				pos;
+	double				distance;
+	t_tex*				tex;
+	struct s_sprite*	next;
+	struct s_sprite*	sorted;
 }				t_sprite;
 
-typedef	struct	s_window
+typedef struct s_window
 {
-	void		*ptr;
-	void		*win;
+	void*		ptr;
+	void*		win;
 	t_image		screen;
 	t_pos		size;
 	t_pos		half;
 	double		ratio;
 }				t_window;
 
-typedef struct	s_camera
+typedef struct s_camera
 {
-	t_pos	pos;
-	t_pos	dir;
-	t_pos	x_dir;
-	t_pos	plane;
+	t_pos		pos;
+	t_pos		dir;
+	t_pos		x_dir;
+	t_pos		plane;
 }				t_camera;
 
-typedef struct	s_render
+typedef struct s_render
 {
-	t_window	*w;
-	t_config	*config;
-	t_camera	*camera;
-	t_tex		*tex;
-	double		*depth;
-	double		*sf_dist;
+	t_window*	w;
+	t_config*	config;
+	t_camera*	camera;
+	t_tex*		tex;
+	double*		depth;
+	double*		sf_dist;
 	int			options;
 }				t_render;
 
-typedef	struct	s_game
+typedef struct s_game
 {
 	t_config	config;
 	t_window	window;
 	t_camera	camera;
-	t_sprite	*sprites;
+	t_sprite*	sprites;
 	t_tex		tex[TEXTURES];
 	t_pos		move;
 	t_pos		x_move;
