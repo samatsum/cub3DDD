@@ -6,19 +6,25 @@
 /*   By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/27 19:31:08 by samatsum          #+#    #+#             */
-/*   Updated: 2026/06/06 23:59:06 by samatsum         ###   ########.fr       */
+/*   Updated: 2026/06/07 06:59:09 by samatsum         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <stdlib.h> 
 #include <stdio.h>
-#include "core/core.h"  
-#include "engine/input/input.h" 
-#include "engine/input/keymap.h" 
-#include "engine/render/render.h" 
-#include "ui/ui.h"                
+#include <stdlib.h>
+#include "core/core.h"
+#include "engine/input/input.h"
+#include "engine/input/keymap.h"
+#include "engine/render/render.h"
+#include "ui/ui.h"
 
 /* ************************************************************************** */
+#define KEY_NUM_1		49
+#define KEY_NUM_2		50
+#define KEY_NUM_3		51
+#define KEY_SPACE		32
+#define SHOOT_COOLDOWN	10
+
 int
 	expose_hook(t_game* game);
 int
@@ -29,6 +35,7 @@ int
 	key_release(int keycode, t_game* game);
 
 /* ************************************************************************** */
+// ウィンドウ再描画イベント時の処理
 int
 	expose_hook(t_game* game)
 {
@@ -37,6 +44,7 @@ int
 }
 
 /* ************************************************************************** */
+// ウィンドウの×ボタン等が押された際の終了処理
 int
 	exit_hook(t_game* game)
 {
@@ -44,6 +52,7 @@ int
 }
 
 /* ************************************************************************** */
+// キーが押された際の移動や武器切り替え、射撃フラグの更新
 int
 	key_press(int keycode, t_game* game)
 {
@@ -62,30 +71,25 @@ int
 	} else if (keycode == KEY_E || keycode == KEY_RIGHT) {
 		game->rotate.y = 1;
 	}
-
-	/* 武器の切り替え (1: ピストル, 2: フラッシュライト, 3: 両手) */
-	if (keycode == '1' || keycode == 49) {
+	if (keycode == '1' || keycode == KEY_NUM_1) {
 		game->current_weapon = WEP_PISTOL;
 	}
-	if (keycode == '2' || keycode == 50) {
+	if (keycode == '2' || keycode == KEY_NUM_2) {
 		game->current_weapon = WEP_FLASHLIGHT;
 	}
-	if (keycode == '3' || keycode == 51) {
+	if (keycode == '3' || keycode == KEY_NUM_3) {
 		game->current_weapon = WEP_HANDS;
 	}
-
-	/* スペースキー(32)のみで射撃判定 */
-	if (keycode == 32 && game->current_weapon == WEP_PISTOL) {
+	if (keycode == KEY_SPACE && game->current_weapon == WEP_PISTOL) {
 		if (game->is_shooting == 0) {
-			game->is_shooting = 10;
-			// printf("Shooting started! (keycode: %d)\n", keycode);
-			// system("aplay sounds/shoot.mp3 > /dev/null 2>&1 &");
+			game->is_shooting = SHOOT_COOLDOWN;
 		}
 	}
 	return (0);
 }
 
 /* ************************************************************************** */
+// キーが離された際の移動フラグ解除やUIオプションの切り替え
 int
 	key_release(int keycode, t_game* game)
 {

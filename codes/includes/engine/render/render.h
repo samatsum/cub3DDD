@@ -6,50 +6,59 @@
 /*   By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/28 13:16:59 by samatsum          #+#    #+#             */
-/*   Updated: 2026/06/04 04:19:12 by samatsum         ###   ########.fr       */
+/*   Updated: 2026/06/07 06:58:49 by samatsum         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef RENDER_H
 # define RENDER_H
 
+# include "engine/raycast/raycast.h"
+# include "engine/texture/texture.h"
 # include "utils/utils.h"
-# include "engine/texture/texture.h" /* t_tex を実体やメンバとして使用するため */
-# include "engine/raycast/raycast.h" /* t_camera, t_raysult のため */
 
 /* ************************************************************************** */
+// 構造体の前方宣言
+struct	s_config;
+struct	s_game;
+
+/* ************************************************************************** */
+// 画像のデータと属性を管理する構造体
 typedef struct s_image
 {
-	void*		img;
-	void*		ptr;
-	int			bpp;
-	int			size_line;
-	int			endian;
-}				t_image;
+	void*	img;
+	void*	ptr;
+	int		bpp;
+	int		size_line;
+	int		endian;
+}	t_image;
 
+// ウィンドウの情報と画面描画用バッファを管理する構造体
 typedef struct s_window
 {
-	void*		ptr;
-	void*		win;
-	t_image		screen;
-	t_pos		size;
-	t_pos		half;
-	double		ratio;
-}				t_window;
+	void*	ptr;
+	void*	win;
+	t_image	screen;
+	t_pos	size;
+	t_pos	half;
+	double	ratio;
+}	t_window;
 
+// スプライト描画計算用の中間データを保持する構造体
 typedef struct s_sprite_draw
 {
-	int			sprite_screen;
-	t_pos		pos;
-	t_pos		transform;
-	t_pos		spr_s;
-	t_pos		draw_x;
-	t_pos		draw_y;
-	t_pos		tex_pos;
-	int			fact;
-	int			draw_y_org;
-}				t_sprite_draw;
+	int		sprite_screen;
+	t_pos	pos;
+	t_pos	transform;
+	t_pos	spr_s;
+	t_pos	draw_x;
+	t_pos	draw_y;
+	t_pos	tex_pos;
+	int		fact;
+	int		draw_y_org;
+}	t_sprite_draw;
 
+// マップ上に配置されたスプライト（アイテムや敵など）を管理するリスト構造体
 typedef struct s_sprite
 {
 	t_pos				pos;
@@ -57,11 +66,9 @@ typedef struct s_sprite
 	t_tex*				tex;
 	struct s_sprite*	next;
 	struct s_sprite*	sorted;
-}				t_sprite;
+}	t_sprite;
 
-struct s_config;
-struct s_game;
-
+// レンダリングに必要な全体情報をまとめて管理する構造体
 typedef struct s_render
 {
 	t_window*			w;
@@ -71,7 +78,7 @@ typedef struct s_render
 	double*				depth;
 	double*				sf_dist;
 	int					options;
-}				t_render;
+}	t_render;
 
 /* ************************************************************************** */
 int
