@@ -6,7 +6,7 @@
 /*   By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/28 13:16:59 by samatsum          #+#    #+#             */
-/*   Updated: 2026/06/03 15:12:56 by samatsum         ###   ########.fr       */
+/*   Updated: 2026/06/04 04:29:04 by samatsum         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,10 @@ void
 	render_frame(t_game* game)
 {
 	update_screen(game);
+	
+	/* 武器を画面にオーバレイ描画する */
+	draw_weapon(game);
+
 	update_window(&game->window, game->options, game->collected, game->to_collect);
 }
 

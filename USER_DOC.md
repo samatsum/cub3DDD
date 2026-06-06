@@ -47,7 +47,7 @@ FT ./textures/floor_1.xpm : 床のテクスチャ（Floor Texture）
 F 184,113,39              : 床の色 (R,G,B)  ※床テクスチャがない場合
 C 51,198,227              : 天井の色 (R,G,B)※天井テクスチャがない場合
 
-OI ./textures/sprite_1.xpm: 通行不可能な物体（Object Impossible)
+OI ./textures/barrel.xpm: 通行不可能な物体（Object Impossible)
 OP ./textures/sprite_2.xpm: 通行可能な物体（Object Possible)
 OC ./textures/sprite_3.xpm: 通行可能な物体(コレクトアイテム)（Object Collect）
 

@@ -6,7 +6,7 @@
 /*   By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/28 13:16:59 by samatsum          #+#    #+#             */
-/*   Updated: 2026/06/03 14:31:25 by samatsum         ###   ########.fr       */
+/*   Updated: 2026/06/04 04:19:12 by samatsum         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,6 +84,8 @@ void
 	render_frame(struct s_game* game);
 void
 	update_screen(struct s_game* game);
+void
+	draw_weapon(struct s_game* game);
 int
 	init_image(t_window* window, t_image* img);
 void
