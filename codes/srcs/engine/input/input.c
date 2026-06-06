@@ -6,11 +6,12 @@
 /*   By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/27 19:31:08 by samatsum          #+#    #+#             */
-/*   Updated: 2026/06/06 15:24:05 by samatsum         ###   ########.fr       */
+/*   Updated: 2026/06/06 23:26:50 by samatsum         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <stdlib.h> /* system() 関数を使うため */
+#include <stdlib.h> 
+#include <stdio.h>      /* printf 用（不要になれば削除・コメントアウトしてください） */
 #include "core/core.h"  
 #include "engine/input/input.h" 
 #include "engine/input/keymap.h" 
@@ -28,7 +29,6 @@ int
 	key_release(int keycode, t_game* game);
 
 /* ************************************************************************** */
-// ウィンドウが再描画されるべきタイミングで画面を更新する
 int
 	expose_hook(t_game* game)
 {
@@ -37,7 +37,6 @@ int
 }
 
 /* ************************************************************************** */
-// ウィンドウの×ボタンなどが押された際にゲームを終了させる
 int
 	exit_hook(t_game* game)
 {
@@ -45,12 +44,9 @@ int
 }
 
 /* ************************************************************************** */
-// キーが押された際に、ゲーム内のフラグをオンにする
 int
 	key_press(int keycode, t_game* game)
 {
-	int	unused; /* 警告回避用のダミー変数 */
-
 	if (keycode == KEY_W || keycode == KEY_FORWARD) {
 		game->move.x = 1;
 	} else if (keycode == KEY_S || keycode == KEY_BACKWARD) {
@@ -75,23 +71,22 @@ int
 		game->current_weapon = WEP_FLASHLIGHT;
 	}
 
-	/* スペースキーで射撃アクションと効果音再生 */
+	/* スペースキー(32)のみで射撃判定 */
 	if (keycode == 32 && game->current_weapon == WEP_PISTOL) {
 		if (game->is_shooting == 0) {
-			game->is_shooting = 1;
+			game->is_shooting = 10;
 			
-			/* Linux環境で音を鳴らすコマンド (WSL環境だからか、鳴らないよ～)*/
-			/* 警告回避: 戻り値を unused に入れ、それを void キャストで明示的に捨てる */
-			/* ログ非表示: > /dev/null 2>&1 を付け、ターミナルが汚れるのを防ぐ */
-			unused = system("aplay sounds/shoot.mp3 > /dev/null 2>&1 &");
-			(void)unused;
+			/* ターミナルにログを出す（不要になれば削除してください） */
+			printf("Shooting started! (keycode: %d)\n", keycode);
+			
+			/* 音声再生コマンド（フリーズする場合はコメントアウトのままにしてください） */
+			// system("aplay sounds/shoot.mp3 > /dev/null 2>&1 &");
 		}
 	}
 	return (0);
 }
 
 /* ************************************************************************** */
-// キーが離された際に、フラグのオフやオプションの切り替えを行う
 int
 	key_release(int keycode, t_game* game)
 {
@@ -115,11 +110,6 @@ int
 		game->options = game->options ^ FLAG_SHADOWS;
 	} else if (keycode == KEY_O) {
 		game->options = game->options ^ FLAG_CROSSHAIR;
-	}
-
-	/* スペースキーを離したら射撃状態を解除 */
-	if (keycode == 32 && game->current_weapon == WEP_PISTOL) {
-		game->is_shooting = 0;
 	}
 	return (0);
 }

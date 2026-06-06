@@ -6,13 +6,14 @@
 /*   By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/03 07:32:33 by samatsum          #+#    #+#             */
-/*   Updated: 2026/06/06 14:32:46 by samatsum         ###   ########.fr       */
+/*   Updated: 2026/06/06 23:13:04 by samatsum         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef CORE_H
 # define CORE_H
 
+/* ************************************************************************** */
 # include <sys/time.h> /* gettimeofday 等による時間計測のため */
 # include "config/config.h"
 # include "engine/render/render.h"
@@ -35,9 +36,9 @@ typedef struct s_game
 	t_camera		camera;
 	t_sprite*		sprites;
 	t_tex			tex[TEXTURES];
-	t_tex			weapon_tex[3];  /* 追加: 0:待機, 1:発砲, 2:懐中電灯 */
-	int				current_weapon; /* 追加: 現在の武器 (WEP_PISTOL 等) */
-	int				is_shooting;    /* 追加: 射撃状態 (0:通常, 1:発砲中) */
+	t_tex			weapon_tex[4];  /* 0:待機, 1:発砲, 2:反動, 3:懐中電灯 */
+	int				current_weapon; /* 現在の武器 (WEP_PISTOL 等) */
+	int				is_shooting;    /* 射撃アニメーションタイマー (残りフレーム数) */
 	t_pos			move;
 	t_pos			x_move;
 	t_pos			rotate;
