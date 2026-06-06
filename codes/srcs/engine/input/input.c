@@ -6,12 +6,12 @@
 /*   By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/27 19:31:08 by samatsum          #+#    #+#             */
-/*   Updated: 2026/06/06 23:26:50 by samatsum         ###   ########.fr       */
+/*   Updated: 2026/06/06 23:59:06 by samatsum         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <stdlib.h> 
-#include <stdio.h>      /* printf 用（不要になれば削除・コメントアウトしてください） */
+#include <stdio.h>
 #include "core/core.h"  
 #include "engine/input/input.h" 
 #include "engine/input/keymap.h" 
@@ -63,23 +63,22 @@ int
 		game->rotate.y = 1;
 	}
 
-	/* 武器の切り替え */
+	/* 武器の切り替え (1: ピストル, 2: フラッシュライト, 3: 両手) */
 	if (keycode == '1' || keycode == 49) {
 		game->current_weapon = WEP_PISTOL;
 	}
 	if (keycode == '2' || keycode == 50) {
 		game->current_weapon = WEP_FLASHLIGHT;
 	}
+	if (keycode == '3' || keycode == 51) {
+		game->current_weapon = WEP_HANDS;
+	}
 
 	/* スペースキー(32)のみで射撃判定 */
 	if (keycode == 32 && game->current_weapon == WEP_PISTOL) {
 		if (game->is_shooting == 0) {
 			game->is_shooting = 10;
-			
-			/* ターミナルにログを出す（不要になれば削除してください） */
-			printf("Shooting started! (keycode: %d)\n", keycode);
-			
-			/* 音声再生コマンド（フリーズする場合はコメントアウトのままにしてください） */
+			// printf("Shooting started! (keycode: %d)\n", keycode);
 			// system("aplay sounds/shoot.mp3 > /dev/null 2>&1 &");
 		}
 	}
