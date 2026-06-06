@@ -6,7 +6,7 @@
 /*   By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/27 14:24:58 by samatsum          #+#    #+#             */
-/*   Updated: 2026/06/03 15:17:04 by samatsum         ###   ########.fr       */
+/*   Updated: 2026/06/06 22:40:31 by samatsum         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 #include "engine/texture/texture.h"
 #include "config/config.h"
 #include "../minilibx-linux/mlx.h"
+#include <stdio.h>
 
 /* ************************************************************************** */
 int
@@ -38,6 +39,7 @@ int
 	i = 0;
 	while (i < TEXTURES) {
 		if (!load_tex(window, &tex[i], config->tex_path[i])) {
+			printf("Failed to load texture: %s\n", config->tex_path[i]);
 			return (0);
 		}
 		if (tex[i].tex) {

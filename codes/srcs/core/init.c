@@ -6,7 +6,7 @@
 /*   By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/03 07:32:33 by samatsum          #+#    #+#             */
-/*   Updated: 2026/06/06 14:34:29 by samatsum         ###   ########.fr       */
+/*   Updated: 2026/06/06 20:33:08 by samatsum         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,8 +41,8 @@ int
 	game->current_weapon = WEP_PISTOL;
 	game->is_shooting = 0;
 
-	game->weapon_tex[0].path = ft_strdup("textures/pistol_static.xpm");
-	game->weapon_tex[1].path = ft_strdup("textures/pistol_shoot.xpm");
+	game->weapon_tex[0].path = ft_strdup("textures/arm/Arm_pistol_static.xpm");
+	game->weapon_tex[1].path = ft_strdup("textures/arm/Arm_pistol_shoot.xpm");
 	game->weapon_tex[2].path = ft_strdup("textures/flashlight_1.xpm");
 	
 	i = 0;
