@@ -45,6 +45,7 @@ SRCS_LIST       = main.c \
                   engine/raycast/tables.c \
                   engine/render/draw.c \
                   engine/render/draw_wall.c \
+                  engine/render/draw_weapon.c \
                   engine/render/draw_sky_floor.c \
                   engine/render/screen.c \
                   engine/render/sprite.c \

@@ -6,10 +6,9 @@
 /*   By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/03 07:32:33 by samatsum          #+#    #+#             */
-/*   Updated: 2026/06/03 14:42:11 by samatsum         ###   ########.fr       */
+/*   Updated: 2026/06/07 00:02:02 by samatsum         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-
 
 #include "engine/raycast/raycast.h"
 #include "core/core.h"
@@ -32,9 +31,32 @@ static int
 int
 	finish_init(t_game* game)
 {
+	int	i;
+
 	if (!init_window(&game->window, &game->config)) {
 		return (exit_error(game, "Error:\nmlx failed to create window or image.\n"));
 	}
+
+	/* 武器の初期状態を設定し、6つのテクスチャをロードする */
+	game->current_weapon = WEP_PISTOL;
+	game->is_shooting = 0;
+
+	game->weapon_tex[0].path = ft_strdup("textures/arm/Arm_pistol_static.xpm");
+	game->weapon_tex[1].path = ft_strdup("textures/arm/Arm_pistol_shoot.xpm");
+	game->weapon_tex[2].path = ft_strdup("textures/arm/Arm_pistol_recoil.xpm");
+	game->weapon_tex[3].path = ft_strdup("textures/arm/Arm_flashlight_1.xpm");
+	game->weapon_tex[4].path = ft_strdup("textures/arm/Arm_lefthand.xpm");
+	game->weapon_tex[5].path = ft_strdup("textures/arm/Arm_righthand.xpm");
+	
+	i = 0;
+	while (i < 6) {
+		game->weapon_tex[i].tex = mlx_xpm_file_to_image(game->window.ptr, game->weapon_tex[i].path, &game->weapon_tex[i].width, &game->weapon_tex[i].height);
+		if (game->weapon_tex[i].tex) {
+			game->weapon_tex[i].ptr = mlx_get_data_addr(game->weapon_tex[i].tex, &game->weapon_tex[i].bpp, &game->weapon_tex[i].size_line, &game->weapon_tex[i].endian);
+		}
+		i++;
+	}
+
 	find_start_pos(&game->config, &game->camera);
 	find_start_angle(&game->config, &game->camera);
 	if (!load_textures(&game->window, game->tex, &game->config)) {
@@ -49,7 +71,7 @@ int
 }
 
 /* ************************************************************************** */
-// ゲームの内部状態（移動量、オプションフラグ、テクスチャ等）を初期化する
+// ゲームの内部状態を初期化する
 void
 	init_game(t_game* game)
 {
@@ -128,11 +150,11 @@ int
 static int
 	find_sprites(t_game* game)
 {
+	t_pos	pos;
+	t_tex*	tex;
 	int		i;
 	int		j;
 	char	c;
-	t_pos	pos;
-	t_tex*	tex;
 
 	game->sprites = NULL;
 	i = 0;

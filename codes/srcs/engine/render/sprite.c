@@ -6,7 +6,7 @@
 /*   By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/28 13:16:59 by samatsum          #+#    #+#             */
-/*   Updated: 2026/06/03 15:13:43 by samatsum         ###   ########.fr       */
+/*   Updated: 2026/06/06 16:07:10 by samatsum         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -97,7 +97,9 @@ static void
 	set_pos(&pixel, spr->draw_x.x, spr->draw_y.x);
 	if (set_tex_pos(rnd, spr, tex, &tex_pos)) {
 		color = shade_color(get_tex_color(tex, &tex_pos), (rnd->options & FLAG_SHADOWS) ? sprite->distance / 3 : 1);
-		if (color != 0x0) {
+		
+		/* 修正箇所: 下位24ビット(RGB成分)だけを取り出し、0(黒)でなければ描画する */
+		if ((color & 0x00FFFFFF)) {
 			draw_pixel(rnd->w, &pixel, color);
 		}
 	}

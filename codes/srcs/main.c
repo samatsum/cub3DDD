@@ -6,7 +6,7 @@
 /*   By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/12 02:23:13 by samatsum          #+#    #+#             */
-/*   Updated: 2026/06/03 14:40:33 by samatsum         ###   ########.fr       */
+/*   Updated: 2026/06/04 04:27:54 by samatsum         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,8 +31,8 @@ static void
 int
 	main(int argc, char** argv)
 {
-	t_game game;
-
+	/* 【対策A】構造体の中身を確実に 0 (NULL) で初期化し、エラー時のセグフォを防ぐ */
+	t_game	game = {0};
 	// 検証とマップ解析
 	if (!validate_check(argc, argv, &game)) {
 		return (EXIT_FAILURE);

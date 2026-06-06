@@ -6,7 +6,7 @@
 /*   By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/28 13:16:59 by samatsum          #+#    #+#             */
-/*   Updated: 2026/06/03 15:12:56 by samatsum         ###   ########.fr       */
+/*   Updated: 2026/06/07 00:34:09 by samatsum         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,7 @@ void
 	render_frame(t_game* game)
 {
 	update_screen(game);
+	
 	update_window(&game->window, game->options, game->collected, game->to_collect);
 }
 
@@ -72,6 +73,10 @@ void
 	if (game->sprites) {
 		draw_sprites(&rnd, game->sprites);
 	}
+
+	/* ★修正: 武器をUIより「先」に描画するようここに移動 ★ */
+	draw_weapon(game);
+
 	if (game->options & FLAG_CROSSHAIR) {
 		display_crosshair(w);
 	}

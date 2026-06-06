@@ -6,16 +6,17 @@
 /*   By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/27 19:31:08 by samatsum          #+#    #+#             */
-/*   Updated: 2026/06/03 14:33:39 by samatsum         ###   ########.fr       */
+/*   Updated: 2026/06/06 23:59:06 by samatsum         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include <stdlib.h> 
+#include <stdio.h>
 #include "core/core.h"  
-
-#include "engine/input/input.h" /* フック関数のプロトタイプを使うため */
-#include "engine/input/keymap.h" /* キーコード（KEY_W等*/
-#include "engine/render/render.h" /* render_frame関数を呼び出すため */
-#include "ui/ui.h"                /* shortcuts.c の関数などを呼び出している場合 */
+#include "engine/input/input.h" 
+#include "engine/input/keymap.h" 
+#include "engine/render/render.h" 
+#include "ui/ui.h"                
 
 /* ************************************************************************** */
 int
@@ -28,7 +29,6 @@ int
 	key_release(int keycode, t_game* game);
 
 /* ************************************************************************** */
-// ウィンドウが再描画されるべきタイミングで画面を更新する
 int
 	expose_hook(t_game* game)
 {
@@ -37,7 +37,6 @@ int
 }
 
 /* ************************************************************************** */
-// ウィンドウの×ボタンなどが押された際にゲームを終了させる
 int
 	exit_hook(t_game* game)
 {
@@ -45,7 +44,6 @@ int
 }
 
 /* ************************************************************************** */
-// キーが押された際に、ゲーム内の移動フラグや回転フラグをオンにする
 int
 	key_press(int keycode, t_game* game)
 {
@@ -64,11 +62,30 @@ int
 	} else if (keycode == KEY_E || keycode == KEY_RIGHT) {
 		game->rotate.y = 1;
 	}
+
+	/* 武器の切り替え (1: ピストル, 2: フラッシュライト, 3: 両手) */
+	if (keycode == '1' || keycode == 49) {
+		game->current_weapon = WEP_PISTOL;
+	}
+	if (keycode == '2' || keycode == 50) {
+		game->current_weapon = WEP_FLASHLIGHT;
+	}
+	if (keycode == '3' || keycode == 51) {
+		game->current_weapon = WEP_HANDS;
+	}
+
+	/* スペースキー(32)のみで射撃判定 */
+	if (keycode == 32 && game->current_weapon == WEP_PISTOL) {
+		if (game->is_shooting == 0) {
+			game->is_shooting = 10;
+			// printf("Shooting started! (keycode: %d)\n", keycode);
+			// system("aplay sounds/shoot.mp3 > /dev/null 2>&1 &");
+		}
+	}
 	return (0);
 }
 
 /* ************************************************************************** */
-// キーが離された際に、移動フラグのオフやオプションの切り替えを行う
 int
 	key_release(int keycode, t_game* game)
 {

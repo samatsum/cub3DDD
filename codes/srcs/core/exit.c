@@ -6,15 +6,15 @@
 /*   By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/27 19:25:55 by samatsum          #+#    #+#             */
-/*   Updated: 2026/06/04 02:49:47 by samatsum         ###   ########.fr       */
+/*   Updated: 2026/06/06 14:34:52 by samatsum         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "core/core.h"
-#include "gnl/get_next_line.h"     /* 追加: GNLの強制クリーンアップ呼び出しのため */
-#include "../minilibx-linux/mlx.h" /* mlx_destroy_display 等のため */
-#include <stdlib.h>                /* free, exit 関数を使用するため */
-#include <unistd.h>                /* write 関数, STDOUT_FILENO用 */
+#include "gnl/get_next_line.h"
+#include "../minilibx-linux/mlx.h"
+#include <stdlib.h>
+#include <unistd.h>
 
 /* ************************************************************************** */
 int
@@ -44,17 +44,31 @@ int
 int
 	exit_game(t_game* game, int code)
 {
-	/* 修正2: プログラム終了時に、GNL(get_next_line)の静的バッファに
-	   読みかけのデータが残っていた場合(Still Reachable)のメモリリークを完全に防ぐ */
+	int i;
+
 	get_next_line(-1, NULL);
 
-	clear_config(&game->config);
-	clear_window(&game->window);
-	clear_textures(&game->window, game->tex);
-	clear_sprites(&game->sprites);
-	if (game->window.ptr) {
-		mlx_destroy_display(game->window.ptr);
-		free(game->window.ptr);
+	if (game)
+	{
+		clear_config(&game->config);
+		clear_window(&game->window);
+		clear_textures(&game->window, game->tex);
+		clear_sprites(&game->sprites);
+		
+		/* 3つの武器メモリを解放 */
+		i = 0;
+		while (i < 3) {
+			if (game->weapon_tex[i].tex && game->window.ptr)
+				mlx_destroy_image(game->window.ptr, game->weapon_tex[i].tex);
+			if (game->weapon_tex[i].path)
+				free(game->weapon_tex[i].path);
+			i++;
+		}
+
+		if (game->window.ptr) {
+			mlx_destroy_display(game->window.ptr);
+			free(game->window.ptr);
+		}
 	}
 	exit(code);
 	return (code);
