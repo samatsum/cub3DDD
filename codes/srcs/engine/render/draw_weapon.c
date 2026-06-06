@@ -11,6 +11,7 @@ static void
 	draw_overlay(t_game* game, t_tex* tex, double start_x, double start_y, double scale);
 
 /* ************************************************************************** */
+// テクスチャを画面上の指定位置・スケールで描画する
 static void
 	draw_overlay(t_game* game, t_tex* tex, double start_x, double start_y, double scale)
 {
@@ -103,11 +104,19 @@ void
 	}
 	/* ピストル または フラッシュライトの描画 */
 	if (game->current_weapon == WEP_PISTOL) {
-		if (game->is_shooting > 7) active_tex = &game->weapon_tex[1];
-		else if (game->is_shooting > 0) active_tex = &game->weapon_tex[2];
-		else active_tex = &game->weapon_tex[0];
-	} else active_tex = &game->weapon_tex[3];
-	if (!active_tex->tex) return ;
+		if (game->is_shooting > 7) {
+			active_tex = &game->weapon_tex[1];
+		} else if (game->is_shooting > 0) {
+			active_tex = &game->weapon_tex[2];
+		} else {
+			active_tex = &game->weapon_tex[0];
+		}
+	} else {
+		active_tex = &game->weapon_tex[3];
+	}
+	if (!active_tex->tex) {
+		return ;
+	}
 	scale = (game->window.size.y * 0.6) / active_tex->height;
 	start_x = (game->window.size.x / 2.0) - ((active_tex->width * scale) / 2.0);
 	start_y = game->window.size.y - (active_tex->height * scale);
