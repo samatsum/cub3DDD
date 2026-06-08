@@ -6,12 +6,13 @@
 /*   By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/03 07:32:33 by samatsum          #+#    #+#             */
-/*   Updated: 2026/06/07 06:38:05 by samatsum         ###   ########.fr       */
+/*   Updated: 2026/06/08 12:11:17 by samatsum         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "engine/raycast/raycast.h"
 #include "core/core.h"
+#include "enemy/enemy.h"
 #include "../minilibx-linux/mlx.h"
 
 /* ************************************************************************** */
@@ -25,6 +26,8 @@ int
 	init_image(t_window* window, t_image* img);
 static int
 	find_sprites(t_game* game);
+static int
+	is_enemy_tex(char* path);
 
 /* ************************************************************************** */
 // ゲームの初期化処理を完了させ、必要なリソースを準備する
@@ -81,6 +84,7 @@ void
 	game->options = FLAG_UI | FLAG_SHADOWS | FLAG_CROSSHAIR;
 	game->last_options = 0;
 	game->sprites = NULL;
+	game->enemies = NULL;
 	i = 0;
 	while (i < TEXTURES) {
 		game->tex[i++].tex = NULL;
@@ -143,15 +147,16 @@ int
 }
 
 /* ************************************************************************** */
-// マップ上のスプライトを検索し、リストに登録する
+// マップ上のスプライトを検索してリストに登録し、敵であれば敵リストにも追加する
 static int
 	find_sprites(t_game* game)
 {
-	t_pos	pos;
-	t_tex*	tex;
-	int		i;
-	int		j;
-	char	c;
+	t_pos		pos;
+	t_tex*		tex;
+	int			i;
+	int			j;
+	char		c;
+	t_sprite*	new_sprite;
 
 	game->sprites = NULL;
 	i = 0;
@@ -161,12 +166,45 @@ static int
 			set_pos(&pos, j + .5, i + .5);
 			c = MAP(pos, game->config);
 			tex = &game->tex[TEX_SPRITE + (c - '0' - 2)];
-			if (c >= '2' && c <= '4' && tex->tex && !add_front_sprite(&game->sprites, 0., &pos, tex)) {
-				return (0);
+			if (c >= '2' && c <= '4' && tex->tex) {
+				new_sprite = add_front_sprite(&game->sprites, 0., &pos, tex);
+				if (!new_sprite) {
+					return (0);
+				}
+				if (is_enemy_tex(tex->path)) {
+					add_enemy(&game->enemies, new_sprite);
+				}
 			}
 			j++;
 		}
 		i++;
 	}
 	return (1);
+}
+
+/* ************************************************************************** */
+// テクスチャのファイルパスに「Enemy_」が含まれているか安全に判定する
+static int
+	is_enemy_tex(char* path)
+{
+	int		i;
+	int		j;
+	char*	target;
+
+	if (!path) {
+		return (0);
+	}
+	target = "Enemy_";
+	i = 0;
+	while (path[i]) {
+		j = 0;
+		while (path[i + j] == target[j]) {
+			if (target[j + 1] == '\0') {
+				return (1);
+			}
+			j++;
+		}
+		i++;
+	}
+	return (0);
 }

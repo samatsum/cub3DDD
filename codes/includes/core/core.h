@@ -6,7 +6,7 @@
 /*   By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/03 07:32:33 by samatsum          #+#    #+#             */
-/*   Updated: 2026/06/07 00:00:23 by samatsum         ###   ########.fr       */
+/*   Updated: 2026/06/08 12:04:25 by samatsum         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,7 @@
 # include "config/config.h"
 # include "engine/render/render.h"
 # include "engine/raycast/raycast.h"
+# include "enemy/enemy.h"
 
 /* ************************************************************************** */
 # define FLAG_UI			0x00000010
@@ -36,6 +37,7 @@ typedef struct s_game
 	t_window		window;
 	t_camera		camera;
 	t_sprite*		sprites;
+	t_enemy*		enemies;  /* ← 敵を管理する専用リストを追加 */
 	t_tex			tex[TEXTURES];
 	t_tex			weapon_tex[6];  /* 0:待機, 1:発砲, 2:反動, 3:懐中電灯, 4:左手, 5:右手 */
 	int				current_weapon; /* 現在の武器 (WEP_PISTOL 等) */
@@ -72,5 +74,7 @@ void
 	check_quest(t_game* game);
 void
 	count_items(t_game* game);
+void
+	shoot_target(t_game* game);
 
 #endif

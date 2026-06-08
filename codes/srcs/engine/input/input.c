@@ -6,7 +6,7 @@
 /*   By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/27 19:31:08 by samatsum          #+#    #+#             */
-/*   Updated: 2026/06/07 06:59:09 by samatsum         ###   ########.fr       */
+/*   Updated: 2026/06/08 11:53:35 by samatsum         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,6 +83,7 @@ int
 	if (keycode == KEY_SPACE && game->current_weapon == WEP_PISTOL) {
 		if (game->is_shooting == 0) {
 			game->is_shooting = SHOOT_COOLDOWN;
+			shoot_target(game);
 		}
 	}
 	return (0);

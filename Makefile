@@ -20,6 +20,8 @@ SRCS_LIST       = main.c \
                   core/init.c \
                   core/exit.c \
                   core/loop.c \
+                  core/shoot.c \
+                  enemy/enemy.c \
                   config/config.c \
                   config/parse_map.c \
                   config/check_map.c \
