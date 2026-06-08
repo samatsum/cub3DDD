@@ -19,7 +19,8 @@ typedef struct s_enemy
 {
 	int				hp;
 	int				state;
-	double			dir_angle; /* 敵自身が向いている方向（ラジアン角） */
+	double			dir_angle;
+	double			track_timer; /* 追跡モードの残り時間（秒）を追加 */
 	t_sprite*		sprite;
 	struct s_enemy*	next;
 }	t_enemy;

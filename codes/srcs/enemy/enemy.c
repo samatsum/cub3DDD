@@ -22,6 +22,10 @@ int
 	init_enemy_textures(t_game* game);
 void
 	update_enemies(t_game* game, double delta_time);
+static void
+	move_enemy(t_enemy* cur, t_game* game, double target_angle, double delta_time);
+static void
+	update_texture(t_enemy* cur, t_game* game, double target_angle);
 
 /* ************************************************************************** */
 // 新しい敵を生成し、リストの先頭に追加する
@@ -36,72 +40,12 @@ t_enemy*
 	}
 	new_enemy->hp = ENEMY_MAX_HP;
 	new_enemy->state = ENEMY_STATE_IDLE;
-	new_enemy->dir_angle = 0.0; /* デフォルトで東（0ラジアン）を向かせる */
+	new_enemy->dir_angle = 0.0;
+	new_enemy->track_timer = 0.0;
 	new_enemy->sprite = sprite;
 	new_enemy->next = *enemies;
 	*enemies = new_enemy;
 	return (new_enemy);
-}
-
-/* ************************************************************************** */
-// 8方向の敵テクスチャをメモリ上にロードする
-int
-	init_enemy_textures(t_game* game)
-{
-	char*	paths[8];
-	int		i;
-
-	paths[0] = "textures/enemy/Enemy_1.xpm";
-	paths[1] = "textures/enemy/Enemy_2.xpm";
-	paths[2] = "textures/enemy/Enemy_3.xpm";
-	paths[3] = "textures/enemy/Enemy_4.xpm";
-	paths[4] = "textures/enemy/Enemy_5.xpm";
-	paths[5] = "textures/enemy/Enemy_6.xpm";
-	paths[6] = "textures/enemy/Enemy_7.xpm";
-	paths[7] = "textures/enemy/Enemy_8.xpm";
-	i = 0;
-	while (i < 8) {
-		game->enemy_tex[i].path = ft_strdup(paths[i]);
-		game->enemy_tex[i].tex = mlx_xpm_file_to_image(game->window.ptr, game->enemy_tex[i].path, &game->enemy_tex[i].width, &game->enemy_tex[i].height);
-		if (!game->enemy_tex[i].tex) {
-			return (0);
-		}
-		game->enemy_tex[i].ptr = mlx_get_data_addr(game->enemy_tex[i].tex, &game->enemy_tex[i].bpp, &game->enemy_tex[i].size_line, &game->enemy_tex[i].endian);
-		i++;
-	}
-	return (1);
-}
-
-/* ************************************************************************** */
-// 毎フレーム敵の角度を計算し、プレイヤーの視点に応じた8方向テクスチャを割り当てる
-void
-	update_enemies(t_game* game, double delta_time)
-{
-	t_enemy*	cur;
-	double		dx;
-	double		dy;
-	double		diff;
-	int			diff_idx;
-	int			tex_idx;
-
-	(void)delta_time; /* 将来のアニメーション・移動拡張用 */
-	cur = game->enemies;
-	while (cur) {
-		dx = game->camera.pos.x - cur->sprite->pos.x;
-		dy = game->camera.pos.y - cur->sprite->pos.y;
-		diff = atan2(dy, dx) - cur->dir_angle;
-		while (diff < 0.0) {
-			diff += 2.0 * M_PI;
-		}
-		while (diff >= 2.0 * M_PI) {
-			diff -= 2.0 * M_PI;
-		}
-		/* 相対角度を45度刻みの8セクター(0〜7)に変換し、画像ファイル名と一致させる反転処理を行う */
-		diff_idx = (int)(floor((diff + (M_PI / 8.0)) / (M_PI / 4.0))) % 8;
-		tex_idx = (8 - diff_idx) % 8;
-		cur->sprite->tex = &game->enemy_tex[tex_idx];
-		cur = cur->next;
-	}
 }
 
 /* ************************************************************************** */
@@ -167,4 +111,130 @@ void
 		}
 		current = current->next;
 	}
+}
+
+/* ************************************************************************** */
+// 8方向の敵テクスチャをメモリ上にロードし、描画境界(start/end)を初期化する
+int
+	init_enemy_textures(t_game* game)
+{
+	char*	paths[8];
+	int		i;
+
+	paths[0] = "textures/enemy/Enemy_1.xpm";
+	paths[1] = "textures/enemy/Enemy_2.xpm";
+	paths[2] = "textures/enemy/Enemy_3.xpm";
+	paths[3] = "textures/enemy/Enemy_4.xpm";
+	paths[4] = "textures/enemy/Enemy_5.xpm";
+	paths[5] = "textures/enemy/Enemy_6.xpm";
+	paths[6] = "textures/enemy/Enemy_7.xpm";
+	paths[7] = "textures/enemy/Enemy_8.xpm";
+	i = 0;
+	while (i < 8) {
+		game->enemy_tex[i].path = ft_strdup(paths[i]);
+		game->enemy_tex[i].tex = mlx_xpm_file_to_image(game->window.ptr, game->enemy_tex[i].path, &game->enemy_tex[i].width, &game->enemy_tex[i].height);
+		if (!game->enemy_tex[i].tex) {
+			return (0);
+		}
+		game->enemy_tex[i].ptr = mlx_get_data_addr(game->enemy_tex[i].tex, &game->enemy_tex[i].bpp, &game->enemy_tex[i].size_line, &game->enemy_tex[i].endian);
+		set_pos(&game->enemy_tex[i].start, 0, 0);
+		set_pos(&game->enemy_tex[i].end, game->enemy_tex[i].width, game->enemy_tex[i].height);
+		i++;
+	}
+	return (1);
+}
+
+/* ************************************************************************** */
+// 毎フレーム敵の視界判定を行い、追跡移動とテクスチャの更新を実行する
+void
+	update_enemies(t_game* game, double delta_time)
+{
+	t_enemy*	cur;
+	double		dx;
+	double		dy;
+	double		target_angle;
+	double		diff;
+	int			diff_idx;
+
+	cur = game->enemies;
+	while (cur) {
+		dx = game->camera.pos.x - cur->sprite->pos.x;
+		dy = game->camera.pos.y - cur->sprite->pos.y;
+		target_angle = atan2(dy, dx);
+		diff = target_angle - cur->dir_angle;
+		while (diff < 0.0) {
+			diff += 2.0 * M_PI;
+		}
+		while (diff >= 2.0 * M_PI) {
+			diff -= 2.0 * M_PI;
+		}
+		diff_idx = (int)(floor((diff + (M_PI / 8.0)) / (M_PI / 4.0))) % 8;
+		
+		/* 視界（正面）にプレイヤーがいればタイマーを5秒にセット */
+		if (diff_idx == 0) {
+			cur->track_timer = 5.0;
+		}
+		move_enemy(cur, game, target_angle, delta_time);
+		update_texture(cur, game, target_angle);
+		cur = cur->next;
+	}
+}
+
+/* ************************************************************************** */
+// 追跡タイマーが有効な間、壁を避けながらプレイヤーの半分の速度で接近する
+static void
+	move_enemy(t_enemy* cur, t_game* game, double target_angle, double delta_time)
+{
+	double	time_mult;
+	double	speed;
+	double	move_x;
+	double	move_y;
+	t_pos	next_pos;
+
+	if (cur->track_timer > 0.0) {
+		cur->track_timer -= delta_time;
+		cur->state = ENEMY_STATE_WALK;
+		cur->dir_angle = target_angle;
+		time_mult = delta_time * 60.0;
+		if (time_mult > 3.0) {
+			time_mult = 3.0;
+		}
+		speed = (game->config.move_speed / 2.0) * time_mult;
+		move_x = cos(cur->dir_angle) * speed;
+		move_y = sin(cur->dir_angle) * speed;
+		
+		/* X軸の壁判定と移動 */
+		set_pos(&next_pos, cur->sprite->pos.x + move_x, cur->sprite->pos.y);
+		if (IN_MAP(next_pos, game->config) && MAP(next_pos, game->config) != '1') {
+			cur->sprite->pos.x += move_x;
+		}
+		/* Y軸の壁判定と移動 */
+		set_pos(&next_pos, cur->sprite->pos.x, cur->sprite->pos.y + move_y);
+		if (IN_MAP(next_pos, game->config) && MAP(next_pos, game->config) != '1') {
+			cur->sprite->pos.y += move_y;
+		}
+	} else {
+		cur->state = ENEMY_STATE_IDLE;
+	}
+}
+
+/* ************************************************************************** */
+// プレイヤーの視点に対する敵の相対角度から、適切な8方向テクスチャを選択する
+static void
+	update_texture(t_enemy* cur, t_game* game, double target_angle)
+{
+	double	diff;
+	int		diff_idx;
+	int		tex_idx;
+
+	diff = target_angle - cur->dir_angle;
+	while (diff < 0.0) {
+		diff += 2.0 * M_PI;
+	}
+	while (diff >= 2.0 * M_PI) {
+		diff -= 2.0 * M_PI;
+	}
+	diff_idx = (int)(floor((diff + (M_PI / 8.0)) / (M_PI / 4.0))) % 8;
+	tex_idx = (8 - diff_idx) % 8;
+	cur->sprite->tex = &game->enemy_tex[tex_idx];
 }
