@@ -6,12 +6,13 @@
 /*   By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/28 13:16:59 by samatsum          #+#    #+#             */
-/*   Updated: 2026/06/04 02:35:37 by samatsum         ###   ########.fr       */
+/*   Updated: 2026/06/08 17:22:22 by samatsum         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "core/core.h"
-#include <stddef.h> /* NULL 用 */
+#include <stddef.h>
+#include <sys/time.h> /* gettimeofday用に追加 */
 
 /* ************************************************************************** */
 int
@@ -20,7 +21,7 @@ static long long
 	get_current_time_ms(void);
 
 /* ************************************************************************** */
-// 毎フレーム実行されるメインループ。経過時間を計測し、フレームレート非依存の移動を行う
+// 毎フレーム実行されるメインループ。経過時間を計測し、フレームレート非依存の移動と更新を行う
 int
 	main_loop(t_game* game)
 {
@@ -29,17 +30,14 @@ int
 	double		delta_time;
 	double		time_mult;
 
-	/* 修正: 経過時間（デルタタイム）の計算 */
 	now = get_current_time_ms();
 	if (game->last_time == 0) {
 		game->last_time = now;
 	}
-	delta_time = (double)(now - game->last_time) / 1000.0; /* 秒に変換 */
+	delta_time = (double)(now - game->last_time) / 1000.0;
 	game->last_time = now;
 
-	/* 60FPS (1秒間に60フレーム) を基準(1.0)とした補正倍率を計算 */
 	time_mult = delta_time / (1.0 / 60.0);
-	/* 異常なラグ発生時のワープを防ぐための安全装置 (最大でも3フレーム分) */
 	if (time_mult > 3.0) {
 		time_mult = 3.0;
 	}
@@ -61,7 +59,10 @@ int
 	if (update) {
 		check_quest(game);
 	}
-	/*update判定に関わらず毎フレーム描画を維持 */
+	
+	/* 追加: 毎フレーム、全敵とプレイヤーの角度を再計算して画像を切り替える */
+	update_enemies(game, delta_time);
+
 	render_frame(game);
 	return (1);
 }

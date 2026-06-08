@@ -1,15 +1,3 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   init.c                                             :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/06/03 07:32:33 by samatsum          #+#    #+#             */
-/*   Updated: 2026/06/08 12:11:17 by samatsum         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #include "engine/raycast/raycast.h"
 #include "core/core.h"
 #include "enemy/enemy.h"
@@ -56,6 +44,9 @@ int
 			game->weapon_tex[i].ptr = mlx_get_data_addr(game->weapon_tex[i].tex, &game->weapon_tex[i].bpp, &game->weapon_tex[i].size_line, &game->weapon_tex[i].endian);
 		}
 		i++;
+	}
+	if (!init_enemy_textures(game)) {
+		return (exit_error(game, "Error:\nfailed to load enemy textures.\n"));
 	}
 	find_start_pos(&game->config, &game->camera);
 	find_start_angle(&game->config, &game->camera);

@@ -19,6 +19,7 @@ typedef struct s_enemy
 {
 	int				hp;
 	int				state;
+	double			dir_angle; /* 敵自身が向いている方向（ラジアン角） */
 	t_sprite*		sprite;
 	struct s_enemy*	next;
 }	t_enemy;
@@ -32,5 +33,9 @@ void
 	clear_enemies(t_enemy** enemies);
 void
 	damage_enemy(struct s_game* game, t_sprite* hit_sprite);
+int
+	init_enemy_textures(struct s_game* game);
+void
+	update_enemies(struct s_game* game, double delta_time);
 
 #endif

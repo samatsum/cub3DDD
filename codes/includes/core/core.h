@@ -6,7 +6,7 @@
 /*   By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/03 07:32:33 by samatsum          #+#    #+#             */
-/*   Updated: 2026/06/08 12:04:25 by samatsum         ###   ########.fr       */
+/*   Updated: 2026/06/08 17:20:49 by samatsum         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,6 +40,7 @@ typedef struct s_game
 	t_enemy*		enemies;  /* ← 敵を管理する専用リストを追加 */
 	t_tex			tex[TEXTURES];
 	t_tex			weapon_tex[6];  /* 0:待機, 1:発砲, 2:反動, 3:懐中電灯, 4:左手, 5:右手 */
+	t_tex			enemy_tex[8]; /* ← 追加: 敵の8方向テクスチャ配列 */
 	int				current_weapon; /* 現在の武器 (WEP_PISTOL 等) */
 	int				is_shooting;    /* 射撃アニメーションタイマー (残りフレーム数) */
 	t_pos			move;
