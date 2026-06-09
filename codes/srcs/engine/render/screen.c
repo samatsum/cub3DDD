@@ -6,7 +6,7 @@
 /*   By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/28 13:16:59 by samatsum          #+#    #+#             */
-/*   Updated: 2026/06/07 00:34:09 by samatsum         ###   ########.fr       */
+/*   Updated: 2026/06/10 08:25:13 by samatsum         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ void
 {
 	update_screen(game);
 	
-	update_window(&game->window, game->options, game->collected, game->to_collect);
+	update_window(&game->window, game->options, game->world.collected, game->world.to_collect);
 }
 
 /* ************************************************************************** */
@@ -53,16 +53,16 @@ void
 	rnd.w = w;
 	rnd.config = &game->config;
 	rnd.camera = &game->camera;
-	rnd.tex = game->tex;
-	rnd.depth = game->depth;
-	rnd.sf_dist = game->sf_dist;
+	rnd.tex = game->assets.tex;
+	rnd.depth = game->cache.depth;
+	rnd.sf_dist = game->cache.sf_dist;
 	rnd.options = game->options;
 
 	i = 0;
 	while (i < w->size.x) {
 		ray.column = i;
-		ray_cast(&game->camera, &game->config, &ray, game->camera_x[i]);
-		game->depth[i] = ray.distance;
+		ray_cast(&game->camera, &game->config, &ray, game->cache.camera_x[i]);
+		game->cache.depth[i] = ray.distance;
 		ray.height = fabs(w->size.y / ray.distance);
 		draw_wall(&rnd, &ray);
 		if (ray.height < game->window.size.y) {
@@ -70,8 +70,8 @@ void
 		}
 		i++;
 	}
-	if (game->sprites) {
-		draw_sprites(&rnd, game->sprites);
+	if (game->world.sprites) {
+		draw_sprites(&rnd, game->world.sprites);
 	}
 
 	/* ★修正: 武器をUIより「先」に描画するようここに移動 ★ */

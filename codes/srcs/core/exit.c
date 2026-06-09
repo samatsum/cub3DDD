@@ -6,21 +6,23 @@
 /*   By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/27 19:25:55 by samatsum          #+#    #+#             */
-/*   Updated: 2026/06/06 14:34:52 by samatsum         ###   ########.fr       */
+/*   Updated: 2026/06/10 08:27:02 by samatsum         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include <stdlib.h>
+#include <unistd.h>
 #include "core/core.h"
 #include "gnl/get_next_line.h"
 #include "../minilibx-linux/mlx.h"
-#include <stdlib.h>
-#include <unistd.h>
 
 /* ************************************************************************** */
 int
 	exit_error(t_game* game, char const* str);
 int
 	exit_game(t_game* game, int code);
+static void
+	clear_assets(t_game* game);
 int
 	clear_window(t_window* window);
 
@@ -40,31 +42,18 @@ int
 }
 
 /* ************************************************************************** */
-// 使用したメモリやリソースを解放し、ゲームを終了させる
+// 使用したメモリやリソースを完全に解放し、ゲームを終了させる
 int
 	exit_game(t_game* game, int code)
 {
-	int i;
-
 	get_next_line(-1, NULL);
-
-	if (game)
-	{
+	if (game) {
 		clear_config(&game->config);
 		clear_window(&game->window);
-		clear_textures(&game->window, game->tex);
-		clear_sprites(&game->sprites);
-		
-		/* 3つの武器メモリを解放 */
-		i = 0;
-		while (i < 3) {
-			if (game->weapon_tex[i].tex && game->window.ptr)
-				mlx_destroy_image(game->window.ptr, game->weapon_tex[i].tex);
-			if (game->weapon_tex[i].path)
-				free(game->weapon_tex[i].path);
-			i++;
-		}
-
+		clear_textures(&game->window, game->assets.tex);
+		clear_sprites(&game->world.sprites);
+		clear_enemies(&game->world.enemies);
+		clear_assets(game);
 		if (game->window.ptr) {
 			mlx_destroy_display(game->window.ptr);
 			free(game->window.ptr);
@@ -72,6 +61,35 @@ int
 	}
 	exit(code);
 	return (code);
+}
+
+/* ************************************************************************** */
+// 武器(6種)と敵(8方向)のテクスチャ画像とパス文字列をすべて解放する
+static void
+	clear_assets(t_game* game)
+{
+	int	i;
+
+	i = 0;
+	while (i < WEAPON_TEX_COUNT) {
+		if (game->assets.weapon_tex[i].tex && game->window.ptr) {
+			mlx_destroy_image(game->window.ptr, game->assets.weapon_tex[i].tex);
+		}
+		if (game->assets.weapon_tex[i].path) {
+			free(game->assets.weapon_tex[i].path);
+		}
+		i++;
+	}
+	i = 0;
+	while (i < ENEMY_TEX_COUNT) {
+		if (game->assets.enemy_tex[i].tex && game->window.ptr) {
+			mlx_destroy_image(game->window.ptr, game->assets.enemy_tex[i].tex);
+		}
+		if (game->assets.enemy_tex[i].path) {
+			free(game->assets.enemy_tex[i].path);
+		}
+		i++;
+	}
 }
 
 /* ************************************************************************** */

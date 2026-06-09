@@ -6,7 +6,7 @@
 /*   By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/28 13:16:59 by samatsum          #+#    #+#             */
-/*   Updated: 2026/06/03 15:09:42 by samatsum         ###   ########.fr       */
+/*   Updated: 2026/06/10 08:36:14 by samatsum         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,8 +20,6 @@ void
 static void
 	calculate_camera_x(double width, double* r);
 static void
-	calculate_cos_sin(double rotate_speed, double* cos_r, double* sin_r);
-static void
 	calculate_sf_dist(double height, double* r);
 
 /* ************************************************************************** */
@@ -29,9 +27,8 @@ static void
 void
 	make_tables(t_game* game)
 {
-	calculate_camera_x(game->window.size.x, game->camera_x);
-	calculate_cos_sin(game->config.rotate_speed, game->cos, game->sin);
-	calculate_sf_dist(game->window.size.y, game->sf_dist);
+	calculate_camera_x(game->window.size.x, game->cache.camera_x);
+	calculate_sf_dist(game->window.size.y, game->cache.sf_dist);
 }
 
 /* ************************************************************************** */
@@ -46,17 +43,6 @@ static void
 		r[i] = ((2. * (double)i) / width) - 1.;
 		i++;
 	}
-}
-
-/* ************************************************************************** */
-// 視点回転のためのサイン・コサインの値を事前に計算する
-static void
-	calculate_cos_sin(double rotate_speed, double* cos_r, double* sin_r)
-{
-	cos_r[0] = cos(-rotate_speed);
-	cos_r[1] = cos(rotate_speed);
-	sin_r[0] = sin(-rotate_speed);
-	sin_r[1] = sin(rotate_speed);
 }
 
 /* ************************************************************************** */

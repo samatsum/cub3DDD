@@ -6,7 +6,7 @@
 /*   By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/03 07:32:33 by samatsum          #+#    #+#             */
-/*   Updated: 2026/06/07 06:38:20 by samatsum         ###   ########.fr       */
+/*   Updated: 2026/06/10 08:23:47 by samatsum         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,8 +25,8 @@ void
 {
 	if (MAP(game->camera.pos, game->config) == '4') {
 		MAP(game->camera.pos, game->config) = 'A';
-		game->collected++;
-		delete_sprite(&game->sprites, &game->camera.pos);
+		game->world.collected++;
+		delete_sprite(&game->world.sprites, &game->camera.pos);
 	}
 }
 
@@ -38,13 +38,13 @@ void
 	int	i;
 	int	j;
 
-	game->to_collect = 0;
+	game->world.to_collect = 0;
 	i = 0;
 	while (i < game->config.map.rows) {
 		j = 0;
 		while (j < game->config.map.columns) {
 			if (MAP_XY(j, i, game->config) == '4') {
-				game->to_collect++;
+				game->world.to_collect++;
 			}
 			j++;
 		}

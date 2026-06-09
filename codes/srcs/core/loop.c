@@ -6,67 +6,41 @@
 /*   By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/28 13:16:59 by samatsum          #+#    #+#             */
-/*   Updated: 2026/06/08 21:46:14 by samatsum         ###   ########.fr       */
+/*   Updated: 2026/06/10 08:20:46 by samatsum         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "core/core.h"
 #include <stddef.h>
 #include <sys/time.h>
+#include "core/core.h"
 
 /* ************************************************************************** */
 #define TARGET_FPS	30.0
+#define BASE_FPS	60.0
 
 int
 	main_loop(t_game* game);
+static double
+	frame_delta(t_game* game, double* time_mult);
+static int
+	apply_input(t_game* game, double time_mult);
 static long long
 	get_current_time_ms(void);
 
 /* ************************************************************************** */
-// 毎フレーム実行されるメインループ。FPS制限とフレームレート非依存の移動・更新を行う
+// 毎フレーム実行されるメインループ。FPS制限・入力反映・更新・描画を統括する
 int
 	main_loop(t_game* game)
 {
-	int			update;
-	long long	now;
-	double		delta_time;
-	double		time_mult;
-	double		speed_mult;
+	double	delta_time;
+	double	time_mult;
+	int		update;
 
-	now = get_current_time_ms();
-	if (game->last_time == 0) {
-		game->last_time = now;
-	}
-	delta_time = (double)(now - game->last_time) / 1000.0;
-	
-	/* FPSを30に制限する（前回フレームからの経過時間が1/30秒未満なら処理をスキップ） */
-	if (delta_time < (1.0 / TARGET_FPS)) {
+	delta_time = frame_delta(game, &time_mult);
+	if (delta_time < 0.0) {
 		return (0);
 	}
-	game->last_time = now;
-
-	/* 基準となる60FPS時の移動量を1.0とし、経過時間からタイムマルチプライヤを計算 */
-	time_mult = delta_time / (1.0 / 60.0);
-	if (time_mult > 3.0) {
-		time_mult = 3.0;
-	}
-
-	/* WEP_HANDS（3番）装備時は移動速度を1.3倍にする */
-	speed_mult = 1.0;
-	if (game->current_weapon == WEP_HANDS) {
-		speed_mult = 1.3;
-	}
-
-	update = 0;
-	if (game->move.x || game->move.y) {
-		update = move_camera(&game->camera, &game->config, (game->move.x) ? 0 : 1, time_mult * speed_mult);
-	}
-	if (game->x_move.x || game->x_move.y) {
-		update = move_perp_camera(&game->camera, &game->config, (game->x_move.x) ? 0 : 1, time_mult * speed_mult);
-	}
-	if (game->rotate.x || game->rotate.y) {
-		update = rotate_camera(&game->camera, &game->config, (game->rotate.x) ? 0 : 1, time_mult); /* 回転は倍率の影響を受けない */
-	}
+	update = apply_input(game, time_mult);
 	if (game->options != game->last_options) {
 		update = 1;
 		game->last_options = game->options;
@@ -74,11 +48,58 @@ int
 	if (update) {
 		check_quest(game);
 	}
-	
 	update_enemies(game, delta_time);
-
 	render_frame(game);
 	return (1);
+}
+
+/* ************************************************************************** */
+// 経過時間を算出してFPS制限を行い、60FPS基準の時間倍率を計算する（制限内は負値）
+static double
+	frame_delta(t_game* game, double* time_mult)
+{
+	long long	now;
+	double		delta_time;
+
+	now = get_current_time_ms();
+	if (game->timing.last_time == 0) {
+		game->timing.last_time = now;
+	}
+	delta_time = (double)(now - game->timing.last_time) / 1000.0;
+	if (delta_time < (1.0 / TARGET_FPS)) {
+		return (-1.0);
+	}
+	game->timing.last_time = now;
+	*time_mult = delta_time / (1.0 / BASE_FPS);
+	if (*time_mult > 3.0) {
+		*time_mult = 3.0;
+	}
+	return (delta_time);
+}
+
+/* ************************************************************************** */
+// 入力状態をカメラへ反映する（WEP_HANDS装備時は移動速度を1.3倍に補正）
+static int
+	apply_input(t_game* game, double time_mult)
+{
+	double	speed_mult;
+	int		update;
+
+	speed_mult = 1.0;
+	if (game->input.current_weapon == WEP_HANDS) {
+		speed_mult = 1.3;
+	}
+	update = 0;
+	if (game->input.move.x || game->input.move.y) {
+		update = move_camera(&game->camera, &game->config, (game->input.move.x) ? 0 : 1, time_mult * speed_mult);
+	}
+	if (game->input.x_move.x || game->input.x_move.y) {
+		update = move_perp_camera(&game->camera, &game->config, (game->input.x_move.x) ? 0 : 1, time_mult * speed_mult);
+	}
+	if (game->input.rotate.x || game->input.rotate.y) {
+		update = rotate_camera(&game->camera, &game->config, (game->input.rotate.x) ? 0 : 1, time_mult);
+	}
+	return (update);
 }
 
 /* ************************************************************************** */

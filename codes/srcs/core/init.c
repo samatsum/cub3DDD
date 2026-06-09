@@ -26,8 +26,8 @@ int
 	if (!init_window(&game->window, &game->config)) {
 		return (exit_error(game, "Error:\nmlx failed to create window or image.\n"));
 	}
-	game->current_weapon = WEP_PISTOL;
-	game->is_shooting = 0;
+	game->input.current_weapon = WEP_PISTOL;
+	game->input.is_shooting = 0;
 	paths[0] = "textures/arm/Arm_pistol_static.xpm";
 	paths[1] = "textures/arm/Arm_pistol_shoot.xpm";
 	paths[2] = "textures/arm/Arm_pistol_recoil.xpm";
@@ -36,10 +36,10 @@ int
 	paths[5] = "textures/arm/Arm_righthand.xpm";
 	i = 0;
 	while (i < 6) {
-		game->weapon_tex[i].path = ft_strdup(paths[i]);
-		game->weapon_tex[i].tex = mlx_xpm_file_to_image(game->window.ptr, game->weapon_tex[i].path, &game->weapon_tex[i].width, &game->weapon_tex[i].height);
-		if (game->weapon_tex[i].tex) {
-			game->weapon_tex[i].ptr = mlx_get_data_addr(game->weapon_tex[i].tex, &game->weapon_tex[i].bpp, &game->weapon_tex[i].size_line, &game->weapon_tex[i].endian);
+		game->assets.weapon_tex[i].path = ft_strdup(paths[i]);
+		game->assets.weapon_tex[i].tex = mlx_xpm_file_to_image(game->window.ptr, game->assets.weapon_tex[i].path, &game->assets.weapon_tex[i].width, &game->assets.weapon_tex[i].height);
+		if (game->assets.weapon_tex[i].tex) {
+			game->assets.weapon_tex[i].ptr = mlx_get_data_addr(game->assets.weapon_tex[i].tex, &game->assets.weapon_tex[i].bpp, &game->assets.weapon_tex[i].size_line, &game->assets.weapon_tex[i].endian);
 		}
 		i++;
 	}
@@ -48,7 +48,7 @@ int
 	}
 	find_start_pos(&game->config, &game->camera);
 	find_start_angle(&game->config, &game->camera);
-	if (!load_textures(&game->window, game->tex, &game->config)) {
+	if (!load_textures(&game->window, game->assets.tex, &game->config)) {
 		return (exit_error(game, "Error:\nfailed to load texture(s).\n"));
 	}
 	if (!find_sprites(game)) {
@@ -66,17 +66,17 @@ void
 {
 	int	i;
 
-	set_pos(&game->move, 0, 0);
-	set_pos(&game->x_move, 0, 0);
-	set_pos(&game->rotate, 0, 0);
-	game->collected = 0;
+	set_pos(&game->input.move, 0, 0);
+	set_pos(&game->input.x_move, 0, 0);
+	set_pos(&game->input.rotate, 0, 0);
+	game->world.collected = 0;
 	game->options = FLAG_UI | FLAG_SHADOWS | FLAG_CROSSHAIR;
 	game->last_options = 0;
-	game->sprites = NULL;
-	game->enemies = NULL;
+	game->world.sprites = NULL;
+	game->world.enemies = NULL;
 	i = 0;
 	while (i < TEXTURES) {
-		game->tex[i++].tex = NULL;
+		game->assets.tex[i++].tex = NULL;
 	}
 }
 
@@ -147,7 +147,7 @@ static int
 	char		c;
 	t_sprite*	new_sprite;
 
-	game->sprites = NULL;
+	game->world.sprites = NULL;
 	i = 0;
 	while (i < game->config.map.rows) {
 		j = 0;
@@ -155,20 +155,20 @@ static int
 			set_pos(&pos, j + .5, i + .5);
 			c = MAP(pos, game->config);
 			if (c >= '2' && c <= '4') {
-				tex = &game->tex[TEX_SPRITE + (c - '0' - 2)];
+				tex = &game->assets.tex[TEX_SPRITE + (c - '0' - 2)];
 				if (tex->tex) {
-					new_sprite = add_front_sprite(&game->sprites, 0., &pos, tex);
+					new_sprite = add_front_sprite(&game->world.sprites, 0., &pos, tex);
 					if (!new_sprite) {
 						return (0);
 					}
 				}
 			} else if (c == 'M') {
-				tex = &game->enemy_tex[0];
-				new_sprite = add_front_sprite(&game->sprites, 0., &pos, tex);
+				tex = &game->assets.enemy_tex[0];
+				new_sprite = add_front_sprite(&game->world.sprites, 0., &pos, tex);
 				if (!new_sprite) {
 					return (0);
 				}
-				add_enemy(&game->enemies, new_sprite);
+				add_enemy(&game->world.enemies, new_sprite);
 			}
 			j++;
 		}

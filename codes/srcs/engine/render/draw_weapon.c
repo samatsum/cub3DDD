@@ -34,7 +34,7 @@ void
 	gettimeofday(&tv, NULL);
 	current_time = (tv.tv_sec * 1000LL) + (tv.tv_usec / 1000);
 	update_weapon_timer(game, current_time);
-	if (game->current_weapon == WEP_HANDS) {
+	if (game->input.current_weapon == WEP_HANDS) {
 		render_hands(game, current_time);
 	} else {
 		render_item(game);
@@ -48,8 +48,8 @@ static void
 {
 	static long long	last_update = 0;
 
-	if (game->is_shooting > 0 && (current_time - last_update) >= SHOOT_INTERVAL) {
-		game->is_shooting--;
+	if (game->input.is_shooting > 0 && (current_time - last_update) >= SHOOT_INTERVAL) {
+		game->input.is_shooting--;
 		last_update = current_time;
 	}
 }
@@ -69,7 +69,7 @@ static void
 	double	bob_right;
 	int		is_moving;
 
-	is_moving = game->move.x || game->move.y || game->x_move.x || game->x_move.y;
+	is_moving = game->input.move.x || game->input.move.y || game->input.x_move.x || game->input.x_move.y;
 	if (!is_moving) {
 		return ;
 	}
@@ -78,7 +78,7 @@ static void
 	bob_right = pow(fabs(cos(angle)), BOB_POWER);
 	
 	/* 左手 */
-	active_tex = &game->weapon_tex[4];
+	active_tex = &game->assets.weapon_tex[4];
 	if (active_tex->tex) {
 		scale = (game->window.size.y * WEAPON_SCALE) / active_tex->height;
 		move_dist = active_tex->height * scale * HAND_MOVE_RATIO;
@@ -87,7 +87,7 @@ static void
 		draw_overlay(game, active_tex, start_x, start_y, scale);
 	}
 	/* 右手 */
-	active_tex = &game->weapon_tex[5];
+	active_tex = &game->assets.weapon_tex[5];
 	if (active_tex->tex) {
 		scale = (game->window.size.y * WEAPON_SCALE) / active_tex->height;
 		move_dist = active_tex->height * scale * HAND_MOVE_RATIO;
@@ -107,16 +107,16 @@ static void
 	double	start_x;
 	double	start_y;
 
-	if (game->current_weapon == WEP_PISTOL) {
-		if (game->is_shooting > SHOOT_FRAMES_MAX) {
-			active_tex = &game->weapon_tex[1];
-		} else if (game->is_shooting > 0) {
-			active_tex = &game->weapon_tex[2];
+	if (game->input.current_weapon == WEP_PISTOL) {
+		if (game->input.is_shooting > SHOOT_FRAMES_MAX) {
+			active_tex = &game->assets.weapon_tex[1];
+		} else if (game->input.is_shooting > 0) {
+			active_tex = &game->assets.weapon_tex[2];
 		} else {
-			active_tex = &game->weapon_tex[0];
+			active_tex = &game->assets.weapon_tex[0];
 		}
 	} else {
-		active_tex = &game->weapon_tex[3];
+		active_tex = &game->assets.weapon_tex[3];
 	}
 	if (!active_tex->tex) {
 		return ;

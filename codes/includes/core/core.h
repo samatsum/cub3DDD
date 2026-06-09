@@ -6,7 +6,7 @@
 /*   By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/03 07:32:33 by samatsum          #+#    #+#             */
-/*   Updated: 2026/06/08 17:20:49 by samatsum         ###   ########.fr       */
+/*   Updated: 2026/06/10 08:36:45 by samatsum         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,41 +21,76 @@
 # include "enemy/enemy.h"
 
 /* ************************************************************************** */
+// 描画オプションの状態フラグ（UI・影・照準・スクリーンショット）
 # define FLAG_UI			0x00000010
 # define FLAG_SHADOWS		0x00000100
 # define FLAG_CROSSHAIR		0x00001000
 # define FLAG_SAVE			0x00000001
 
+// 装備中の武器の種別
 # define WEP_PISTOL			0
 # define WEP_FLASHLIGHT		1
 # define WEP_HANDS			2
 
+// テクスチャ配列の要素数（旧マジックナンバー 6 / 8 を排除）
+# define WEAPON_TEX_COUNT	6
+# define ENEMY_TEX_COUNT	8
+
 /* ************************************************************************** */
+// 入力状態（押下中キーに応じた移動・回転フラグと武器の状態）
+typedef struct s_input
+{
+	t_pos	move;
+	t_pos	x_move;
+	t_pos	rotate;
+	int		current_weapon;
+	int		is_shooting;
+}				t_input;
+
+// ゲーム世界の動的エンティティと収集進行状況
+typedef struct s_world
+{
+	t_sprite*	sprites;
+	t_enemy*	enemies;
+	int			to_collect;
+	int			collected;
+}				t_world;
+
+// 画像アセット（壁/床/天井・武器・敵のテクスチャ群）
+typedef struct s_assets
+{
+	t_tex	tex[TEXTURES];
+	t_tex	weapon_tex[WEAPON_TEX_COUNT];
+	t_tex	enemy_tex[ENEMY_TEX_COUNT];
+}				t_assets;
+
+// 描画前計算のキャッシュ（カメラ平面比率・深度・床天井距離・回転三角関数）
+typedef struct s_render_cache
+{
+	double	camera_x[MAX_WIDTH];
+	double	depth[MAX_WIDTH];
+	double	sf_dist[MAX_HEIGHT];
+}				t_render_cache;
+
+// フレーム制御用のタイミング情報
+typedef struct s_timing
+{
+	long long	last_time;
+}				t_timing;
+
+// 各サブシステムを集約するファサード構造体
 typedef struct s_game
 {
 	t_config		config;
 	t_window		window;
 	t_camera		camera;
-	t_sprite*		sprites;
-	t_enemy*		enemies;  /* ← 敵を管理する専用リストを追加 */
-	t_tex			tex[TEXTURES];
-	t_tex			weapon_tex[6];  /* 0:待機, 1:発砲, 2:反動, 3:懐中電灯, 4:左手, 5:右手 */
-	t_tex			enemy_tex[8]; /* ← 追加: 敵の8方向テクスチャ配列 */
-	int				current_weapon; /* 現在の武器 (WEP_PISTOL 等) */
-	int				is_shooting;    /* 射撃アニメーションタイマー (残りフレーム数) */
-	t_pos			move;
-	t_pos			x_move;
-	t_pos			rotate;
+	t_input			input;
+	t_world			world;
+	t_assets		assets;
+	t_render_cache	cache;
+	t_timing		timing;
 	int				options;
 	int				last_options;
-	int				to_collect;
-	int				collected;
-	long long		last_time;
-	double			camera_x[1920];
-	double			depth[1920];
-	double			sf_dist[1080];
-	double			cos[2];
-	double			sin[2];
 }				t_game;
 
 /* ************************************************************************** */

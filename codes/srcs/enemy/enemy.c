@@ -98,13 +98,13 @@ void
 {
 	t_enemy*	current;
 
-	current = game->enemies;
+	current = game->world.enemies;
 	while (current) {
 		if (current->sprite == hit_sprite) {
 			if (current->hp > 0) {
 				current->hp -= 1;
 				if (current->hp <= 0) {
-					delete_enemy(&game->enemies, &game->sprites, hit_sprite);
+					delete_enemy(&game->world.enemies, &game->world.sprites, hit_sprite);
 				}
 			}
 			return ;
@@ -131,14 +131,14 @@ int
 	paths[7] = "textures/enemy/Enemy_8.xpm";
 	i = 0;
 	while (i < 8) {
-		game->enemy_tex[i].path = ft_strdup(paths[i]);
-		game->enemy_tex[i].tex = mlx_xpm_file_to_image(game->window.ptr, game->enemy_tex[i].path, &game->enemy_tex[i].width, &game->enemy_tex[i].height);
-		if (!game->enemy_tex[i].tex) {
+		game->assets.enemy_tex[i].path = ft_strdup(paths[i]);
+		game->assets.enemy_tex[i].tex = mlx_xpm_file_to_image(game->window.ptr, game->assets.enemy_tex[i].path, &game->assets.enemy_tex[i].width, &game->assets.enemy_tex[i].height);
+		if (!game->assets.enemy_tex[i].tex) {
 			return (0);
 		}
-		game->enemy_tex[i].ptr = mlx_get_data_addr(game->enemy_tex[i].tex, &game->enemy_tex[i].bpp, &game->enemy_tex[i].size_line, &game->enemy_tex[i].endian);
-		set_pos(&game->enemy_tex[i].start, 0, 0);
-		set_pos(&game->enemy_tex[i].end, game->enemy_tex[i].width, game->enemy_tex[i].height);
+		game->assets.enemy_tex[i].ptr = mlx_get_data_addr(game->assets.enemy_tex[i].tex, &game->assets.enemy_tex[i].bpp, &game->assets.enemy_tex[i].size_line, &game->assets.enemy_tex[i].endian);
+		set_pos(&game->assets.enemy_tex[i].start, 0, 0);
+		set_pos(&game->assets.enemy_tex[i].end, game->assets.enemy_tex[i].width, game->assets.enemy_tex[i].height);
 		i++;
 	}
 	return (1);
@@ -156,7 +156,7 @@ void
 	double		diff;
 	int			diff_idx;
 
-	cur = game->enemies;
+	cur = game->world.enemies;
 	while (cur) {
 		dx = game->camera.pos.x - cur->sprite->pos.x;
 		dy = game->camera.pos.y - cur->sprite->pos.y;
@@ -236,5 +236,5 @@ static void
 	}
 	diff_idx = (int)(floor((diff + (M_PI / 8.0)) / (M_PI / 4.0))) % 8;
 	tex_idx = (8 - diff_idx) % 8;
-	cur->sprite->tex = &game->enemy_tex[tex_idx];
+	cur->sprite->tex = &game->assets.enemy_tex[tex_idx];
 }

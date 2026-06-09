@@ -6,17 +6,15 @@
 /*   By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/27 19:31:08 by samatsum          #+#    #+#             */
-/*   Updated: 2026/06/08 11:53:35 by samatsum         ###   ########.fr       */
+/*   Updated: 2026/06/10 08:29:28 by samatsum         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <stdio.h>
 #include <stdlib.h>
 #include "core/core.h"
 #include "engine/input/input.h"
 #include "engine/input/keymap.h"
 #include "engine/render/render.h"
-#include "ui/ui.h"
 
 /* ************************************************************************** */
 #define KEY_NUM_1		49
@@ -24,6 +22,20 @@
 #define KEY_NUM_3		51
 #define KEY_SPACE		32
 #define SHOOT_COOLDOWN	10
+
+#define AXIS_FORWARD	0
+#define AXIS_BACKWARD	1
+#define AXIS_STRAFE_L	2
+#define AXIS_STRAFE_R	3
+#define AXIS_ROTATE_L	4
+#define AXIS_ROTATE_R	5
+
+// 押下/離上で 1/0 を切り替える移動・回転キーと制御軸の対応エントリ
+typedef struct s_hold_key
+{
+	int	keycode;
+	int	axis;
+}			t_hold_key;
 
 int
 	expose_hook(t_game* game);
@@ -33,6 +45,25 @@ int
 	key_press(int keycode, t_game* game);
 int
 	key_release(int keycode, t_game* game);
+static int
+	set_hold_axis(t_game* game, int keycode, double value);
+static void
+	handle_action(int keycode, t_game* game);
+static double*
+	axis_field(t_game* game, int axis);
+
+/* ************************************************************************** */
+// 移動・回転キーと制御軸の対応表（移動はWASDのみ、Q/E・左右矢印で回転）
+static const t_hold_key	g_hold_keys[] = {
+	{KEY_W, AXIS_FORWARD},
+	{KEY_S, AXIS_BACKWARD},
+	{KEY_A, AXIS_STRAFE_L},
+	{KEY_D, AXIS_STRAFE_R},
+//	{KEY_Q, AXIS_ROTATE_L},
+	{KEY_LEFT, AXIS_ROTATE_L},
+//	{KEY_E, AXIS_ROTATE_R},
+	{KEY_RIGHT, AXIS_ROTATE_R},
+};
 
 /* ************************************************************************** */
 // ウィンドウ再描画イベント時の処理
@@ -52,61 +83,25 @@ int
 }
 
 /* ************************************************************************** */
-// キーが押された際の移動や武器切り替え、射撃フラグの更新
+// キー押下時：移動・回転状態のON、または単発アクションを処理する
 int
 	key_press(int keycode, t_game* game)
 {
-	if (keycode == KEY_W || keycode == KEY_FORWARD) {
-		game->move.x = 1;
-	} else if (keycode == KEY_S || keycode == KEY_BACKWARD) {
-		game->move.y = 1;
-	}
-	if (keycode == KEY_A) {
-		game->x_move.x = 1;
-	} else if (keycode == KEY_D) {
-		game->x_move.y = 1;
-	}
-	if (keycode == KEY_Q || keycode == KEY_LEFT) {
-		game->rotate.x = 1;
-	} else if (keycode == KEY_E || keycode == KEY_RIGHT) {
-		game->rotate.y = 1;
-	}
-	if (keycode == '1' || keycode == KEY_NUM_1) {
-		game->current_weapon = WEP_PISTOL;
-	}
-	if (keycode == '2' || keycode == KEY_NUM_2) {
-		game->current_weapon = WEP_FLASHLIGHT;
-	}
-	if (keycode == '3' || keycode == KEY_NUM_3) {
-		game->current_weapon = WEP_HANDS;
-	}
-	if (keycode == KEY_SPACE && game->current_weapon == WEP_PISTOL) {
-		if (game->is_shooting == 0) {
-			game->is_shooting = SHOOT_COOLDOWN;
-			shoot_target(game);
-		}
+	if (!set_hold_axis(game, keycode, 1.0)) {
+		handle_action(keycode, game);
 	}
 	return (0);
 }
 
 /* ************************************************************************** */
-// キーが離された際の移動フラグ解除やUIオプションの切り替え
+// キー解放時：移動・回転状態のOFF、またはUI切り替え・終了を処理する
 int
 	key_release(int keycode, t_game* game)
 {
-	if (keycode == KEY_W || keycode == KEY_FORWARD) {
-		game->move.x = 0;
-	} else if (keycode == KEY_S || keycode == KEY_BACKWARD) {
-		game->move.y = 0;
-	} else if (keycode == KEY_A) {
-		game->x_move.x = 0;
-	} else if (keycode == KEY_D) {
-		game->x_move.y = 0;
-	} else if (keycode == KEY_Q || keycode == KEY_LEFT) {
-		game->rotate.x = 0;
-	} else if (keycode == KEY_E || keycode == KEY_RIGHT) {
-		game->rotate.y = 0;
-	} else if (keycode == KEY_ESC) {
+	if (set_hold_axis(game, keycode, 0.0)) {
+		return (0);
+	}
+	if (keycode == KEY_ESC) {
 		return (exit_game(game, EXIT_SUCCESS));
 	} else if (keycode == KEY_I) {
 		game->options = game->options ^ FLAG_UI;
@@ -116,4 +111,62 @@ int
 		game->options = game->options ^ FLAG_CROSSHAIR;
 	}
 	return (0);
+}
+
+/* ************************************************************************** */
+// 対応表とキーコードを照合し、一致した制御軸の状態を value に更新する
+static int
+	set_hold_axis(t_game* game, int keycode, double value)
+{
+	int	count;
+	int	i;
+
+	count = sizeof(g_hold_keys) / sizeof(g_hold_keys[0]);
+	i = 0;
+	while (i < count) {
+		if (g_hold_keys[i].keycode == keycode) {
+			*axis_field(game, g_hold_keys[i].axis) = value;
+			return (1);
+		}
+		i++;
+	}
+	return (0);
+}
+
+/* ************************************************************************** */
+// 押下時の単発アクション（武器切り替え・射撃）を処理する
+static void
+	handle_action(int keycode, t_game* game)
+{
+	if (keycode == '1' || keycode == KEY_NUM_1) {
+		game->input.current_weapon = WEP_PISTOL;
+	} else if (keycode == '2' || keycode == KEY_NUM_2) {
+		game->input.current_weapon = WEP_FLASHLIGHT;
+	} else if (keycode == '3' || keycode == KEY_NUM_3) {
+		game->input.current_weapon = WEP_HANDS;
+	} else if (keycode == KEY_SPACE && game->input.current_weapon == WEP_PISTOL) {
+		if (game->input.is_shooting == 0) {
+			game->input.is_shooting = SHOOT_COOLDOWN;
+			shoot_target(game);
+		}
+	}
+}
+
+/* ************************************************************************** */
+// 制御軸の番号から、対応する状態フィールドのポインタを返す
+static double*
+	axis_field(t_game* game, int axis)
+{
+	if (axis == AXIS_FORWARD) {
+		return (&game->input.move.x);
+	} else if (axis == AXIS_BACKWARD) {
+		return (&game->input.move.y);
+	} else if (axis == AXIS_STRAFE_L) {
+		return (&game->input.x_move.x);
+	} else if (axis == AXIS_STRAFE_R) {
+		return (&game->input.x_move.y);
+	} else if (axis == AXIS_ROTATE_L) {
+		return (&game->input.rotate.x);
+	}
+	return (&game->input.rotate.y);
 }

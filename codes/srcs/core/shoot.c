@@ -19,7 +19,7 @@ void
 	t_sprite*	target;
 	double		min_dist;
 
-	current = game->sprites;
+	current = game->world.sprites;
 	target = NULL;
 	min_dist = -1.0;
 	while (current) {
@@ -61,7 +61,7 @@ static void
 	}
 	/* 修正箇所: 画面幅をintにキャストしてインデックスとして使用 */
 	mid_x = (int)(game->window.size.x / 2.0);
-	if (tf.y >= game->depth[mid_x]) {
+	if (tf.y >= game->cache.depth[mid_x]) {
 		return ;
 	}
 	if (*min == -1.0 || tf.y < *min) {
