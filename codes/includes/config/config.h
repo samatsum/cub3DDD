@@ -6,7 +6,7 @@
 /*   By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/29 12:51:26 by samatsum          #+#    #+#             */
-/*   Updated: 2026/06/03 15:00:24 by samatsum         ###   ########.fr       */
+/*   Updated: 2026/06/08 22:19:56 by samatsum         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@
 
 /* ************************************************************************** */
 # define DIRECTIONS				"NSEW"
-# define VALID_MAP_CHARACTERS	" 01234NSEW"
+# define VALID_MAP_CHARACTERS	" 01234EWNSM"
 
 # define MAX_WIDTH				1920
 # define MAX_HEIGHT				1080

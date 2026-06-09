@@ -14,8 +14,6 @@ int
 	init_image(t_window* window, t_image* img);
 static int
 	find_sprites(t_game* game);
-static int
-	is_enemy_tex(char* path);
 
 /* ************************************************************************** */
 // ゲームの初期化処理を完了させ、必要なリソースを準備する
@@ -138,7 +136,7 @@ int
 }
 
 /* ************************************************************************** */
-// マップ上のスプライトを検索してリストに登録し、敵であれば敵リストにも追加する
+// マップ上のスプライトを検索し、オブジェクト(2-4)と敵(M)をそれぞれ登録する
 static int
 	find_sprites(t_game* game)
 {
@@ -156,46 +154,25 @@ static int
 		while (j < game->config.map.columns) {
 			set_pos(&pos, j + .5, i + .5);
 			c = MAP(pos, game->config);
-			tex = &game->tex[TEX_SPRITE + (c - '0' - 2)];
-			if (c >= '2' && c <= '4' && tex->tex) {
+			if (c >= '2' && c <= '4') {
+				tex = &game->tex[TEX_SPRITE + (c - '0' - 2)];
+				if (tex->tex) {
+					new_sprite = add_front_sprite(&game->sprites, 0., &pos, tex);
+					if (!new_sprite) {
+						return (0);
+					}
+				}
+			} else if (c == 'M') {
+				tex = &game->enemy_tex[0];
 				new_sprite = add_front_sprite(&game->sprites, 0., &pos, tex);
 				if (!new_sprite) {
 					return (0);
 				}
-				if (is_enemy_tex(tex->path)) {
-					add_enemy(&game->enemies, new_sprite);
-				}
+				add_enemy(&game->enemies, new_sprite);
 			}
 			j++;
 		}
 		i++;
 	}
 	return (1);
-}
-
-/* ************************************************************************** */
-// テクスチャのファイルパスに「Enemy_」が含まれているか安全に判定する
-static int
-	is_enemy_tex(char* path)
-{
-	int		i;
-	int		j;
-	char*	target;
-
-	if (!path) {
-		return (0);
-	}
-	target = "Enemy_";
-	i = 0;
-	while (path[i]) {
-		j = 0;
-		while (path[i + j] == target[j]) {
-			if (target[j + 1] == '\0') {
-				return (1);
-			}
-			j++;
-		}
-		i++;
-	}
-	return (0);
 }

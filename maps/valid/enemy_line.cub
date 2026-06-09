@@ -13,5 +13,5 @@ OP ./textures/enemy/Enemy_monster1.xpm
 OC ./textures/object/Object_star.xpm
 
 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1
-1 E 0 0 0 3 0 0 0 3 0 0 0 3 0 0 0 0 1
+1 E 0 0 0 M 0 0 0 M 0 0 0 M 0 0 0 0 1
 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1
