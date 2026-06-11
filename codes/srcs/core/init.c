@@ -21,7 +21,7 @@ int
 	finish_init(t_game* game)
 {
 	int			i;
-	const char*	paths[6];
+	const char*	paths[WEAPON_TEX_COUNT];
 
 	if (!init_window(&game->window, &game->config)) {
 		return (exit_error(game, "Error:\nmlx failed to create window or image.\n"));
@@ -35,7 +35,7 @@ int
 	paths[4] = "textures/arm/Arm_lefthand.xpm";
 	paths[5] = "textures/arm/Arm_righthand.xpm";
 	i = 0;
-	while (i < 6) {
+	while (i < WEAPON_TEX_COUNT) {
 		game->assets.weapon_tex[i].path = ft_strdup(paths[i]);
 		game->assets.weapon_tex[i].tex = mlx_xpm_file_to_image(game->window.ptr, game->assets.weapon_tex[i].path, &game->assets.weapon_tex[i].width, &game->assets.weapon_tex[i].height);
 		if (game->assets.weapon_tex[i].tex) {

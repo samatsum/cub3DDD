@@ -6,7 +6,7 @@
 /*   By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/27 19:25:55 by samatsum          #+#    #+#             */
-/*   Updated: 2026/06/10 08:27:02 by samatsum         ###   ########.fr       */
+/*   Updated: 2026/06/11 17:38:10 by samatsum         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@ int
 	exit_game(t_game* game, int code);
 static void
 	clear_assets(t_game* game);
-int
+static int
 	clear_window(t_window* window);
 
 /* ************************************************************************** */
@@ -94,7 +94,7 @@ static void
 
 /* ************************************************************************** */
 // ウィンドウとイメージのリソースを解放する
-int
+static int
 	clear_window(t_window* window)
 {
 	if (window->screen.img) {

@@ -6,10 +6,11 @@
 /*   By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/29 15:25:21 by samatsum          #+#    #+#             */
-/*   Updated: 2026/06/04 02:13:51 by samatsum         ###   ########.fr       */
+/*   Updated: 2026/06/11 18:13:18 by samatsum         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include <stdio.h>
 #include "config/config.h"
 
 /* ************************************************************************** */
@@ -19,6 +20,8 @@ int
 	parse_color(t_config* config, int key, char const* line);
 static int
 	str_to_color(t_str* str);
+int
+	parse_speed(t_config* config, int key, char const* line);
 
 /* ************************************************************************** */
 // 画面サイズの解像度設定を解析する
@@ -82,7 +85,6 @@ int
 	str_arr[1] = NULL;
 	str_arr[0] = ft_split(line, ' ');
 	if (!str_arr[0] || str_length(str_arr[0]) != 2) {
-		/* 修正2: str_clear(&str_arr[0]) が true的評価をされた場合に str_arr[1] が解放されないリークバグを修正 */
 		str_clear(&str_arr[0]);
 		str_clear(&str_arr[1]);
 		return (0);
@@ -130,4 +132,33 @@ static int
 		str = str->next;
 	}
 	return (color);
+}
+
+int
+	parse_speed(t_config* config, int key, char const* line)
+{
+	int		i;
+	double	speed;
+	char*	endptr;
+
+	i = 1;//MS,RSは２文字なので。
+	while (line[++i]) {
+		// 	printf("line[%d] = '%c'\n", i, line[i]); // デバッグ用出力
+		if (!ft_in_set(line[i], " .0123456789")) {
+			return (0);
+		}
+	}
+	// printf("line to parse: '%s'\n", line); // デバッグ用出力
+	// printf("line + 2 to parse: '%s'\n", line + 2); // デバッグ用出力
+	speed = strtod(line + 2, &endptr);
+	// printf("Parsed speed: %f\n", speed); // デバッグ用出力
+	if (endptr == line + 2 || speed <= 0.0) {
+		return (0);
+	}
+	if (key == C_RS) {
+		config->rotate_speed = speed;
+	} else if (key == C_MS) {
+		config->move_speed = speed;
+	}
+	return (1);
 }

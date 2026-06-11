@@ -6,7 +6,7 @@
 /*   By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/29 12:51:26 by samatsum          #+#    #+#             */
-/*   Updated: 2026/06/08 22:19:56 by samatsum         ###   ########.fr       */
+/*   Updated: 2026/06/11 18:37:43 by samatsum         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,19 +46,26 @@
 # define C_ST					9
 # define C_F					10
 # define C_C					11
+# define C_MS					12
+# define C_RS					13
 
-# define C_MAP					12
-# define C_LAST					13
+# define C_MAP					14
+# define C_LAST					15
 
+//これわかりにくい
 # define TEXTURES				9
+
 # define TEX_NORTH				0
 # define TEX_SOUTH				1
 # define TEX_WEST				2
 # define TEX_EAST				3
 # define TEX_SKY				4
 # define TEX_FLOOR				5
+//これわかりにくい
 # define TEX_SPRITE				6
+//これわかりにくい
 # define TEX_SPRITE_UP			7
+//これわかりにくい
 # define TEX_SPRITE_C			8
 
 # define BEST_RATIO				1.7777777778
@@ -95,6 +102,8 @@ int
 	parse_texture(t_config* config, int key, char const* line);
 int
 	parse_color(t_config* config, int key, char const* line);
+int
+	parse_speed(t_config* config, int key, char const* line);
 int
 	parse_config(t_config* config, char const* conf_path);
 int

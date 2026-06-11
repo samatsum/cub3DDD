@@ -118,7 +118,7 @@ void
 int
 	init_enemy_textures(t_game* game)
 {
-	char*	paths[8];
+	char*	paths[ENEMY_TEX_COUNT];
 	int		i;
 
 	paths[0] = "textures/enemy/Enemy_1.xpm";
@@ -130,7 +130,7 @@ int
 	paths[6] = "textures/enemy/Enemy_7.xpm";
 	paths[7] = "textures/enemy/Enemy_8.xpm";
 	i = 0;
-	while (i < 8) {
+	while (i < ENEMY_TEX_COUNT) {
 		game->assets.enemy_tex[i].path = ft_strdup(paths[i]);
 		game->assets.enemy_tex[i].tex = mlx_xpm_file_to_image(game->window.ptr, game->assets.enemy_tex[i].path, &game->assets.enemy_tex[i].width, &game->assets.enemy_tex[i].height);
 		if (!game->assets.enemy_tex[i].tex) {
@@ -234,7 +234,7 @@ static void
 	while (diff >= 2.0 * M_PI) {
 		diff -= 2.0 * M_PI;
 	}
-	diff_idx = (int)(floor((diff + (M_PI / 8.0)) / (M_PI / 4.0))) % 8;
-	tex_idx = (8 - diff_idx) % 8;
+	diff_idx = (int)(floor((diff + (M_PI / 8.0)) / (M_PI / 4.0))) % ENEMY_TEX_COUNT;
+	tex_idx = (ENEMY_TEX_COUNT - diff_idx) % ENEMY_TEX_COUNT;
 	cur->sprite->tex = &game->assets.enemy_tex[tex_idx];
 }

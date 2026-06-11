@@ -6,7 +6,7 @@
 /*   By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/03 07:32:33 by samatsum          #+#    #+#             */
-/*   Updated: 2026/06/04 02:36:01 by samatsum         ###   ########.fr       */
+/*   Updated: 2026/06/11 17:36:45 by samatsum         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,7 +83,7 @@ int
 	double	actual_speed;
 
 	/* 修正: 速度に時間倍率を掛けて、FPSに依存しない移動量を計算 */
-	actual_speed = MOVE_SPEED * time_mult;
+	actual_speed = config->move_speed  * time_mult;
 	copy_pos(&n_pos, &c->pos);
 	n_pos.x += (((direction) ? -1 : 1) * (c->dir.x * actual_speed));
 	if (IN_MAP(n_pos, *config) && MAP(n_pos, *config) != '1' && MAP(n_pos, *config) != '2') {
@@ -109,7 +109,7 @@ int
 	double	actual_speed;
 
 	/* 修正: 速度に時間倍率を掛けて、FPSに依存しない移動量を計算 */
-	actual_speed = MOVE_SPEED * time_mult;
+	actual_speed = config->move_speed * time_mult;
 	copy_pos(&n_pos, &c->pos);
 	n_pos.x += (((direction) ? -1 : 1) * (c->x_dir.x * actual_speed) + COLLISION_MARGIN);
 	if (IN_MAP(n_pos, *config) && MAP(n_pos, *config) != '1' && MAP(n_pos, *config) != '2') {

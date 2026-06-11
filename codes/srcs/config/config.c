@@ -6,7 +6,7 @@
 /*   By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/03 07:32:33 by samatsum          #+#    #+#             */
-/*   Updated: 2026/06/04 02:14:52 by samatsum         ###   ########.fr       */
+/*   Updated: 2026/06/11 17:53:09 by samatsum         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,9 +50,9 @@ void
 	config->map.data = NULL;
 	config->map.rows = 0;
 	config->map.columns = 0;
-	config->rotate_speed = .11;
-	config->move_speed = .11;
-	config->fov = .66;
+	config->rotate_speed = 0.11;
+	config->move_speed = 0.11;
+	config->fov = 0.66;
 	i = 0;
 	while (i < C_LAST) {
 		config->set[i++] = 0;
@@ -141,7 +141,6 @@ static int
 	int	key;
 
 	length = ft_strlen(line);
-	
 	/*static変数を廃止し、引数で状態ポインタを受け取るように変更（状態依存バグの回避） */
 	if (length == 0 && config->set[C_MAP]) {
 		*empty_map = 1;
@@ -162,6 +161,8 @@ static int
 		return (parse_texture(config, key, line));
 	} else if (key == C_F || key == C_C) {
 		return (parse_color(config, key, line));
+	} else if (key == C_RS || key == C_MS) {
+		return (parse_speed(config, key, line));
 	}
 	config->set[key] = 1;
 	if (*empty_map) {
@@ -199,6 +200,10 @@ static int
 		return (C_OP);
 	} else if (line[0] == 'O' && line[1] == 'C') {
 		return (C_OC);
+	} else if (line[0] == 'M' && line[1] == 'S') {
+		return (C_MS);
+	} else if (line[0] == 'R' && line[1] == 'S') {
+		return (C_RS);
 	}
 	return (C_MAP);
 }

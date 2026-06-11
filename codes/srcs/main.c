@@ -6,7 +6,7 @@
 /*   By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/12 02:23:13 by samatsum          #+#    #+#             */
-/*   Updated: 2026/06/04 04:27:54 by samatsum         ###   ########.fr       */
+/*   Updated: 2026/06/11 17:41:12 by samatsum         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,12 +53,12 @@ static bool
 	validate_check(int argc, char** argv, t_game* game)
 {
 	if (argc < 2) {
-		exit_error(game, "Error:\nno map specified.\n");
+		exit_error(game, "Error:\n no map specified.\n");
 		return (false);
 	}
 	init_config(&game->config);
 	if (!parse_config(&game->config, argv[1])) {
-		exit_error(game, "Error:\ninvalid map.\n");
+		exit_error(game, "Error:\n invalid map.\n");
 		return (false);
 	}
 	return (true);
@@ -81,9 +81,9 @@ static bool
 static void
 	setup_hooks(t_game* game)
 {
-	mlx_hook(game->window.win, X_EVENT_KEY_PRESS, MASK_KEY_PRESS, &key_press, game);
-	mlx_hook(game->window.win, X_EVENT_KEY_RELEASE, MASK_KEY_RELEASE, &key_release, game);
-	mlx_hook(game->window.win, X_EVENT_EXIT, MASK_CLOSE, &exit_hook, game);
+	mlx_hook(game->window.win, EVENT_KEY_PRESS, MASK_KEY_PRESS, &key_press, game);
+	mlx_hook(game->window.win, EVENT_KEY_RELEASE, MASK_KEY_RELEASE, &key_release, game);
+	mlx_hook(game->window.win, EVENT_EXIT, MASK_CLOSE, &exit_hook, game);
 	mlx_hook(game->window.win, EVENT_EXPOSE, MASK_EXPOSE, &expose_hook, game);
 	mlx_loop_hook(game->window.ptr, &main_loop, game);
 }

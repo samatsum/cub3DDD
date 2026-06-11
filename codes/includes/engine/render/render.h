@@ -6,7 +6,7 @@
 /*   By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/28 13:16:59 by samatsum          #+#    #+#             */
-/*   Updated: 2026/06/07 06:58:49 by samatsum         ###   ########.fr       */
+/*   Updated: 2026/06/11 17:47:21 by samatsum         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,8 +83,6 @@ typedef struct s_render
 /* ************************************************************************** */
 int
 	init_window(t_window* window, struct s_config* config);
-int
-	clear_window(t_window* window);
 void
 	update_window(t_window* w, int options, int collected, int to_collect);
 void

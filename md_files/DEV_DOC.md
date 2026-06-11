@@ -144,7 +144,7 @@ make re        # fclean + all
 
 ## 6. コーディング規約
 
-- Norminette V3 風（1 関数 25 行、変数宣言は関数頭、`for` 不使用、ヘッダガード必須）。
+- 変数宣言は関数頭、`for` 不使用、ヘッダガード必須。
 - 命名:
   - 関数・ファイル: `動詞_名詞`（`parse_map`, `draw_wall`）
   - 構造体: `t_xxx`
@@ -159,7 +159,6 @@ make re        # fclean + all
 ### (a) 一貫性の問題
 
 - **武器テクスチャのインデックスがマジックナンバー**: `draw_weapon.c` で `weapon_tex[4]` / `[5]` などを直接参照しています。`init.c` の `paths[]` の並びと暗黙の対応関係があるため、`enum { WTEX_PISTOL_IDLE = 0, ... }` を導入すべきです。
-- **`MOVE_SPEED` と `config.move_speed` の二重管理**: `camera.c` はマクロを、`enemy.c` は config を見ています。設定の唯一の真実は `t_config` 側に寄せ、マクロは削除する方針が望ましいです。
 - **テクスチャ数のマジックナンバー**: `core.h` で `WEAPON_TEX_COUNT = 6`, `ENEMY_TEX_COUNT = 8` を定義していますが、`init.c` / `enemy.c` のループは `while (i < 6)` / `while (i < 8)` と直書きしています。
 - **`TEXTURES = 9` と `TEX_NORTH..TEX_SPRITE_C` の対応が暗黙**: `enum` 化すれば追加時の同期忘れを防げます。
 
@@ -174,10 +173,6 @@ make re        # fclean + all
 ### (d) ヘッダの include グラフが太い
 
 `core.h` が `config.h` / `render.h` / `raycast.h` / `enemy.h` を引き、その下流もさらに引いていくため、`input.c` をビルドするだけでほぼ全ヘッダをパースします。サブモジュールのヘッダは **公開関数の前方宣言** に絞り、構造体の本体定義はその実装が必要な `.c` でのみ展開するよう整理する余地があります。
-
-### (e) Q / E キー
-
-`keymap.h` に `KEY_Q` / `KEY_E` のマクロは残っていますが、`input.c` 側ではコメントアウトされています。回転キーを Q / E にも復活させるか、マクロ自体を削除するかを決めてください（README / USER_DOC は現状の左右矢印のみに合わせて記述しています）。
 
 ### (f) `mlx_*` 関数の戻り値
 
