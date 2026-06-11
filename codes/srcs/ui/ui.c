@@ -1,20 +1,8 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   ui.c                                               :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/06/03 07:32:33 by samatsum          #+#    #+#             */
-/*   Updated: 2026/06/03 15:18:01 by samatsum         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
-
+#include "../minilibx-linux/mlx.h"
 #include "ui/ui.h"
-#include "config/config.h" /* マップ情報の取得に必要 */
-#include "engine/render/render.h" /* draw_rectangle, draw_string等のため */
-#include "utils/utils.h"          /* ft_write_str等の文字列操作やset_posのため */
+#include "config/config.h"
+#include "engine/render/render.h"
+#include "utils/utils.h"
 
 /* ************************************************************************** */
 void
@@ -25,6 +13,8 @@ static void
 	draw_minimap(t_render* rnd, t_pos* start, t_pos* end);
 static int
 	case_color(t_config* config, t_camera* camera, int x, int y);
+static int
+	draw_string(t_window* window, t_pos* s_pos, char* str, int color);
 
 /* ************************************************************************** */
 // UIの背景とミニマップを描画し、UI全体を更新する
@@ -40,7 +30,6 @@ void
 	draw_minimap(rnd, &start, &end);
 }
 
-/* ************************************************************************** */
 // 収集アイテムの状況などのUIテキストを画面に書き込む
 void
 	write_ui_text(t_window* w, int collected, int to_collect)
@@ -66,7 +55,6 @@ void
 	draw_string(w, &start, buf, COLOR_UI_FONT);
 }
 
-/* ************************************************************************** */
 // 画面右下にミニマップを描画する
 static void
 	draw_minimap(t_render* rnd, t_pos* start, t_pos* end)
@@ -95,7 +83,6 @@ static void
 	}
 }
 
-/* ************************************************************************** */
 // ミニマップの特定座標における色を判定して返す
 static int
 	case_color(t_config* config, t_camera* camera, int x, int y)
@@ -111,4 +98,14 @@ static int
 		return (COLOR_UI_TEXT);
 	}
 	return (COLOR_MINIMAP_EMPTY);
+}
+
+// 指定された座標に文字列を描画する
+static int
+	draw_string(t_window* window, t_pos* s_pos, char* str, int color)
+{
+	return (mlx_string_put(
+		window->ptr, window->win,
+		s_pos->x, s_pos->y,
+		color, str));
 }

@@ -6,7 +6,7 @@
 /*   By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/27 14:24:58 by samatsum          #+#    #+#             */
-/*   Updated: 2026/06/11 17:42:35 by samatsum         ###   ########.fr       */
+/*   Updated: 2026/06/11 23:17:59 by samatsum         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,9 +26,7 @@
 # define KEY_S					115
 # define KEY_D					100
 
-// 回転キー（Q/E(コメントアウト) と 左右矢印）
-// # define KEY_Q					113
-// # define KEY_E					101
+// 回転キー（左右矢印）
 # define KEY_LEFT				65361
 # define KEY_RIGHT				65363
 

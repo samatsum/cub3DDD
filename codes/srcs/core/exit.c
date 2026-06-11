@@ -1,20 +1,8 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   exit.c                                             :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/05/27 19:25:55 by samatsum          #+#    #+#             */
-/*   Updated: 2026/06/11 17:38:10 by samatsum         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #include <stdlib.h>
 #include <unistd.h>
+#include "../minilibx-linux/mlx.h"
 #include "core/core.h"
 #include "gnl/get_next_line.h"
-#include "../minilibx-linux/mlx.h"
 
 /* ************************************************************************** */
 int
@@ -41,7 +29,6 @@ int
 	return (EXIT_FAILURE);
 }
 
-/* ************************************************************************** */
 // 使用したメモリやリソースを完全に解放し、ゲームを終了させる
 int
 	exit_game(t_game* game, int code)
@@ -57,13 +44,13 @@ int
 		if (game->window.ptr) {
 			mlx_destroy_display(game->window.ptr);
 			free(game->window.ptr);
+			game->window.ptr = NULL;
 		}
 	}
 	exit(code);
 	return (code);
 }
 
-/* ************************************************************************** */
 // 武器(6種)と敵(8方向)のテクスチャ画像とパス文字列をすべて解放する
 static void
 	clear_assets(t_game* game)
@@ -74,9 +61,11 @@ static void
 	while (i < WEAPON_TEX_COUNT) {
 		if (game->assets.weapon_tex[i].tex && game->window.ptr) {
 			mlx_destroy_image(game->window.ptr, game->assets.weapon_tex[i].tex);
+			game->assets.weapon_tex[i].tex = NULL;
 		}
 		if (game->assets.weapon_tex[i].path) {
 			free(game->assets.weapon_tex[i].path);
+			game->assets.weapon_tex[i].path = NULL;
 		}
 		i++;
 	}
@@ -84,24 +73,27 @@ static void
 	while (i < ENEMY_TEX_COUNT) {
 		if (game->assets.enemy_tex[i].tex && game->window.ptr) {
 			mlx_destroy_image(game->window.ptr, game->assets.enemy_tex[i].tex);
+			game->assets.enemy_tex[i].tex = NULL;
 		}
 		if (game->assets.enemy_tex[i].path) {
 			free(game->assets.enemy_tex[i].path);
+			game->assets.enemy_tex[i].path = NULL;
 		}
 		i++;
 	}
 }
 
-/* ************************************************************************** */
 // ウィンドウとイメージのリソースを解放する
 static int
 	clear_window(t_window* window)
 {
 	if (window->screen.img) {
 		mlx_destroy_image(window->ptr, window->screen.img);
+		window->screen.img = NULL;
 	}
 	if (window->ptr && window->win) {
 		mlx_destroy_window(window->ptr, window->win);
+		window->win = NULL;
 	}
 	return (0);
 }

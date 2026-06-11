@@ -27,11 +27,10 @@ void
 		current = current->next;
 	}
 	if (target != NULL) {
-		damage_enemy(game, target); /* ← 専用モジュールへ委譲 */
+		damage_enemy(game, target);
 	}
 }
 
-/* ************************************************************************** */
 // 単一のスプライトに対する射影変換と画面中央のヒット判定を行う
 static void
 	check_hit(t_game* game, t_sprite* cur, t_sprite** tgt, double* min)
@@ -41,7 +40,7 @@ static void
 	double	inv;
 	int		scr_x;
 	int		size;
-	int		mid_x; /* 追加: インデックス用整数変数 */
+	int		mid_x;
 
 	inv = 1.0 / (game->camera.plane.x * game->camera.dir.y - game->camera.plane.y * game->camera.dir.x);
 	sp.x = cur->pos.x - game->camera.pos.x;
@@ -59,8 +58,10 @@ static void
 	if (game->window.size.y / 2 < -size / 2 + game->window.size.y / 2 || game->window.size.y / 2 > size / 2 + game->window.size.y / 2) {
 		return ;
 	}
-	/* 修正箇所: 画面幅をintにキャストしてインデックスとして使用 */
 	mid_x = (int)(game->window.size.x / 2.0);
+	if (mid_x < 0 || mid_x >= MAX_WIDTH) {
+		return ;
+	}
 	if (tf.y >= game->cache.depth[mid_x]) {
 		return ;
 	}

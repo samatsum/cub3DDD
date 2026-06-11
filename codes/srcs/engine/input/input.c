@@ -1,15 +1,3 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   input.c                                            :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/05/27 19:31:08 by samatsum          #+#    #+#             */
-/*   Updated: 2026/06/11 20:24:45 by samatsum         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #include <stdlib.h>
 #include "core/core.h"
 #include "engine/input/input.h"
@@ -58,15 +46,13 @@ static double*
 	axis_field(t_game* game, int axis);
 
 /* ************************************************************************** */
-// 移動・回転キーと制御軸の対応表（移動はWASDのみ、Q/E・左右矢印で回転）
+// 移動・回転キーと制御軸の対応表（移動はWASDのみ、左右矢印で回転）
 static const t_hold_key	g_hold_keys[] = {
 	{KEY_W, AXIS_FORWARD},
 	{KEY_S, AXIS_BACKWARD},
 	{KEY_A, AXIS_STRAFE_L},
 	{KEY_D, AXIS_STRAFE_R},
-//	{KEY_Q, AXIS_ROTATE_L},
 	{KEY_LEFT, AXIS_ROTATE_L},
-//	{KEY_E, AXIS_ROTATE_R},
 	{KEY_RIGHT, AXIS_ROTATE_R},
 };
 
@@ -79,7 +65,6 @@ int
 	return (0);
 }
 
-/* ************************************************************************** */
 // ウィンドウの×ボタン等が押された際の終了処理
 int
 	exit_hook(t_game* game)
@@ -87,7 +72,6 @@ int
 	return (exit_game(game, EXIT_SUCCESS));
 }
 
-/* ************************************************************************** */
 // キー押下時：移動・回転状態のON、または単発アクションを処理する
 int
 	key_press(int keycode, t_game* game)
@@ -98,7 +82,6 @@ int
 	return (0);
 }
 
-/* ************************************************************************** */
 // キー解放時：移動・回転状態のOFF、またはUI切り替え・終了を処理する
 int
 	key_release(int keycode, t_game* game)
@@ -118,7 +101,6 @@ int
 	return (0);
 }
 
-/* ************************************************************************** */
 // 対応表とキーコードを照合し、一致した制御軸の状態を value に更新する
 static int
 	set_hold_axis(t_game* game, int keycode, double value)
@@ -138,16 +120,15 @@ static int
 	return (0);
 }
 
-/* ************************************************************************** */
 // 押下時の単発アクション（武器切り替え・射撃）を処理する
 static void
 	handle_action(int keycode, t_game* game)
 {
-	if (keycode == '1' || keycode == KEY_NUM_1) {
+	if (keycode == KEY_NUM_1) {
 		game->input.current_weapon = WEP_PISTOL;
-	} else if (keycode == '2' || keycode == KEY_NUM_2) {
+	} else if (keycode == KEY_NUM_2) {
 		game->input.current_weapon = WEP_FLASHLIGHT;
-	} else if (keycode == '3' || keycode == KEY_NUM_3) {
+	} else if (keycode == KEY_NUM_3) {
 		game->input.current_weapon = WEP_HANDS;
 	} else if (keycode == KEY_SPACE && game->input.current_weapon == WEP_PISTOL) {
 		if (game->input.is_shooting == 0) {
@@ -157,7 +138,6 @@ static void
 	}
 }
 
-/* ************************************************************************** */
 // 制御軸の番号から、対応する状態フィールドのポインタを返す
 static double*
 	axis_field(t_game* game, int axis)

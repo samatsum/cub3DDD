@@ -55,7 +55,6 @@ SRCS_LIST       = main.c \
                   engine/texture/color.c \
                   engine/texture/texture.c \
                   engine/input/input.c \
-                  ui/shortcuts.c \
                   ui/ui.c \
                   ui/crosshair.c
 
