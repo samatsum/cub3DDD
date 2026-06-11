@@ -6,7 +6,7 @@
 /*   By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/28 13:16:59 by samatsum          #+#    #+#             */
-/*   Updated: 2026/06/11 17:47:21 by samatsum         ###   ########.fr       */
+/*   Updated: 2026/06/11 23:44:48 by samatsum         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -101,8 +101,6 @@ int
 	draw_vertical_line(t_window* window, t_pos* start, int length, int color);
 int
 	draw_rectangle(t_window* window, t_pos* p1, t_pos* p2, int color);
-int
-	draw_string(t_window* window, t_pos* s_pos, char* str, int color);
 void
 	draw_wall(t_render* rnd, t_raysult* ray);
 void

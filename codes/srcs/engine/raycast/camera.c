@@ -6,13 +6,14 @@
 /*   By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/03 07:32:33 by samatsum          #+#    #+#             */
-/*   Updated: 2026/06/11 17:36:45 by samatsum         ###   ########.fr       */
+/*   Updated: 2026/06/11 23:53:56 by samatsum         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include <math.h>          /* cos, sin 関数用 */
+
 #include "engine/raycast/raycast.h"
 #include "config/config.h" /* MAP等のマクロ展開のため */
-#include <math.h>          /* cos, sin 関数用 */
 
 /* ************************************************************************** */
 void

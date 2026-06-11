@@ -69,6 +69,7 @@ void
 			}
 			delete_sprite(sprites, &target->pos);
 			free(tmp);
+			tmp = NULL;
 			return ;
 		}
 		previous = current;
