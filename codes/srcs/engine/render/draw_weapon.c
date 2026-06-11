@@ -78,7 +78,7 @@ static void
 	bob_right = pow(fabs(cos(angle)), BOB_POWER);
 	
 	/* 左手 */
-	active_tex = &game->assets.weapon_tex[4];
+	active_tex = &game->assets.weapon_tex[WTEX_HAND_LEFT];
 	if (active_tex->tex) {
 		scale = (game->window.size.y * WEAPON_SCALE) / active_tex->height;
 		move_dist = active_tex->height * scale * HAND_MOVE_RATIO;
@@ -87,7 +87,7 @@ static void
 		draw_overlay(game, active_tex, start_x, start_y, scale);
 	}
 	/* 右手 */
-	active_tex = &game->assets.weapon_tex[5];
+	active_tex = &game->assets.weapon_tex[WTEX_HAND_RIGHT];
 	if (active_tex->tex) {
 		scale = (game->window.size.y * WEAPON_SCALE) / active_tex->height;
 		move_dist = active_tex->height * scale * HAND_MOVE_RATIO;
@@ -109,14 +109,14 @@ static void
 
 	if (game->input.current_weapon == WEP_PISTOL) {
 		if (game->input.is_shooting > SHOOT_FRAMES_MAX) {
-			active_tex = &game->assets.weapon_tex[1];
+			active_tex = &game->assets.weapon_tex[WTEX_PISTOL_SHOOT];
 		} else if (game->input.is_shooting > 0) {
-			active_tex = &game->assets.weapon_tex[2];
+			active_tex = &game->assets.weapon_tex[WTEX_PISTOL_RECOIL];
 		} else {
-			active_tex = &game->assets.weapon_tex[0];
+			active_tex = &game->assets.weapon_tex[WTEX_PISTOL_IDLE];
 		}
 	} else {
-		active_tex = &game->assets.weapon_tex[3];
+		active_tex = &game->assets.weapon_tex[WTEX_FLASHLIGHT];
 	}
 	if (!active_tex->tex) {
 		return ;

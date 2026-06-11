@@ -6,7 +6,7 @@
 /*   By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/22 15:19:29 by samatsum          #+#    #+#             */
-/*   Updated: 2026/06/04 02:23:45 by samatsum         ###   ########.fr       */
+/*   Updated: 2026/06/11 22:04:56 by samatsum         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,60 +22,49 @@ int
 int
 	write_next_line(t_str** str, char** line);
 static int
+	gnl_clear(t_fd** list, int fd, char** line);
+static int
 	free_all(t_fd** list, int fd, char* buf);
 
 /* ************************************************************************** */
-// ファイルディスクリプタから1行読み込む
+// fdから1行読み込む（成功:1 / 終端:0 / エラー:負。終端・エラー時は *line を NULL 化する）
 int
 	get_next_line(int fd, char** line)
 {
 	static t_fd*	list = NULL;
 	t_fd*			current;
-	int				read_rem;
-	char*			buffer;
+	int				is_new;
 	int				r;
 
-	/* 修正4: fdが負の値の場合などに、静的バッファ(list)を明示的に解放できるガード節を追加。
-	   パース中断時などに get_next_line(-1, NULL) と呼ぶことでメモリリークを防げる設計とした。 */
 	if (fd < 0 || !line || BUFFER_SIZE <= 0) {
-		return (free_all(&list, fd, NULL) | -1);
+		return (gnl_clear(&list, fd, line));
 	}
-	current = find_fd(&list, fd, &read_rem);
+	*line = NULL;
+	current = find_fd(&list, fd, &is_new);
 	if (!current) {
-		return (free_all(&list, -1, NULL) | -1);
+		return (gnl_clear(&list, -1, line));
 	}
-	buffer = NULL;
-	if (!read_rem && current->str) {
-		read_rem = !find_nl(current->str, NULL);
-	}
-	if (read_rem) {
+	if (is_new || !current->str || !find_nl(current->str, NULL)) {
 		r = read_file_until_nl(&current->str, fd);
 		if (r < 0) {
-			return (free_all(&list, (r == -1) ? -1 : fd, NULL) | -1);
+			return (gnl_clear(&list, (r == -1) ? -1 : fd, line));
 		}
 	}
 	if (!malloc_next_line(&current->str, line)) {
-		return (free_all(&list, -1, NULL) | -1);
+		return (gnl_clear(&list, -1, line));
 	}
-	read_rem = write_next_line(&current->str, line);
-	if (!read_rem) {
-		buffer = (char*)malloc(sizeof(*buffer) * (BUFFER_SIZE + 1));
-		if (!buffer) {
-			return (free_all(&list, -1, NULL));
-		}
-		r = read_file(&current->str, buffer, fd);
-		if (free_all(NULL, -1, buffer) || r < 0) {
-			return (free_all(&list, fd, NULL) | -1);
-		}
+	r = write_next_line(&current->str, line);
+	if (r == 0 && ft_strlen(*line) == 0) {
+		free(*line);
+		*line = NULL;
+		free_all(&list, fd, NULL);
+		return (0);
 	}
-	if (r > 0 || read_rem) {
-		return (1);
-	}
-	return (free_all(&list, fd, NULL));
+	return (1);
 }
 
 /* ************************************************************************** */
-// 改行が見つかるまでファイルから読み込みを続ける
+// 改行が見つかるまでファイルから読み込みを続ける（成功:1 / 自身のmalloc失敗:-1 / 読込失敗:-2）
 int
 	read_file_until_nl(t_str** str, int fd)
 {
@@ -132,7 +121,7 @@ int
 }
 
 /* ************************************************************************** */
-// 確保したメモリにバッファから1行分の文字列を書き込む
+// 確保したメモリにバッファから1行分の文字列を書き込む（改行を消費したら 1 を返す）
 int
 	write_next_line(t_str** str, char** line)
 {
@@ -166,33 +155,44 @@ int
 }
 
 /* ************************************************************************** */
-// リストやバッファのメモリを解放する
+// 内部リストとバッファを解放し、*line を NULL 化して -1 を返す（エラー処理の共通化）
+static int
+	gnl_clear(t_fd** list, int fd, char** line)
+{
+	free_all(list, fd, NULL);
+	if (line) {
+		*line = NULL;
+	}
+	return (-1);
+}
+
+/* ************************************************************************** */
+// 指定fd(負なら全fd)のリストノードとバッファを解放する（解放済みノードを再参照しない）
 static int
 	free_all(t_fd** list, int fd, char* buf)
 {
-	t_fd*	first;
-	t_fd*	lt0;
-	t_fd*	lt1;
+	t_fd*	cur;
+	t_fd*	prev;
+	t_fd*	next;
 
-	first = (list) ? *list : NULL;
-	lt0 = NULL;
-	while (list && *list) {
-		lt1 = (*list)->next;
-		if (fd < 0 || (*list)->fd == fd) {
-			if (first == (*list)) {
-				first = lt1;
-			}
-			str_clear(&(*list)->str);
-			free((*list));
-			if (lt0) {
-				lt0->next = lt1;
-			}
-		}
-		lt0 = (*list);
-		(*list) = lt1;
-	}
+	prev = NULL;
 	if (list) {
-		*list = first;
+		cur = *list;
+		while (cur) {
+			next = cur->next;
+			if (fd < 0 || cur->fd == fd) {
+				if (prev) {
+					prev->next = next;
+				} else {
+					*list = next;
+				}
+				str_clear(&cur->str);
+				free(cur);
+			} else {
+				prev = cur;
+			}
+			cur = next;
+		}
 	}
 	if (buf) {
 		free(buf);

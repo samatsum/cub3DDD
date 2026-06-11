@@ -6,7 +6,7 @@
 /*   By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/27 19:31:08 by samatsum          #+#    #+#             */
-/*   Updated: 2026/06/10 08:29:28 by samatsum         ###   ########.fr       */
+/*   Updated: 2026/06/11 20:24:45 by samatsum         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,12 +23,17 @@
 #define KEY_SPACE		32
 #define SHOOT_COOLDOWN	10
 
-#define AXIS_FORWARD	0
-#define AXIS_BACKWARD	1
-#define AXIS_STRAFE_L	2
-#define AXIS_STRAFE_R	3
-#define AXIS_ROTATE_L	4
-#define AXIS_ROTATE_R	5
+// 移動・回転の制御軸ID（末尾の AXIS_COUNT は要素数を兼ねる）
+typedef enum e_axis
+{
+	AXIS_FORWARD = 0,
+	AXIS_BACKWARD,
+	AXIS_STRAFE_L,
+	AXIS_STRAFE_R,
+	AXIS_ROTATE_L,
+	AXIS_ROTATE_R,
+	AXIS_COUNT
+}	t_axis;
 
 // 押下/離上で 1/0 を切り替える移動・回転キーと制御軸の対応エントリ
 typedef struct s_hold_key

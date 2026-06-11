@@ -1,14 +1,28 @@
 #ifndef ENEMY_H
 # define ENEMY_H
 
+/* ************************************************************************** */
 # include "engine/render/render.h"
 
 /* ************************************************************************** */
+// 敵1体あたりの最大HP
 # define ENEMY_MAX_HP		10
 
-# define ENEMY_STATE_IDLE	0
-# define ENEMY_STATE_WALK	1
-# define ENEMY_STATE_DEAD	2
+/* ************************************************************************** */
+// 敵の行動状態
+typedef enum e_enemy_state
+{
+	ENEMY_STATE_IDLE = 0,
+	ENEMY_STATE_WALK,
+	ENEMY_STATE_DEAD
+}				t_enemy_state;
+
+// 敵テクスチャ配列の要素数（8方向ぶん。個々の要素は角度から算術的に参照される
+// ため、方向名は付けず要素数のみを型付き定数として保持する）
+typedef enum e_enemy_tex_id
+{
+	ENEMY_TEX_COUNT = 8
+}				t_enemy_tex_id;
 
 // 前方宣言
 struct s_game;

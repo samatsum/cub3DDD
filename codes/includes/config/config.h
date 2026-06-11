@@ -1,32 +1,26 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   config.h                                           :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/11/29 12:51:26 by samatsum          #+#    #+#             */
-/*   Updated: 2026/06/11 18:37:43 by samatsum         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #ifndef CONFIG_H
 # define CONFIG_H
 
+/* ************************************************************************** */
+# include <math.h> /* floor関数を使用するマクロ(FINT)のため */
 # include "utils/utils.h"
-# include <math.h> /* floor関数を使用するマクロ(FINT)のため追加 */
 
 /* ************************************************************************** */
+// マップ解析で使用する方向文字と有効なマップ文字の集合
 # define DIRECTIONS				"NSEW"
 # define VALID_MAP_CHARACTERS	" 01234EWNSM"
 
+// ウィンドウ解像度の上限・下限
 # define MAX_WIDTH				1920
 # define MAX_HEIGHT				1080
 # define MIN_WIDTH				848
 # define MIN_HEIGHT				480
 
+// 視野角(FOV)の調整スケールと最適アスペクト比
 # define FOV_SCALE				2.5
+# define BEST_RATIO				1.7777777778
 
+// 座標の整数化・マップ範囲判定・マップ要素参照を行うマクロ群
 # define FINT(x)				((int)floor(x))
 # define CHECK_TOP(p)			(FINT(p.x) >= 0 && FINT(p.y) >= 0)
 # define CHECK_BOT(p, c)		(FINT(p.x) < (c).map.columns && FINT(p.y) < (c).map.rows)
@@ -34,43 +28,45 @@
 # define MAP(p, c)				(c).map.data[(FINT(p.y) * (c).map.columns) + FINT(p.x)]
 # define MAP_XY(x, y, c)		(c).map.data[(FINT(y) * (c).map.columns) + FINT(x)]
 
-# define C_R					0
-# define C_NO					1
-# define C_SO					2
-# define C_WE					3
-# define C_EA					4
-# define C_OI					5
-# define C_OP					6
-# define C_OC					7
-# define C_FT					8
-# define C_ST					9
-# define C_F					10
-# define C_C					11
-# define C_MS					12
-# define C_RS					13
-
-# define C_MAP					14
-# define C_LAST					15
-
-//これわかりにくい
-# define TEXTURES				9
-
-# define TEX_NORTH				0
-# define TEX_SOUTH				1
-# define TEX_WEST				2
-# define TEX_EAST				3
-# define TEX_SKY				4
-# define TEX_FLOOR				5
-//これわかりにくい
-# define TEX_SPRITE				6
-//これわかりにくい
-# define TEX_SPRITE_UP			7
-//これわかりにくい
-# define TEX_SPRITE_C			8
-
-# define BEST_RATIO				1.7777777778
-
 /* ************************************************************************** */
+// 設定ファイルの行種別キー（順序・値はパーサの範囲判定に依存するため変更不可。
+// C_MAP はマップ本体、C_LAST は set[] の要素数を兼ねるため必ず末尾に置く）
+typedef enum e_config_key
+{
+	C_R = 0,
+	C_NO,
+	C_SO,
+	C_WE,
+	C_EA,
+	C_OI,
+	C_OP,
+	C_OC,
+	C_FT,
+	C_ST,
+	C_F,
+	C_C,
+	C_MS,
+	C_RS,
+	C_MAP,
+	C_LAST
+}				t_config_key;
+
+// テクスチャ／色配列のインデックス（TEXTURES は要素数を兼ねるため必ず末尾に置く）
+typedef enum e_texture_id
+{
+	TEX_NORTH = 0,
+	TEX_SOUTH,
+	TEX_WEST,
+	TEX_EAST,
+	TEX_SKY,
+	TEX_FLOOR,
+	TEX_SPRITE,
+	TEX_SPRITE_UP,
+	TEX_SPRITE_C,
+	TEXTURES
+}				t_texture_id;
+
+// マップ本体（1次元配列）と寸法を保持する構造体
 typedef struct s_map
 {
 	int*	data;
@@ -78,6 +74,7 @@ typedef struct s_map
 	int		rows;
 }				t_map;
 
+// 解像度・色・テクスチャパス・速度・マップなど全設定を集約する構造体
 typedef struct s_config
 {
 	char*			tex_path[TEXTURES];

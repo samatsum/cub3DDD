@@ -1,15 +1,3 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   core.h                                             :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/06/03 07:32:33 by samatsum          #+#    #+#             */
-/*   Updated: 2026/06/10 08:36:45 by samatsum         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #ifndef CORE_H
 # define CORE_H
 
@@ -27,16 +15,27 @@
 # define FLAG_CROSSHAIR		0x00001000
 # define FLAG_SAVE			0x00000001
 
-// 装備中の武器の種別
-# define WEP_PISTOL			0
-# define WEP_FLASHLIGHT		1
-# define WEP_HANDS			2
-
-// テクスチャ配列の要素数（旧マジックナンバー 6 / 8 を排除）
-# define WEAPON_TEX_COUNT	6
-# define ENEMY_TEX_COUNT	8
-
 /* ************************************************************************** */
+// 装備中の武器の種別
+typedef enum e_weapon_type
+{
+	WEP_PISTOL = 0,
+	WEP_FLASHLIGHT,
+	WEP_HANDS
+}				t_weapon_type;
+
+// 武器・手のテクスチャ配列のインデックス（WEAPON_TEX_COUNT は要素数を兼ねるため必ず末尾に置く）
+typedef enum e_weapon_tex_id
+{
+	WTEX_PISTOL_IDLE = 0,
+	WTEX_PISTOL_SHOOT,
+	WTEX_PISTOL_RECOIL,
+	WTEX_FLASHLIGHT,
+	WTEX_HAND_LEFT,
+	WTEX_HAND_RIGHT,
+	WEAPON_TEX_COUNT
+}				t_weapon_tex_id;
+
 // 入力状態（押下中キーに応じた移動・回転フラグと武器の状態）
 typedef struct s_input
 {

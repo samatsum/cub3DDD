@@ -156,12 +156,6 @@ make re        # fclean + all
 
 実装と乖離している点、リファクタしたい点を列挙します。新しく入ってきた人はまずここを見てください。
 
-### (a) 一貫性の問題
-
-- **武器テクスチャのインデックスがマジックナンバー**: `draw_weapon.c` で `weapon_tex[4]` / `[5]` などを直接参照しています。`init.c` の `paths[]` の並びと暗黙の対応関係があるため、`enum { WTEX_PISTOL_IDLE = 0, ... }` を導入すべきです。
-- **テクスチャ数のマジックナンバー**: `core.h` で `WEAPON_TEX_COUNT = 6`, `ENEMY_TEX_COUNT = 8` を定義していますが、`init.c` / `enemy.c` のループは `while (i < 6)` / `while (i < 8)` と直書きしています。
-- **`TEXTURES = 9` と `TEX_NORTH..TEX_SPRITE_C` の対応が暗黙**: `enum` 化すれば追加時の同期忘れを防げます。
-
 ### (b) `screenshot()` がエントリから呼ばれていない
 
 `core/bmp.c` の `screenshot()` 関数は実装されていますが、`main.c` / `input.c` のどこからも呼び出されていません。さらに `screenshot()` 内で `open()` した fd が使われずに捨てられ、`save_bmp()` が固定ファイル名 `screenshot.bmp` を別途開いてしまうという二重オープン問題があります。BMP 機能を生かすなら、コマンドライン引数（例: `-save`）かキーバインドを通じて呼び出す導線を引き、`screenshot()` 内のファイルパス決定と `save_bmp()` の書き込み先を統合する必要があります。

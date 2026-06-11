@@ -28,12 +28,12 @@ int
 	}
 	game->input.current_weapon = WEP_PISTOL;
 	game->input.is_shooting = 0;
-	paths[0] = "textures/arm/Arm_pistol_static.xpm";
-	paths[1] = "textures/arm/Arm_pistol_shoot.xpm";
-	paths[2] = "textures/arm/Arm_pistol_recoil.xpm";
-	paths[3] = "textures/arm/Arm_flashlight_1.xpm";
-	paths[4] = "textures/arm/Arm_lefthand.xpm";
-	paths[5] = "textures/arm/Arm_righthand.xpm";
+	paths[WTEX_PISTOL_IDLE] = "textures/arm/Arm_pistol_static.xpm";
+	paths[WTEX_PISTOL_SHOOT] = "textures/arm/Arm_pistol_shoot.xpm";
+	paths[WTEX_PISTOL_RECOIL] = "textures/arm/Arm_pistol_recoil.xpm";
+	paths[WTEX_FLASHLIGHT] = "textures/arm/Arm_flashlight_1.xpm";
+	paths[WTEX_HAND_LEFT] = "textures/arm/Arm_lefthand.xpm";
+	paths[WTEX_HAND_RIGHT] = "textures/arm/Arm_righthand.xpm";
 	i = 0;
 	while (i < WEAPON_TEX_COUNT) {
 		game->assets.weapon_tex[i].path = ft_strdup(paths[i]);

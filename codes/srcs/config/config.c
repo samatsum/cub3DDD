@@ -6,14 +6,14 @@
 /*   By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/03 07:32:33 by samatsum          #+#    #+#             */
-/*   Updated: 2026/06/11 17:53:09 by samatsum         ###   ########.fr       */
+/*   Updated: 2026/06/11 22:05:13 by samatsum         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "config/config.h"
 #include <stdio.h>
 #include <fcntl.h>  /* open, O_RDONLY 用 */
 #include <unistd.h> /* close 用 */
+#include "config/config.h"
 #include "gnl/get_next_line.h" /* get_next_line 用 */
 
 /* ************************************************************************** */
@@ -87,11 +87,12 @@ int
 	parse_config(t_config* config, char const* conf_path)
 {
 	int		c_fd;
-	char*	line;
+	int		ret;
 	int		r;
-	t_str*	map_buffer;
 	int		empty_map;
 	int		cont_after;
+	char*	line;
+	t_str*	map_buffer;
 
 	if (!ft_endwith(conf_path, ".cub")) {
 		printf("DEBUG: File extension is not .cub\n");
@@ -104,24 +105,29 @@ int
 	}
 	map_buffer = NULL;
 	r = 1;
-	
-	/* 修正1: パース状態をローカル変数として管理。これにより、エラー後の再実行時などでも状態がリセットされ、バグを防げる */
+	/* パース状態をローカル変数として管理し、再実行時の状態残留バグを回避する */
 	empty_map = 0;
 	cont_after = 0;
-	while (get_next_line(c_fd, &line)) {
+	/* get_next_line は「成功:1 / 終端:0 / エラー:負, 終端・エラー時 *line=NULL」を保証するため、
+	   line を NULL 始点とし ret>0 の間だけ処理する。末尾改行なしの最終行も ret==1 で届くため、
+	   ループ後に line を再参照する旧来の特殊処理（解放後参照・二重解放の温床）は不要になった */
+	line = NULL;
+	ret = get_next_line(c_fd, &line);
+	while (ret > 0) {
 		r = (r && parse_line(config, line, &map_buffer, &empty_map, &cont_after));
 		if (!r) {
 			printf("DEBUG: parse_line failed at line: [%s]\n", line);
 		}
 		free(line);
+		line = NULL;
+		ret = get_next_line(c_fd, &line);
 	}
-	if (r && ft_strlen(line) > 0) {
-		r = !!str_add_back(&map_buffer, ft_strdup(line));
-	}
-	free(line);
 	close(c_fd);
+	if (ret < 0) {
+		r = 0;
+	}
 	if (!r) {
-		printf("DEBUG: parse_line returned 0 during file reading.\n");
+		printf("DEBUG: parse failed during file reading.\n");
 		return (str_clear(&map_buffer));
 	}
 	if (!parse_map(config, map_buffer)) {
@@ -141,7 +147,7 @@ static int
 	int	key;
 
 	length = ft_strlen(line);
-	/*static変数を廃止し、引数で状態ポインタを受け取るように変更（状態依存バグの回避） */
+	/* static変数を廃止し、引数で状態ポインタを受け取る（状態依存バグの回避） */
 	if (length == 0 && config->set[C_MAP]) {
 		*empty_map = 1;
 	}
