@@ -3,6 +3,7 @@
 #include "config/config.h"
 #include "engine/render/render.h"
 #include "utils/utils.h"
+#include "tuning.h"
 
 /* ************************************************************************** */
 void
@@ -30,6 +31,7 @@ void
 	draw_minimap(rnd, &start, &end);
 }
 
+/* ************************************************************************** */
 // 収集アイテムの状況などのUIテキストを画面に書き込む
 void
 	write_ui_text(t_window* w, int collected, int to_collect)
@@ -55,6 +57,7 @@ void
 	draw_string(w, &start, buf, COLOR_UI_FONT);
 }
 
+/* ************************************************************************** */
 // 画面右下にミニマップを描画する
 static void
 	draw_minimap(t_render* rnd, t_pos* start, t_pos* end)
@@ -83,6 +86,7 @@ static void
 	}
 }
 
+/* ************************************************************************** */
 // ミニマップの特定座標における色を判定して返す
 static int
 	case_color(t_config* config, t_camera* camera, int x, int y)
@@ -90,7 +94,7 @@ static int
 	char	c;
 
 	c = MAP_XY(x, y, *config);
-	if (c == '1' || c == '2') {
+	if (c == '1' || c == TILE_OBSTACLE) {
 		return (COLOR_MINIMAP_WALL);
 	} else if (y == (int)camera->pos.y && x == (int)camera->pos.x) {
 		return (COLOR_MINIMAP_BG);
@@ -100,6 +104,7 @@ static int
 	return (COLOR_MINIMAP_EMPTY);
 }
 
+/* ************************************************************************** */
 // 指定された座標に文字列を描画する
 static int
 	draw_string(t_window* window, t_pos* s_pos, char* str, int color)

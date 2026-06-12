@@ -12,6 +12,7 @@
 
 #include <stdio.h>
 #include "config/config.h"
+#include "tuning.h"
 
 /* ************************************************************************** */
 int
@@ -125,7 +126,7 @@ static int
 	color = 0;
 	while (str) {
 		tmp = ft_atoi(str->content);
-		if (tmp < 0 || tmp > 255) {
+		if (tmp < 0 || tmp > RGB_MAX) {
 			return (-1);
 		}
 		color = color | (tmp << (16 - (i++ * 8)));
@@ -134,6 +135,8 @@ static int
 	return (color);
 }
 
+/* ************************************************************************** */
+// TODO: 関数の説明を記述する
 int
 	parse_speed(t_config* config, int key, char const* line)
 {

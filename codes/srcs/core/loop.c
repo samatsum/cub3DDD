@@ -6,16 +6,16 @@
 /*   By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/28 13:16:59 by samatsum          #+#    #+#             */
-/*   Updated: 2026/06/10 08:20:46 by samatsum         ###   ########.fr       */
+/*   Updated: 2026/06/12 12:37:30 by samatsum         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <stddef.h>
 #include <sys/time.h>
 #include "core/core.h"
+#include "tuning.h"
 
 /* ************************************************************************** */
-#define TARGET_FPS	30.0
 #define BASE_FPS	60.0
 
 int
@@ -71,8 +71,8 @@ static double
 	}
 	game->timing.last_time = now;
 	*time_mult = delta_time / (1.0 / BASE_FPS);
-	if (*time_mult > 3.0) {
-		*time_mult = 3.0;
+	if (*time_mult > MAX_TIME_MULT) {
+		*time_mult = MAX_TIME_MULT;
 	}
 	return (delta_time);
 }
@@ -87,7 +87,7 @@ static int
 
 	speed_mult = 1.0;
 	if (game->input.current_weapon == WEP_HANDS) {
-		speed_mult = 1.3;
+		speed_mult = BAREHAND_SPEED_MULT;
 	}
 	update = 0;
 	if (game->input.move.x || game->input.move.y) {

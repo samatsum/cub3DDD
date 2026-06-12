@@ -12,6 +12,7 @@
 
 #include "core/core.h"
 #include "engine/texture/texture.h"
+#include "tuning.h"
 
 /* ************************************************************************** */
 int
@@ -50,7 +51,7 @@ int
 	get_tex_color(t_tex* tex, t_pos* pos)
 {
 	if (pos->x >= 0 && pos->x < tex->width && pos->y >= 0 && pos->y < tex->height) {
-		return (*(int*)(tex->ptr + (4 * tex->width * (int)pos->y) + (4 * (int)pos->x)));
+		return (*(int*)(tex->ptr + (BYTES_PER_PIXEL * tex->width * (int)pos->y) + (BYTES_PER_PIXEL * (int)pos->x)));
 	}
 	return (0x0);
 }

@@ -17,6 +17,7 @@
 #include <fcntl.h>  /* open用 */
 #include <unistd.h> /* write, close用 */
 #include "core/core.h"
+#include "tuning.h"
 
 /* ************************************************************************** */
 int
@@ -176,7 +177,7 @@ static int
 	int	rgb;
 	int	color;
 
-	color = *(int*)(w->screen.ptr + (4 * (int)w->size.x * ((int)w->size.y - 1 - y)) + (4 * x));
+	color = *(int*)(w->screen.ptr + (BYTES_PER_PIXEL * (int)w->size.x * ((int)w->size.y - 1 - y)) + (BYTES_PER_PIXEL * x));
 	rgb = (color & 0xFF0000) | (color & 0x00FF00) | (color & 0x0000FF);
 	return (rgb);
 }

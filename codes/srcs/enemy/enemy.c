@@ -3,6 +3,7 @@
 #include "core/core.h"
 #include "enemy/enemy.h"
 #include "../minilibx-linux/mlx.h"
+#include "tuning.h"
 
 /* ************************************************************************** */
 #ifndef M_PI
@@ -173,7 +174,7 @@ void
 		
 		/* 視界（正面）にプレイヤーがいればタイマーを5秒にセット */
 		if (diff_idx == 0) {
-			cur->track_timer = 5.0;
+			cur->track_timer = ENEMY_TRACK_SECONDS;
 		}
 		move_enemy(cur, game, target_angle, delta_time);
 		update_texture(cur, game, target_angle);
@@ -196,9 +197,9 @@ static void
 		cur->track_timer -= delta_time;
 		cur->state = ENEMY_STATE_WALK;
 		cur->dir_angle = target_angle;
-		time_mult = delta_time * 60.0;
-		if (time_mult > 3.0) {
-			time_mult = 3.0;
+		time_mult = delta_time * TARGET_FPS;
+		if (time_mult > MAX_TIME_MULT) {
+			time_mult = MAX_TIME_MULT;
 		}
 		speed = (game->config.move_speed / 2.0) * time_mult;
 		move_x = cos(cur->dir_angle) * speed;

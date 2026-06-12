@@ -11,6 +11,7 @@
 /* ************************************************************************** */
 
 #include "engine/render/render.h"  /* 自身の関数宣言 (draw_rectangle 等) */
+#include "tuning.h"
 
 /* ************************************************************************** */
 void
@@ -33,7 +34,7 @@ void
 		/* 修正1: 1バイト単位(char*)で計算した後に4バイト強引に書き込むと、画面右端ギリギリでバッファオーバーフローの危険がある。
 		   MiniLibXのbppが32(4バイト)であることを前提に、最初から unsigned int* 型の配列として扱うことで安全にメモリアクセスする */
 		dst = (unsigned int*)w->screen.ptr;
-		dst[(int)pos->y * (w->screen.size_line / 4) + (int)pos->x] = (unsigned int)color;
+		dst[(int)pos->y * (w->screen.size_line / BYTES_PER_PIXEL) + (int)pos->x] = (unsigned int)color;
 	}
 }
 

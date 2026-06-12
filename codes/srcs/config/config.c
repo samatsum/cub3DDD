@@ -15,6 +15,7 @@
 #include <unistd.h> /* close 用 */
 #include "config/config.h"
 #include "gnl/get_next_line.h" /* get_next_line 用 */
+#include "tuning.h"
 
 /* ************************************************************************** */
 void
@@ -35,8 +36,8 @@ void
 {
 	int	i;
 
-	config->requested_width = 848;
-	config->requested_height = 480;
+	config->requested_width = WIN_MIN_WIDTH;
+	config->requested_height = WIN_MIN_HEIGHT;
 	i = 0;
 	while (i < TEXTURES) {
 		config->tex_path[i++] = NULL;
@@ -50,9 +51,9 @@ void
 	config->map.data = NULL;
 	config->map.rows = 0;
 	config->map.columns = 0;
-	config->rotate_speed = 0.11;
-	config->move_speed = 0.11;
-	config->fov = 0.66;
+	config->rotate_speed = DEFAULT_ROTATE_SPEED;
+	config->move_speed = DEFAULT_MOVE_SPEED;
+	config->fov = DEFAULT_FOV;
 	i = 0;
 	while (i < C_LAST) {
 		config->set[i++] = 0;

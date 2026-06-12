@@ -2,6 +2,7 @@
 #include "core/core.h"
 #include "enemy/enemy.h"
 #include "../minilibx-linux/mlx.h"
+#include "tuning.h"
 
 /* ************************************************************************** */
 int
@@ -154,8 +155,8 @@ static int
 		while (j < game->config.map.columns) {
 			set_pos(&pos, j + .5, i + .5);
 			c = MAP(pos, game->config);
-			if (c >= '2' && c <= '4') {
-				tex = &game->assets.tex[TEX_SPRITE + (c - '0' - 2)];
+			if (c >= TILE_OBSTACLE && c <= TILE_ITEM) {
+				tex = &game->assets.tex[TEX_SPRITE + (c - TILE_OBSTACLE)];
 				if (tex->tex) {
 					new_sprite = add_front_sprite(&game->world.sprites, 0., &pos, tex);
 					if (!new_sprite) {

@@ -14,6 +14,7 @@
 
 #include "engine/raycast/raycast.h"
 #include "config/config.h" /* MAP等のマクロ展開のため */
+#include "tuning.h"
 
 /* ************************************************************************** */
 void
@@ -87,15 +88,15 @@ int
 	actual_speed = config->move_speed  * time_mult;
 	copy_pos(&n_pos, &c->pos);
 	n_pos.x += (((direction) ? -1 : 1) * (c->dir.x * actual_speed));
-	if (IN_MAP(n_pos, *config) && MAP(n_pos, *config) != '1' && MAP(n_pos, *config) != '2') {
+	if (IN_MAP(n_pos, *config) && MAP(n_pos, *config) != '1' && MAP(n_pos, *config) != TILE_OBSTACLE) {
 		copy_pos(&c->pos, &n_pos);
 	}
 	copy_pos(&n_pos, &c->pos);
 	n_pos.y += (((direction) ? -1 : 1) * (c->dir.y * actual_speed));
-	if (IN_MAP(n_pos, *config) && MAP(n_pos, *config) != '1' && MAP(n_pos, *config) != '2') {
+	if (IN_MAP(n_pos, *config) && MAP(n_pos, *config) != '1' && MAP(n_pos, *config) != TILE_OBSTACLE) {
 		copy_pos(&c->pos, &n_pos);
 	}
-	if (MAP(c->pos, *config) != '4') {
+	if (MAP(c->pos, *config) != TILE_ITEM) {
 		MAP(c->pos, *config) = 'A';
 	}
 	return (1);
@@ -113,15 +114,15 @@ int
 	actual_speed = config->move_speed * time_mult;
 	copy_pos(&n_pos, &c->pos);
 	n_pos.x += (((direction) ? -1 : 1) * (c->x_dir.x * actual_speed) + COLLISION_MARGIN);
-	if (IN_MAP(n_pos, *config) && MAP(n_pos, *config) != '1' && MAP(n_pos, *config) != '2') {
+	if (IN_MAP(n_pos, *config) && MAP(n_pos, *config) != '1' && MAP(n_pos, *config) != TILE_OBSTACLE) {
 		copy_pos(&c->pos, &n_pos);
 	}
 	copy_pos(&n_pos, &c->pos);
 	n_pos.y += (((direction) ? -1 : 1) * (c->x_dir.y * actual_speed) + COLLISION_MARGIN);
-	if (IN_MAP(n_pos, *config) && MAP(n_pos, *config) != '1' && MAP(n_pos, *config) != '2') {
+	if (IN_MAP(n_pos, *config) && MAP(n_pos, *config) != '1' && MAP(n_pos, *config) != TILE_OBSTACLE) {
 		copy_pos(&c->pos, &n_pos);
 	}
-	if (MAP(c->pos, *config) != '4') {
+	if (MAP(c->pos, *config) != TILE_ITEM) {
 		MAP(c->pos, *config) = 'A';
 	}
 	return (1);

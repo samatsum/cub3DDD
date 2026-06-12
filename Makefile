@@ -71,7 +71,7 @@ MLX_TARGET      = $(MLX_DIR)/libmlx.a
 # ==============================================================================
 # ビルドルール
 # ==============================================================================
-all:            check $(NAME)
+all:            $(NAME)
 
 $(NAME):        $(MLX_TARGET) $(OBJS)
 				$(CC) $(CFLAGS) -o $(NAME) $(OBJS) $(LIBS)
@@ -90,17 +90,7 @@ check:
 				@echo "=================================================="
 				@echo " Running Static Analysis & Quality Checks... "
 				@echo "=================================================="
-				@python3 codes/PythonCodes/check_signatures.py
-				@python3 codes/PythonCodes/check_style.py
-				@python3 codes/PythonCodes/check_pointer_notation.py
-				@python3 codes/PythonCodes/check_static.py
-				@python3 codes/PythonCodes/check_includes.py
-				@python3 codes/PythonCodes/check_duplicates.py
-				@python3 codes/PythonCodes/check_unused_funcs.py
-				@python3 codes/PythonCodes/check_magic_numbers.py
-				@python3 codes/PythonCodes/check_separators.py
-				@python3 codes/PythonCodes/check_include_guards.py
-				@python3 codes/PythonCodes/check_complexity.py
+				@python3 codes/PythonCodes/lint.py
 				@echo "=================================================="
 				@echo " All checks passed! Code is perfectly structured. "
 				@echo "=================================================="

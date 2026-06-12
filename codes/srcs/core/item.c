@@ -11,6 +11,7 @@
 /* ************************************************************************** */
 
 #include "core/core.h"
+#include "tuning.h"
 
 /* ************************************************************************** */
 void
@@ -23,7 +24,7 @@ void
 void
 	check_quest(t_game* game)
 {
-	if (MAP(game->camera.pos, game->config) == '4') {
+	if (MAP(game->camera.pos, game->config) == TILE_ITEM) {
 		MAP(game->camera.pos, game->config) = 'A';
 		game->world.collected++;
 		delete_sprite(&game->world.sprites, &game->camera.pos);
@@ -43,7 +44,7 @@ void
 	while (i < game->config.map.rows) {
 		j = 0;
 		while (j < game->config.map.columns) {
-			if (MAP_XY(j, i, game->config) == '4') {
+			if (MAP_XY(j, i, game->config) == TILE_ITEM) {
 				game->world.to_collect++;
 			}
 			j++;
