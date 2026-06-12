@@ -1,5 +1,5 @@
-#include "../minilibx-linux/mlx.h"
 #include "ui/ui.h"
+#include "ui/font.h"
 #include "config/config.h"
 #include "engine/render/render.h"
 #include "utils/utils.h"
@@ -11,34 +11,60 @@ void
 void
 	write_ui_text(t_window* w, int collected, int to_collect);
 static void
+	build_status_text(char* buf, int collected, int to_collect);
+static void
 	draw_minimap(t_render* rnd, t_pos* start, t_pos* end);
 static int
 	case_color(t_config* config, t_camera* camera, int x, int y);
 static int
-	draw_string(t_window* window, t_pos* s_pos, char* str, int color);
+	scale_ui_px(int base, int win_height);
 
 /* ************************************************************************** */
-// UIの背景とミニマップを描画し、UI全体を更新する
+// UIの背景とミニマップを描画する（欄・タイルは解像度に比例して拡大）
 void
 	update_ui(t_render* rnd)
 {
 	t_pos	start;
 	t_pos	end;
+	int		bg_x;
+	int		bg_y;
+	int		bg_size;
 
-	set_pos(&start, UI_BG_X, rnd->w->size.y - UI_BG_Y);
-	set_pos(&end, UI_BG_SIZE, rnd->w->size.y - UI_BG_X);
+	bg_x = scale_ui_px(UI_BG_X, rnd->w->size.y);
+	bg_y = scale_ui_px(UI_BG_Y, rnd->w->size.y);
+	bg_size = scale_ui_px(UI_BG_SIZE, rnd->w->size.y);
+	set_pos(&start, bg_x, rnd->w->size.y - bg_y);
+	set_pos(&end, bg_size, rnd->w->size.y - bg_x);
 	draw_rectangle(rnd->w, &start, &end, COLOR_UI_BG);
 	draw_minimap(rnd, &start, &end);
 }
 
 /* ************************************************************************** */
-// 収集アイテムの状況などのUIテキストを画面に書き込む
+// 収集状況のテキストを自前フォントで描画する（位置・サイズは解像度連動）
 void
 	write_ui_text(t_window* w, int collected, int to_collect)
 {
-	static char	buf[UI_BUF_SIZE];
-	t_pos		start;
-	int			i;
+	char	buf[UI_BUF_SIZE];
+	t_pos	start;
+	int		scale;
+	int		box_top;
+	int		box_bot;
+
+	build_status_text(buf, collected, to_collect);
+	scale = scale_ui_px(UI_TEXT_SCALE, w->size.y);
+	box_top = w->size.y - scale_ui_px(UI_BG_Y, w->size.y);
+	box_bot = w->size.y - scale_ui_px(UI_BG_X, w->size.y);
+	set_pos(&start, scale_ui_px(UI_BG_X + UI_TEXT_PAD, w->size.y),
+		box_top + (box_bot - box_top - FONT_H * scale) / 2);
+	draw_text_scaled(w, &start, buf, scale, COLOR_UI_FONT);
+}
+
+/* ************************************************************************** */
+// 収集状況を表す文字列を buf に組み立てる
+static void
+	build_status_text(char* buf, int collected, int to_collect)
+{
+	int	i;
 
 	i = 0;
 	while (i < UI_BUF_SIZE) {
@@ -53,19 +79,21 @@ void
 	} else {
 		ft_write_str(buf, "Nothing to collect !", 0);
 	}
-	set_pos(&start, MAP_TILE_SIZE, w->size.y - UI_TEXT_Y);
-	draw_string(w, &start, buf, COLOR_UI_FONT);
 }
 
 /* ************************************************************************** */
-// 画面右下にミニマップを描画する
+// 画面右下にミニマップを描画する（タイル・余白は解像度に比例して拡大する）
 static void
 	draw_minimap(t_render* rnd, t_pos* start, t_pos* end)
 {
 	int	i;
 	int	j;
 	int	color;
+	int	tile;
+	int	margin;
 
+	tile = scale_ui_px(MAP_TILE_SIZE, rnd->w->size.y);
+	margin = scale_ui_px(SCALE, rnd->w->size.y);
 	i = 0;
 	while (i < rnd->config->map.rows) {
 		j = 0;
@@ -73,11 +101,11 @@ static void
 			color = case_color(rnd->config, rnd->camera, j, i);
 			if (color >= 0) {
 				set_pos(start,
-					rnd->w->size.x - (rnd->config->map.columns * MAP_TILE_SIZE) - SCALE + (j * MAP_TILE_SIZE),
-					rnd->w->size.y - (rnd->config->map.rows * MAP_TILE_SIZE) - SCALE + (i * MAP_TILE_SIZE));
+					rnd->w->size.x - (rnd->config->map.columns * tile) - margin + (j * tile),
+					rnd->w->size.y - (rnd->config->map.rows * tile) - margin + (i * tile));
 				set_pos(end,
-					rnd->w->size.x - (rnd->config->map.columns * MAP_TILE_SIZE) + (j * MAP_TILE_SIZE),
-					rnd->w->size.y - (rnd->config->map.rows * MAP_TILE_SIZE) + (i * MAP_TILE_SIZE));
+					rnd->w->size.x - (rnd->config->map.columns * tile) + (j * tile),
+					rnd->w->size.y - (rnd->config->map.rows * tile) + (i * tile));
 				draw_rectangle(rnd->w, start, end, color);
 			}
 			j++;
@@ -105,12 +133,15 @@ static int
 }
 
 /* ************************************************************************** */
-// 指定された座標に文字列を描画する
+// 基準解像度(UI_REF_HEIGHT)で base px の量を、実解像度に比例させて返す
 static int
-	draw_string(t_window* window, t_pos* s_pos, char* str, int color)
+	scale_ui_px(int base, int win_height)
 {
-	return (mlx_string_put(
-		window->ptr, window->win,
-		s_pos->x, s_pos->y,
-		color, str));
+	int	scaled;
+
+	scaled = base * win_height / UI_REF_HEIGHT;
+	if (scaled < base) {
+		scaled = base;
+	}
+	return (scaled);
 }

@@ -1,28 +1,39 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   parse_params.c                                     :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/11/29 15:25:21 by samatsum          #+#    #+#             */
-/*   Updated: 2026/06/12 00:18:17 by samatsum         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
+#include <stddef.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include "config/config.h"
 #include "tuning.h"
+
+/* ************************************************************************** */
+// 上書き可能なスカラー設定のレジストリ（キー→t_configフィールド→許容範囲）。
+// 新しいスカラー設定を増やすときは、この配列に1行追加し、対応キーを enum と
+// config_key に足すだけでよい（パーサ本体の分岐を増やす必要はない）
+typedef struct s_scalar_def
+{
+	int		key;
+	double	min_exclusive;
+	double	max_inclusive;
+	size_t	field_off;
+}				t_scalar_def;
+
+static const t_scalar_def	g_scalars[] = {
+	{C_MS, 0.0, 100.0, offsetof(t_config, move_speed)},
+	{C_RS, 0.0, 100.0, offsetof(t_config, rotate_speed)},
+	{C_FOV, 0.0, 10.0, offsetof(t_config, fov)},
+	{C_ET, 0.0, 3600.0, offsetof(t_config, enemy_track_seconds)},
+};
 
 /* ************************************************************************** */
 int
 	parse_dimensions(t_config* config, char const* line);
 int
 	parse_color(t_config* config, int key, char const* line);
+int
+	parse_scalar(t_config* config, int key, char const* line);
 static int
 	str_to_color(t_str* str);
-int
-	parse_speed(t_config* config, int key, char const* line);
+static const t_scalar_def*
+	find_scalar(int key);
 
 /* ************************************************************************** */
 // 画面サイズの解像度設定を解析する
@@ -61,8 +72,6 @@ int
 		return (0);
 	}
 	config->requested_height = tmp;
-	
-	/* 成功時も確実にメモリを解放して 1 を返す */
 	str_clear(&str);
 	return (1);
 }
@@ -107,9 +116,44 @@ int
 	} else {
 		config->colors[TEX_SKY] = color;
 	}
-	
 	str_clear(&str_arr[0]);
 	str_clear(&str_arr[1]);
+	return (1);
+}
+
+/* ************************************************************************** */
+// .cub のスカラー設定(MS/RS/FOV/ET)を解析し、対応フィールドを上書きする
+int
+	parse_scalar(t_config* config, int key, char const* line)
+{
+	const t_scalar_def*	def;
+	double				value;
+	char*				endptr;
+	int					start;
+	int					i;
+
+	def = find_scalar(key);
+	if (!def) {
+		return (0);
+	}
+	start = 0;
+	while ((line[start] >= 'A' && line[start] <= 'Z')
+		|| (line[start] >= 'a' && line[start] <= 'z')) {
+		start++;
+	}
+	i = start;
+	while (line[i]) {
+		if (!ft_in_set(line[i], " .0123456789")) {
+			return (0);
+		}
+		i++;
+	}
+	value = strtod(line + start, &endptr);
+	if (endptr == line + start || value <= def->min_exclusive
+		|| value > def->max_inclusive) {
+		return (0);
+	}
+	*(double*)((char*)config + def->field_off) = value;
 	return (1);
 }
 
@@ -136,32 +180,18 @@ static int
 }
 
 /* ************************************************************************** */
-// TODO: 関数の説明を記述する
-int
-	parse_speed(t_config* config, int key, char const* line)
+// キーに対応するスカラー設定の定義をレジストリから検索する
+static const t_scalar_def*
+	find_scalar(int key)
 {
-	int		i;
-	double	speed;
-	char*	endptr;
+	size_t	i;
 
-	i = 1;//MS,RSは２文字なので。
-	while (line[++i]) {
-		// 	printf("line[%d] = '%c'\n", i, line[i]); // デバッグ用出力
-		if (!ft_in_set(line[i], " .0123456789")) {
-			return (0);
+	i = 0;
+	while (i < sizeof(g_scalars) / sizeof(g_scalars[0])) {
+		if (g_scalars[i].key == key) {
+			return (&g_scalars[i]);
 		}
+		i++;
 	}
-	// printf("line to parse: '%s'\n", line); // デバッグ用出力
-	// printf("line + 2 to parse: '%s'\n", line + 2); // デバッグ用出力
-	speed = strtod(line + 2, &endptr);
-	// printf("Parsed speed: %f\n", speed); // デバッグ用出力
-	if (endptr == line + 2 || speed <= 0.0) {
-		return (0);
-	}
-	if (key == C_RS) {
-		config->rotate_speed = speed;
-	} else if (key == C_MS) {
-		config->move_speed = speed;
-	}
-	return (1);
+	return (NULL);
 }

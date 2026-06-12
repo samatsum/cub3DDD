@@ -1,21 +1,39 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   config.c                                           :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/06/03 07:32:33 by samatsum          #+#    #+#             */
-/*   Updated: 2026/06/11 22:05:13 by samatsum         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #include <stdio.h>
 #include <fcntl.h>  /* open, O_RDONLY 用 */
 #include <unistd.h> /* close 用 */
 #include "config/config.h"
 #include "gnl/get_next_line.h" /* get_next_line 用 */
-#include "tuning.h"
+#include "config/defaults.h"
+
+/* ************************************************************************** */
+// 行頭キー文字列と種別の対応表。新しいキーはここに1行追加するだけでよい
+typedef struct s_key_def
+{
+	char const*	tag;
+	int			key;
+}				t_key_def;
+
+/* ************************************************************************** */
+// 行頭キー文字列と種別の対応表。.cub で記述できる設定キーの一覧でもある。
+// 新しいキーはここに1行追加するだけでよい
+static const t_key_def	g_keys[] = {
+	{"R", C_R},      // 解像度          : R 幅 高さ
+	{"NO", C_NO},    // 壁テクスチャ    : 北向き (.xpm)
+	{"SO", C_SO},    // 壁テクスチャ    : 南向き (.xpm)
+	{"WE", C_WE},    // 壁テクスチャ    : 西向き (.xpm)
+	{"EA", C_EA},    // 壁テクスチャ    : 東向き (.xpm)
+	{"ST", C_ST},    // 天井テクスチャ  : 任意 (.xpm)
+	{"FT", C_FT},    // 床テクスチャ    : 任意 (.xpm)
+	{"F", C_F},      // 床の色          : F R,G,B（テクスチャ未指定時のフォールバック）
+	{"C", C_C},      // 天井の色        : C R,G,B（テクスチャ未指定時のフォールバック）
+	{"OI", C_OI},    // スプライト '2'  : 通行不可の障害物テクスチャ (.xpm)
+	{"OP", C_OP},    // スプライト '3'  : 通行可能な装飾テクスチャ (.xpm)
+	{"OC", C_OC},    // スプライト '4'  : 収集アイテムのテクスチャ (.xpm)
+	{"MS", C_MS},    // 移動速度        : 任意 (0 より大)
+	{"RS", C_RS},    // 回転速度        : 任意 (0 より大)
+	{"FOV", C_FOV},  // 視野角          : 任意 (大きいほど広角)
+	{"ET", C_ET},    // 敵の追跡秒数    : 任意 (見失うまでの秒数)
+};
 
 /* ************************************************************************** */
 void
@@ -28,6 +46,8 @@ static int
 	parse_line(t_config* config, char const* line, t_str** map_buffer, int* empty_map, int* cont_after);
 static int
 	config_key(char const* line);
+static int
+	tag_matches(char const* line, char const* tag);
 
 /* ************************************************************************** */
 // 設定情報を初期化する
@@ -36,8 +56,8 @@ void
 {
 	int	i;
 
-	config->requested_width = WIN_MIN_WIDTH;
-	config->requested_height = WIN_MIN_HEIGHT;
+	config->requested_width = MIN_WIDTH;
+	config->requested_height = MIN_HEIGHT;
 	i = 0;
 	while (i < TEXTURES) {
 		config->tex_path[i++] = NULL;
@@ -54,6 +74,7 @@ void
 	config->rotate_speed = DEFAULT_ROTATE_SPEED;
 	config->move_speed = DEFAULT_MOVE_SPEED;
 	config->fov = DEFAULT_FOV;
+	config->enemy_track_seconds = DEFAULT_ENEMY_TRACK_SECONDS;
 	i = 0;
 	while (i < C_LAST) {
 		config->set[i++] = 0;
@@ -168,8 +189,8 @@ static int
 		return (parse_texture(config, key, line));
 	} else if (key == C_F || key == C_C) {
 		return (parse_color(config, key, line));
-	} else if (key == C_RS || key == C_MS) {
-		return (parse_speed(config, key, line));
+	} else if (key >= C_MS && key <= C_ET) {
+		return (parse_scalar(config, key, line));
 	}
 	config->set[key] = 1;
 	if (*empty_map) {
@@ -179,38 +200,35 @@ static int
 }
 
 /* ************************************************************************** */
-// 行の先頭文字列から設定キーを判定する
+// 行の先頭トークンを対応表と照合し、設定キーを判定する
 static int
 	config_key(char const* line)
 {
-	if (line[0] == 'R' && line[1] == ' ') {
-		return (C_R);
-	} else if (line[0] == 'N' && line[1] == 'O') {
-		return (C_NO);
-	} else if (line[0] == 'S' && line[1] == 'O') {
-		return (C_SO);
-	} else if (line[0] == 'W' && line[1] == 'E') {
-		return (C_WE);
-	} else if (line[0] == 'E' && line[1] == 'A') {
-		return (C_EA);
-	} else if (line[0] == 'S' && line[1] == 'T') {
-		return (C_ST);
-	} else if (line[0] == 'F' && line[1] == 'T') {
-		return (C_FT);
-	} else if (line[0] == 'F' && line[1] == ' ') {
-		return (C_F);
-	} else if (line[0] == 'C' && line[1] == ' ') {
-		return (C_C);
-	} else if (line[0] == 'O' && line[1] == 'I') {
-		return (C_OI);
-	} else if (line[0] == 'O' && line[1] == 'P') {
-		return (C_OP);
-	} else if (line[0] == 'O' && line[1] == 'C') {
-		return (C_OC);
-	} else if (line[0] == 'M' && line[1] == 'S') {
-		return (C_MS);
-	} else if (line[0] == 'R' && line[1] == 'S') {
-		return (C_RS);
+	size_t	i;
+
+	i = 0;
+	while (i < sizeof(g_keys) / sizeof(g_keys[0])) {
+		if (tag_matches(line, g_keys[i].tag)) {
+			return (g_keys[i].key);
+		}
+		i++;
 	}
 	return (C_MAP);
+}
+
+/* ************************************************************************** */
+// 行頭が tag と一致し、かつ直後がトークン境界（空白か行末）であるかを判定する
+static int
+	tag_matches(char const* line, char const* tag)
+{
+	int	i;
+
+	i = 0;
+	while (tag[i]) {
+		if (line[i] != tag[i]) {
+			return (0);
+		}
+		i++;
+	}
+	return (line[i] == ' ' || line[i] == '\0');
 }

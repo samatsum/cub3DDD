@@ -56,6 +56,7 @@ SRCS_LIST       = main.c \
                   engine/texture/texture.c \
                   engine/input/input.c \
                   ui/ui.c \
+                  ui/font.c \
                   ui/crosshair.c
 
 SRCS            = $(addprefix $(SRC_DIR)/, $(SRCS_LIST))

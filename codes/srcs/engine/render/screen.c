@@ -6,7 +6,7 @@
 /*   By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/28 13:16:59 by samatsum          #+#    #+#             */
-/*   Updated: 2026/06/10 08:25:13 by samatsum         ###   ########.fr       */
+/*   Updated: 2026/06/12 17:42:15 by samatsum         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,8 +90,8 @@ void
 void
 	update_window(t_window* w, int options, int collected, int to_collect)
 {
-	mlx_put_image_to_window(w->ptr, w->win, w->screen.img, 0, 0);
 	if (options & FLAG_UI) {
 		write_ui_text(w, collected, to_collect);
 	}
+	mlx_put_image_to_window(w->ptr, w->win, w->screen.img, 0, 0);
 }

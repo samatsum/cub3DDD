@@ -10,11 +10,14 @@
 # define DIRECTIONS				"NSEW"
 # define VALID_MAP_CHARACTERS	" 01234EWNSM"
 
-// ウィンドウ解像度の上限・下限
+// ウィンドウ解像度の上限・下限（init時の既定要求サイズにも下限値を用いる）
 # define MAX_WIDTH				1920
 # define MAX_HEIGHT				1080
 # define MIN_WIDTH				848
 # define MIN_HEIGHT				480
+
+// 色成分(R/G/B)入力の最大値
+# define RGB_MAX				255
 
 // 視野角(FOV)の調整スケールと最適アスペクト比
 # define FOV_SCALE				2.5
@@ -30,6 +33,7 @@
 
 /* ************************************************************************** */
 // 設定ファイルの行種別キー（順序・値はパーサの範囲判定に依存するため変更不可。
+// テクスチャ群 C_NO..C_ST、スカラー群 C_MS..C_ET はそれぞれ連続させること。
 // C_MAP はマップ本体、C_LAST は set[] の要素数を兼ねるため必ず末尾に置く）
 typedef enum e_config_key
 {
@@ -47,6 +51,8 @@ typedef enum e_config_key
 	C_C,
 	C_MS,
 	C_RS,
+	C_FOV,
+	C_ET,
 	C_MAP,
 	C_LAST
 }				t_config_key;
@@ -81,6 +87,7 @@ typedef struct s_config
 	double			rotate_speed;
 	double			move_speed;
 	double			fov;
+	double			enemy_track_seconds;
 	unsigned int	requested_width;
 	unsigned int	requested_height;
 	unsigned int	colors[TEXTURES];
@@ -100,7 +107,7 @@ int
 int
 	parse_color(t_config* config, int key, char const* line);
 int
-	parse_speed(t_config* config, int key, char const* line);
+	parse_scalar(t_config* config, int key, char const* line);
 int
 	parse_config(t_config* config, char const* conf_path);
 int

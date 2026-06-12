@@ -4,14 +4,24 @@
 # include "types.h"
 
 /* ************************************************************************** */
-// ミニマップの描画やUIの座標・サイズ設定
+// UI描画の基準解像度（ウィンドウ高さ）。各px値はこの高さのときの値で、
+// 実際の描画では解像度に比例して拡大される
+# define UI_REF_HEIGHT			480
+
+// ミニマップ描画の基準値（px / 基準解像度時）
 # define MAP_TILE_SIZE			5
 # define SCALE					10
+
+// UIテキスト欄の座標・サイズ設定（px / 基準解像度時）。
+// UI_BG_SIZE は欄の右端x座標で、最長文字列が収まるよう設定する
 # define UI_BG_X				2
 # define UI_BG_Y				27
-# define UI_BG_SIZE				210
-# define UI_TEXT_Y				5
+# define UI_BG_SIZE				340
 # define UI_BUF_SIZE			100
+
+// UIテキストの基準スケール（フォント8x8の倍率）と左内側パディング（px / 基準時）
+# define UI_TEXT_SCALE			2
+# define UI_TEXT_PAD			4
 
 // UIやミニマップの各要素の色定義
 # define COLOR_MINIMAP_WALL		0x000000

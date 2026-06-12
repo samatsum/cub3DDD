@@ -174,7 +174,7 @@ void
 		
 		/* 視界（正面）にプレイヤーがいればタイマーを5秒にセット */
 		if (diff_idx == 0) {
-			cur->track_timer = ENEMY_TRACK_SECONDS;
+			cur->track_timer = game->config.enemy_track_seconds;
 		}
 		move_enemy(cur, game, target_angle, delta_time);
 		update_texture(cur, game, target_angle);
