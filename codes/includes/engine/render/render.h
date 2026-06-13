@@ -1,15 +1,3 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   render.h                                           :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/05/28 13:16:59 by samatsum          #+#    #+#             */
-/*   Updated: 2026/06/11 23:44:48 by samatsum         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #ifndef RENDER_H
 # define RENDER_H
 
@@ -21,6 +9,7 @@
 // 構造体の前方宣言
 struct	s_config;
 struct	s_game;
+struct	s_world;
 
 /* ************************************************************************** */
 // 画像のデータと属性を管理する構造体
@@ -74,6 +63,7 @@ typedef struct s_render
 	t_window*			w;
 	struct s_config*	config;
 	t_camera*			camera;
+	struct s_world*		world;
 	t_tex*				tex;
 	double*				depth;
 	double*				sf_dist;

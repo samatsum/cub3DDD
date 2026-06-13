@@ -15,7 +15,9 @@ static void
 static void
 	draw_minimap(t_render* rnd, t_pos* start, t_pos* end);
 static int
-	case_color(t_config* config, t_camera* camera, int x, int y);
+	case_color(t_config* config, t_camera* camera, t_enemy* enemies, int x, int y);
+static int
+	enemy_in_cell(t_enemy* enemies, int x, int y);
 static int
 	scale_ui_px(int base, int win_height);
 
@@ -98,7 +100,7 @@ static void
 	while (i < rnd->config->map.rows) {
 		j = 0;
 		while (j < rnd->config->map.columns) {
-			color = case_color(rnd->config, rnd->camera, j, i);
+			color = case_color(rnd->config, rnd->camera, rnd->world->enemies, j, i);
 			if (color >= 0) {
 				set_pos(start,
 					rnd->w->size.x - (rnd->config->map.columns * tile) - margin + (j * tile),
@@ -117,7 +119,7 @@ static void
 /* ************************************************************************** */
 // ミニマップの特定座標における色を判定して返す
 static int
-	case_color(t_config* config, t_camera* camera, int x, int y)
+	case_color(t_config* config, t_camera* camera, t_enemy* enemies, int x, int y)
 {
 	char	c;
 
@@ -126,10 +128,26 @@ static int
 		return (COLOR_MINIMAP_WALL);
 	} else if (y == (int)camera->pos.y && x == (int)camera->pos.x) {
 		return (COLOR_MINIMAP_BG);
+	} else if (enemy_in_cell(enemies, x, y)) {
+		return (COLOR_MINIMAP_ENEMY);
 	} else if (c == 'A') {
 		return (COLOR_UI_TEXT);
 	}
 	return (COLOR_MINIMAP_EMPTY);
+}
+
+/* ************************************************************************** */
+// 指定セルに敵がいるかを敵リストから判定する
+static int
+	enemy_in_cell(t_enemy* enemies, int x, int y)
+{
+	while (enemies) {
+		if ((int)enemies->sprite->pos.x == x && (int)enemies->sprite->pos.y == y) {
+			return (1);
+		}
+		enemies = enemies->next;
+	}
+	return (0);
 }
 
 /* ************************************************************************** */

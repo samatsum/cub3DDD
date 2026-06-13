@@ -1,15 +1,3 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   screen.c                                           :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/05/28 13:16:59 by samatsum          #+#    #+#             */
-/*   Updated: 2026/06/12 17:42:15 by samatsum         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #include "core/core.h"            /* ゲーム設定の取得に必要 */
 #include "engine/raycast/raycast.h"
 #include "engine/render/render.h" /* 描画関数群の呼び出しに必要 */
@@ -30,7 +18,6 @@ void
 	render_frame(t_game* game)
 {
 	update_screen(game);
-	
 	update_window(&game->window, game->options, game->world.collected, game->world.to_collect);
 }
 
@@ -48,16 +35,14 @@ void
 	w = &game->window;
 	set_pos(&start, 0, 0);
 	draw_rectangle(w, &start, &w->size, 0x0);
-	
-	/* 描画専用コンテキストの初期化（God Objectからの切り離し） */
 	rnd.w = w;
 	rnd.config = &game->config;
 	rnd.camera = &game->camera;
+	rnd.world = &game->world;
 	rnd.tex = game->assets.tex;
 	rnd.depth = game->cache.depth;
 	rnd.sf_dist = game->cache.sf_dist;
 	rnd.options = game->options;
-
 	i = 0;
 	while (i < w->size.x) {
 		ray.column = i;
@@ -73,10 +58,7 @@ void
 	if (game->world.sprites) {
 		draw_sprites(&rnd, game->world.sprites);
 	}
-
-	/* ★修正: 武器をUIより「先」に描画するようここに移動 ★ */
 	draw_weapon(game);
-
 	if (game->options & FLAG_CROSSHAIR) {
 		display_crosshair(w);
 	}
