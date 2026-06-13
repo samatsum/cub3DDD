@@ -31,6 +31,11 @@ SRCS_LIST       = main.c \
                   core/shoot.c \
                   core/collision.c \
                   enemy/enemy.c \
+                  enemy/enemy_ai.c \
+                  enemy/enemy_assets.c \
+                  enemy/enemy_sense.c \
+                  enemy/enemy_path.c \
+                  enemy/enemy_move.c \
                   config/config.c \
                   config/parse_map.c \
                   config/check_map.c \
