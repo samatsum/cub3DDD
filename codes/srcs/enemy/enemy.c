@@ -1,6 +1,7 @@
 #include <math.h>
 #include <stdlib.h>
 #include "core/core.h"
+#include "core/collision.h"
 #include "enemy/enemy.h"
 #include "../minilibx-linux/mlx.h"
 #include "tuning.h"
@@ -170,9 +171,8 @@ void
 		while (diff >= 2.0 * M_PI) {
 			diff -= 2.0 * M_PI;
 		}
-		diff_idx = (int)(floor((diff + (M_PI / 8.0)) / (M_PI / 4.0))) % 8;
-		
-		/* 視界（正面）にプレイヤーがいればタイマーを5秒にセット */
+		diff_idx = (int)(floor((diff + (M_PI / 8.0)) / (M_PI / 4.0))) % ENEMY_TEX_COUNT;
+		/* 視界（正面）にプレイヤーがいれば追跡タイマーをセットする */
 		if (diff_idx == 0) {
 			cur->track_timer = game->config.enemy_track_seconds;
 		}
@@ -183,7 +183,7 @@ void
 }
 
 /* ************************************************************************** */
-// 追跡タイマーが有効な間、壁を避けながらプレイヤーの半分の速度で接近する
+// 追跡中、壁と他エンティティ(プレイヤー/敵)を避けつつ半分の速度で接近する
 static void
 	move_enemy(t_enemy* cur, t_game* game, double target_angle, double delta_time)
 {
@@ -204,15 +204,14 @@ static void
 		speed = (game->config.move_speed / 2.0) * time_mult;
 		move_x = cos(cur->dir_angle) * speed;
 		move_y = sin(cur->dir_angle) * speed;
-		
-		/* X軸の壁判定と移動 */
+		/* X軸: 壁と他エンティティ(プレイヤー/敵)を避けて移動 */
 		set_pos(&next_pos, cur->sprite->pos.x + move_x, cur->sprite->pos.y);
-		if (IN_MAP(next_pos, game->config) && MAP(next_pos, game->config) != '1') {
+		if (IN_MAP(next_pos, game->config) && MAP(next_pos, game->config) != '1' && !is_blocked_by_entities(&cur->sprite->pos, &next_pos, game, cur->sprite)) {
 			cur->sprite->pos.x += move_x;
 		}
-		/* Y軸の壁判定と移動 */
+		/* Y軸: 壁と他エンティティ(プレイヤー/敵)を避けて移動 */
 		set_pos(&next_pos, cur->sprite->pos.x, cur->sprite->pos.y + move_y);
-		if (IN_MAP(next_pos, game->config) && MAP(next_pos, game->config) != '1') {
+		if (IN_MAP(next_pos, game->config) && MAP(next_pos, game->config) != '1' && !is_blocked_by_entities(&cur->sprite->pos, &next_pos, game, cur->sprite)) {
 			cur->sprite->pos.y += move_y;
 		}
 	} else {

@@ -1,7 +1,9 @@
 #include <math.h>          /* cos, sin 関数用 */
+#include <stddef.h>        /* NULL 用 */
 
 #include "engine/raycast/raycast.h"
 #include "config/config.h" /* MAP等のマクロ展開のため */
+#include "core/collision.h"
 #include "tuning.h"
 
 /* ************************************************************************** */
@@ -10,9 +12,9 @@ void
 void
 	find_start_angle(t_config* config, t_camera* camera);
 int
-	move_camera(t_camera* c, t_config* config, int direction, double time_mult);
+	move_camera(t_camera* c, t_config* config, struct s_world* world, int direction, double time_mult);
 int
-	move_perp_camera(t_camera* c, t_config* config, int direction, double time_mult);
+	move_perp_camera(t_camera* c, t_config* config, struct s_world* world, int direction, double time_mult);
 int
 	rotate_camera(t_camera* c, t_config* config, int dir, double time_mult);
 
@@ -65,23 +67,23 @@ void
 }
 
 /* ************************************************************************** */
-// 前後へのカメラの移動を行い、壁の判定と訪問済みのマーキングをする
+// 前後へ移動。壁・通行不可・他エンティティの判定と訪問済みマーキングを行う
 int
-	move_camera(t_camera* c, t_config* config, int direction, double time_mult)
+	move_camera(t_camera* c, t_config* config, struct s_world* world, int direction, double time_mult)
 {
 	t_pos	n_pos;
 	double	actual_speed;
 
-	/* 修正: 速度に時間倍率を掛けて、FPSに依存しない移動量を計算 */
-	actual_speed = config->move_speed  * time_mult;
+	/* 速度に時間倍率を掛けて、FPSに依存しない移動量を計算 */
+	actual_speed = config->move_speed * time_mult;
 	copy_pos(&n_pos, &c->pos);
 	n_pos.x += (((direction) ? -1 : 1) * (c->dir.x * actual_speed));
-	if (IN_MAP(n_pos, *config) && !IS_BLOCKING(MAP(n_pos, *config))) {
+	if (IN_MAP(n_pos, *config) && !IS_BLOCKING(MAP(n_pos, *config)) && !is_blocked_by_enemies(&c->pos, &n_pos, world, NULL)) {
 		copy_pos(&c->pos, &n_pos);
 	}
 	copy_pos(&n_pos, &c->pos);
 	n_pos.y += (((direction) ? -1 : 1) * (c->dir.y * actual_speed));
-	if (IN_MAP(n_pos, *config) && !IS_BLOCKING(MAP(n_pos, *config))) {
+	if (IN_MAP(n_pos, *config) && !IS_BLOCKING(MAP(n_pos, *config)) && !is_blocked_by_enemies(&c->pos, &n_pos, world, NULL)) {
 		copy_pos(&c->pos, &n_pos);
 	}
 	if (!IS_COLLECTIBLE(MAP(c->pos, *config))) {
@@ -91,23 +93,23 @@ int
 }
 
 /* ************************************************************************** */
-// 左右へのカメラの平行移動を行い、壁の判定と訪問済みのマーキングをする
+// 左右へ平行移動。壁・通行不可・他エンティティの判定とマーキングを行う
 int
-	move_perp_camera(t_camera* c, t_config* config, int direction, double time_mult)
+	move_perp_camera(t_camera* c, t_config* config, struct s_world* world, int direction, double time_mult)
 {
 	t_pos	n_pos;
 	double	actual_speed;
 
-	/* 修正: 速度に時間倍率を掛けて、FPSに依存しない移動量を計算 */
+	/* 速度に時間倍率を掛けて、FPSに依存しない移動量を計算 */
 	actual_speed = config->move_speed * time_mult;
 	copy_pos(&n_pos, &c->pos);
 	n_pos.x += (((direction) ? -1 : 1) * (c->x_dir.x * actual_speed) + COLLISION_MARGIN);
-	if (IN_MAP(n_pos, *config) && !IS_BLOCKING(MAP(n_pos, *config))) {
+	if (IN_MAP(n_pos, *config) && !IS_BLOCKING(MAP(n_pos, *config)) && !is_blocked_by_enemies(&c->pos, &n_pos, world, NULL)) {
 		copy_pos(&c->pos, &n_pos);
 	}
 	copy_pos(&n_pos, &c->pos);
 	n_pos.y += (((direction) ? -1 : 1) * (c->x_dir.y * actual_speed) + COLLISION_MARGIN);
-	if (IN_MAP(n_pos, *config) && !IS_BLOCKING(MAP(n_pos, *config))) {
+	if (IN_MAP(n_pos, *config) && !IS_BLOCKING(MAP(n_pos, *config)) && !is_blocked_by_enemies(&c->pos, &n_pos, world, NULL)) {
 		copy_pos(&c->pos, &n_pos);
 	}
 	if (!IS_COLLECTIBLE(MAP(c->pos, *config))) {
@@ -126,7 +128,7 @@ int
 	double	cos_val;
 	double	sin_val;
 
-	/* 修正: 回転速度に時間倍率を掛け、可変FPSに対応するため毎回cos/sinを計算する */
+	/* 回転速度に時間倍率を掛け、可変FPSに対応するため毎回cos/sinを計算する */
 	actual_rot = config->rotate_speed * time_mult;
 	if (dir == 0) {
 		actual_rot = -actual_rot;
