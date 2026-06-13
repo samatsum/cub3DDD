@@ -3,9 +3,9 @@ NO textures/wall/Wall_mossy.xpm
 SO textures/wall/Wall_mossy.xpm
 WE textures/wall/Wall_mossy.xpm
 EA textures/wall/Wall_mossy.xpm
-OI textures/object/Object_barrel.xpm
-OP textures/object/Object_greenlight.xpm
-OC textures/object/Object_star.xpm
+OI1 textures/object/Object_barrel.xpm
+OP1 textures/object/Object_greenlight.xpm
+OC1 textures/object/Object_star.xpm
 F 184,113,39
 C 51,198,227
 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1

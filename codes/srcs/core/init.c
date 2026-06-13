@@ -137,7 +137,7 @@ int
 }
 
 /* ************************************************************************** */
-// マップ上のスプライトを検索し、オブジェクト(2-4)と敵(M)をそれぞれ登録する
+// マップ上のスプライトを検索し、オブジェクト(通行不可/通行可/収集)と敵(M)を登録する
 static int
 	find_sprites(t_game* game)
 {
@@ -155,8 +155,8 @@ static int
 		while (j < game->config.map.columns) {
 			set_pos(&pos, j + .5, i + .5);
 			c = MAP(pos, game->config);
-			if (c >= TILE_OBSTACLE && c <= TILE_ITEM) {
-				tex = &game->assets.tex[TEX_SPRITE + (c - TILE_OBSTACLE)];
+			if (IS_OBJECT(c)) {
+				tex = &game->assets.tex[OBJ_SLOT(c)];
 				if (tex->tex) {
 					new_sprite = add_front_sprite(&game->world.sprites, 0., &pos, tex);
 					if (!new_sprite) {

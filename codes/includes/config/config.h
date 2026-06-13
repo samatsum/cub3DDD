@@ -7,8 +7,9 @@
 
 /* ************************************************************************** */
 // マップ解析で使用する方向文字と有効なマップ文字の集合
+// （'a'〜'o' はオブジェクト3カテゴリ×5種、'2'〜'4' は旧仕様の後方互換用）
 # define DIRECTIONS				"NSEW"
-# define VALID_MAP_CHARACTERS	" 01234EWNSM"
+# define VALID_MAP_CHARACTERS	" 01234abcdefghijklmnoEWNSM"
 
 // ウィンドウ解像度の上限・下限（init時の既定要求サイズにも下限値を用いる）
 # define MAX_WIDTH				1920
@@ -32,8 +33,35 @@
 # define MAP_XY(x, y, c)		(c).map.data[(FINT(y) * (c).map.columns) + FINT(x)]
 
 /* ************************************************************************** */
+// オブジェクトのマップ文字ブロック。カテゴリごとに連続した英小文字を割り当てる。
+// 旧 '2'/'3'/'4' は各ブロック先頭(1種目)の別名として後方互換のため許容する
+# define OBJ_PER_CATEGORY		5
+# define IMP_FIRST				'a'
+# define PAS_FIRST				'f'
+# define COL_FIRST				'k'
+# define LEGACY_IMP				'2'
+# define LEGACY_PAS				'3'
+# define LEGACY_COL				'4'
+
+/* ************************************************************************** */
+// マップ文字 → 分類判定（オブジェクトの「意味」の定義はここだけが知っている）
+# define IS_IMPASSABLE(c)	(((c) >= IMP_FIRST && (c) < IMP_FIRST + OBJ_PER_CATEGORY) || (c) == LEGACY_IMP)
+# define IS_PASSABLE(c)		(((c) >= PAS_FIRST && (c) < PAS_FIRST + OBJ_PER_CATEGORY) || (c) == LEGACY_PAS)
+# define IS_COLLECTIBLE(c)	(((c) >= COL_FIRST && (c) < COL_FIRST + OBJ_PER_CATEGORY) || (c) == LEGACY_COL)
+# define IS_OBJECT(c)		(IS_IMPASSABLE(c) || IS_PASSABLE(c) || IS_COLLECTIBLE(c))
+# define IS_BLOCKING(c)		((c) == '1' || IS_IMPASSABLE(c))
+
+/* ************************************************************************** */
+// マップ文字 → テクスチャスロット番号（連番の t_texture_id を前提に算術で引く）
+# define IMP_SLOT(c)		(TEX_IMP_1 + (((c) == LEGACY_IMP) ? 0 : (c) - IMP_FIRST))
+# define PAS_SLOT(c)		(TEX_PAS_1 + (((c) == LEGACY_PAS) ? 0 : (c) - PAS_FIRST))
+# define COL_SLOT(c)		(TEX_COL_1 + (((c) == LEGACY_COL) ? 0 : (c) - COL_FIRST))
+# define OBJ_SLOT(c)		(IS_IMPASSABLE(c) ? IMP_SLOT(c) : (IS_PASSABLE(c) ? PAS_SLOT(c) : COL_SLOT(c)))
+
+/* ************************************************************************** */
 // 設定ファイルの行種別キー（順序・値はパーサの範囲判定に依存するため変更不可。
-// テクスチャ群 C_NO..C_ST、スカラー群 C_MS..C_ET はそれぞれ連続させること。
+// テクスチャ群 C_NO..C_ST（オブジェクト系 C_OI1..C_OC5 を含む）と
+// スカラー群 C_MS..C_ET はそれぞれ連続させること。
 // C_MAP はマップ本体、C_LAST は set[] の要素数を兼ねるため必ず末尾に置く）
 typedef enum e_config_key
 {
@@ -42,9 +70,21 @@ typedef enum e_config_key
 	C_SO,
 	C_WE,
 	C_EA,
-	C_OI,
-	C_OP,
-	C_OC,
+	C_OI1,
+	C_OI2,
+	C_OI3,
+	C_OI4,
+	C_OI5,
+	C_OP1,
+	C_OP2,
+	C_OP3,
+	C_OP4,
+	C_OP5,
+	C_OC1,
+	C_OC2,
+	C_OC3,
+	C_OC4,
+	C_OC5,
 	C_FT,
 	C_ST,
 	C_F,
@@ -57,7 +97,8 @@ typedef enum e_config_key
 	C_LAST
 }				t_config_key;
 
-// テクスチャ／色配列のインデックス（TEXTURES は要素数を兼ねるため必ず末尾に置く）
+// テクスチャ／色配列のインデックス（TEXTURES は要素数を兼ねるため必ず末尾に置く。
+// IMP/PAS/COL は各5枠を連続させること。OBJ_SLOT マクロが連番を前提とするため）
 typedef enum e_texture_id
 {
 	TEX_NORTH = 0,
@@ -66,9 +107,21 @@ typedef enum e_texture_id
 	TEX_EAST,
 	TEX_SKY,
 	TEX_FLOOR,
-	TEX_SPRITE,
-	TEX_SPRITE_UP,
-	TEX_SPRITE_C,
+	TEX_IMP_1,
+	TEX_IMP_2,
+	TEX_IMP_3,
+	TEX_IMP_4,
+	TEX_IMP_5,
+	TEX_PAS_1,
+	TEX_PAS_2,
+	TEX_PAS_3,
+	TEX_PAS_4,
+	TEX_PAS_5,
+	TEX_COL_1,
+	TEX_COL_2,
+	TEX_COL_3,
+	TEX_COL_4,
+	TEX_COL_5,
 	TEXTURES
 }				t_texture_id;
 

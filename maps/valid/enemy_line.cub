@@ -8,9 +8,9 @@ EA ./textures/wall/Wall_4.xpm
 ST ./textures/wall/Wall_mossy.xpm
 FT ./textures/wall/Wall_tile.xpm
 
-OI ./textures/object/Object_barrel.xpm
-OP ./textures/enemy/Enemy_monster1.xpm
-OC ./textures/object/Object_star.xpm
+OI1 ./textures/object/Object_barrel.xpm
+OP1 ./textures/enemy/Enemy_1.xpm
+OC1 ./textures/object/Object_star.xpm
 
 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1
 1 E 0 0 0 M 0 0 0 M 0 0 0 M 0 0 0 0 1

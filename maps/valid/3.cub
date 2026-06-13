@@ -1,7 +1,7 @@
 R 1920 1080
 NO textures/wall/Wall_1.xpm
 SO textures/wall/Wall_2.xpm
-OI textures/object/Object_barrel.xpm
+OI1 textures/object/Object_barrel.xpm
 F 184,113,39
 C 51,198,227
 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1

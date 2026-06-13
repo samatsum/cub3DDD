@@ -3,7 +3,7 @@ NO textures/wall/Wall_1.xpm
 SO textures/wall/Wall_2.xpm
 WE textures/wall/Wall_3.xpm
 EA textures/wall/Wall_4.xpm
-OI textures/object/Object_barrel.xpm
+OI1 textures/object/Object_barrel.xpm
 ST textures/wall/Wall_mossy.xpm
 FT textures/wall/Wall_tile.xpm
 F 184,113,39

@@ -1,15 +1,3 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   item.c                                             :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/06/03 07:32:33 by samatsum          #+#    #+#             */
-/*   Updated: 2026/06/10 08:23:47 by samatsum         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #include "core/core.h"
 #include "tuning.h"
 
@@ -24,7 +12,7 @@ void
 void
 	check_quest(t_game* game)
 {
-	if (MAP(game->camera.pos, game->config) == TILE_ITEM) {
+	if (IS_COLLECTIBLE(MAP(game->camera.pos, game->config))) {
 		MAP(game->camera.pos, game->config) = 'A';
 		game->world.collected++;
 		delete_sprite(&game->world.sprites, &game->camera.pos);
@@ -44,7 +32,7 @@ void
 	while (i < game->config.map.rows) {
 		j = 0;
 		while (j < game->config.map.columns) {
-			if (MAP_XY(j, i, game->config) == TILE_ITEM) {
+			if (IS_COLLECTIBLE(MAP_XY(j, i, game->config))) {
 				game->world.to_collect++;
 			}
 			j++;

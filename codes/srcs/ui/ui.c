@@ -71,7 +71,7 @@ static void
 		buf[i++] = 0;
 	}
 	if (to_collect > 0 && to_collect == collected) {
-		ft_write_str(buf, "GG !", 0);
+		ft_write_str(buf, "ALL COLLECTED!", 0);
 	} else if (to_collect > 0) {
 		i = ft_write_str(buf, "Collect: ", 0);
 		i = ft_write_str(buf, " / ", ft_write_int(buf, collected, i));
@@ -122,7 +122,7 @@ static int
 	char	c;
 
 	c = MAP_XY(x, y, *config);
-	if (c == '1' || c == TILE_OBSTACLE) {
+	if (IS_BLOCKING(c)) {
 		return (COLOR_MINIMAP_WALL);
 	} else if (y == (int)camera->pos.y && x == (int)camera->pos.x) {
 		return (COLOR_MINIMAP_BG);

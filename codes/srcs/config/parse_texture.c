@@ -1,15 +1,3 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   parse_texture.c                                    :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/12/09 13:33:50 by samatsum          #+#    #+#             */
-/*   Updated: 2026/06/07 06:39:56 by samatsum         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #include "config/config.h"
 
 /* ************************************************************************** */
@@ -18,7 +6,7 @@ int
 static int
 	texture_index(int key);
 static char*
-	path_from_line(int start, char const* line);
+	path_from_line(char const* line);
 
 /* ************************************************************************** */
 // テクスチャ設定を解析し、パスを保存する
@@ -33,8 +21,7 @@ int
 		free(config->tex_path[index]);
 		config->tex_path[index] = NULL;
 	}
-	// 常に「先頭から2文字飛ばした先」からパスを取得
-	path = path_from_line(2, line);
+	path = path_from_line(line);
 	if (!path) {
 		return (0);
 	}
@@ -43,7 +30,7 @@ int
 }
 
 /* ************************************************************************** */
-// 設定キーからテクスチャのインデックスを取得する
+// 設定キーから保存先テクスチャスロットを1対1で求める
 static int
 	texture_index(int key)
 {
@@ -59,42 +46,40 @@ static int
 		return (TEX_SKY);
 	} else if (key == C_FT) {
 		return (TEX_FLOOR);
-	} else if (key == C_OI) {
-		return (TEX_SPRITE);
-	} else if (key == C_OP) {
-		return (TEX_SPRITE_UP);
-	} else if (key == C_OC) {
-		return (TEX_SPRITE_C);
+	} else if (key >= C_OI1 && key <= C_OI5) {
+		return (TEX_IMP_1 + (key - C_OI1));
+	} else if (key >= C_OP1 && key <= C_OP5) {
+		return (TEX_PAS_1 + (key - C_OP1));
+	} else if (key >= C_OC1 && key <= C_OC5) {
+		return (TEX_COL_1 + (key - C_OC1));
 	}
-	return (TEX_SPRITE);
+	return (TEX_IMP_1);
 }
 
 /* ************************************************************************** */
-// 行文字列からテクスチャのパス部分を抽出する
+// 行から先頭キー(タグ)を読み飛ばし、テクスチャのパス部分を抽出する
 static char*
-	path_from_line(int start, char const* line)
+	path_from_line(char const* line)
 {
-	int		start_def;
+	int		start;
 	int		end;
-	char*	path;
 
-	start_def = start;
 	if (!line) {
 		return (NULL);
 	}
-	while (line[start] && line[start] == ' ') {
+	start = 0;
+	while (line[start] && line[start] != ' ') {
+		start++;
+	}
+	while (line[start] == ' ') {
 		start++;
 	}
 	end = ft_strlen(line);
-	while (line[end] == ' ') {
+	while (end > start && line[end - 1] == ' ') {
 		end--;
 	}
-	if (start == start_def || end - start <= 0) {
+	if (line[start] == '\0' || end - start <= 0) {
 		return (NULL);
 	}
-	path = ft_substr(line, start, end - start);
-	if (!path) {
-		return (NULL);
-	}
-	return (path);
+	return (ft_substr(line, start, end - start));
 }
