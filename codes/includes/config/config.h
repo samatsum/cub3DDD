@@ -7,9 +7,9 @@
 
 /* ************************************************************************** */
 // マップ解析で使用する方向文字と有効なマップ文字の集合
-// （'a'〜'o' はオブジェクト3カテゴリ×5種、'2'〜'4' は旧仕様の後方互換用）
+// （'a'〜'o' はオブジェクト3カテゴリ×5種）
 # define DIRECTIONS				"NSEW"
-# define VALID_MAP_CHARACTERS	" 01234abcdefghijklmnoEWNSM"
+# define VALID_MAP_CHARACTERS	" 01abcdefghijklmnoEWNSM"
 
 // ウィンドウ解像度の上限・下限（init時の既定要求サイズにも下限値を用いる）
 # define MAX_WIDTH				1920
@@ -34,28 +34,24 @@
 
 /* ************************************************************************** */
 // オブジェクトのマップ文字ブロック。カテゴリごとに連続した英小文字を割り当てる。
-// 旧 '2'/'3'/'4' は各ブロック先頭(1種目)の別名として後方互換のため許容する
 # define OBJ_PER_CATEGORY		5
 # define IMP_FIRST				'a'
 # define PAS_FIRST				'f'
 # define COL_FIRST				'k'
-# define LEGACY_IMP				'2'
-# define LEGACY_PAS				'3'
-# define LEGACY_COL				'4'
 
 /* ************************************************************************** */
 // マップ文字 → 分類判定（オブジェクトの「意味」の定義はここだけが知っている）
-# define IS_IMPASSABLE(c)	(((c) >= IMP_FIRST && (c) < IMP_FIRST + OBJ_PER_CATEGORY) || (c) == LEGACY_IMP)
-# define IS_PASSABLE(c)		(((c) >= PAS_FIRST && (c) < PAS_FIRST + OBJ_PER_CATEGORY) || (c) == LEGACY_PAS)
-# define IS_COLLECTIBLE(c)	(((c) >= COL_FIRST && (c) < COL_FIRST + OBJ_PER_CATEGORY) || (c) == LEGACY_COL)
+# define IS_IMPASSABLE(c)	((c) >= IMP_FIRST && (c) < IMP_FIRST + OBJ_PER_CATEGORY)
+# define IS_PASSABLE(c)		((c) >= PAS_FIRST && (c) < PAS_FIRST + OBJ_PER_CATEGORY)
+# define IS_COLLECTIBLE(c)	((c) >= COL_FIRST && (c) < COL_FIRST + OBJ_PER_CATEGORY)
 # define IS_OBJECT(c)		(IS_IMPASSABLE(c) || IS_PASSABLE(c) || IS_COLLECTIBLE(c))
 # define IS_BLOCKING(c)		((c) == '1' || IS_IMPASSABLE(c))
 
 /* ************************************************************************** */
 // マップ文字 → テクスチャスロット番号（連番の t_texture_id を前提に算術で引く）
-# define IMP_SLOT(c)		(TEX_IMP_1 + (((c) == LEGACY_IMP) ? 0 : (c) - IMP_FIRST))
-# define PAS_SLOT(c)		(TEX_PAS_1 + (((c) == LEGACY_PAS) ? 0 : (c) - PAS_FIRST))
-# define COL_SLOT(c)		(TEX_COL_1 + (((c) == LEGACY_COL) ? 0 : (c) - COL_FIRST))
+# define IMP_SLOT(c)		(TEX_IMP_1 + ((c) - IMP_FIRST))
+# define PAS_SLOT(c)		(TEX_PAS_1 + ((c) - PAS_FIRST))
+# define COL_SLOT(c)		(TEX_COL_1 + ((c) - COL_FIRST))
 # define OBJ_SLOT(c)		(IS_IMPASSABLE(c) ? IMP_SLOT(c) : (IS_PASSABLE(c) ? PAS_SLOT(c) : COL_SLOT(c)))
 
 /* ************************************************************************** */

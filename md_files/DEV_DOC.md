@@ -127,7 +127,6 @@ cub3d/
 オブジェクトは **3 カテゴリ × 最大 5 種** に拡張されています（`config/config.h`）。
 
 - マップ文字ブロック: 通行不可 `a`〜`e`（`IMP_FIRST='a'`）、通行可 `f`〜`j`（`PAS_FIRST='f'`）、収集 `k`〜`o`（`COL_FIRST='k'`）。`OBJ_PER_CATEGORY = 5`。
-- 旧文字 `2`/`3`/`4` は各ブロック 1 種目（`a`/`f`/`k`）の **別名** として後方互換で許容（`LEGACY_IMP` 等）。
 - 分類は `IS_IMPASSABLE` / `IS_PASSABLE` / `IS_COLLECTIBLE`、当たり判定は `IS_BLOCKING`（`'1'` または通行不可）で行います。
 - マップ文字 → テクスチャスロットは `OBJ_SLOT(c)` が連番の `t_texture_id`（`TEX_IMP_1..5` / `TEX_PAS_1..5` / `TEX_COL_1..5`）を算術で引きます。
 - `.cub` の設定キーは `config.c` の `g_keys[]` で定義され、`OI1..OI5` / `OP1..OP5` / `OC1..OC5` に対応します（裸の `OI`/`OP`/`OC` は廃止）。
