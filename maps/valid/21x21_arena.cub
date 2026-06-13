@@ -8,7 +8,7 @@ EA ./textures/wall/Wall_4.xpm
 ST ./textures/wall/Wall_mossy.xpm
 FT ./textures/wall/Wall_tile.xpm
 
-OI1 ./textures/enemy/Enemy_1.xpm
+OI1 ./textures/object/Object_barrel.xpm
 OI2 ./textures/object/Object_barrel.xpm
 OP1 ./textures/object/Object_greenlight.xpm
 OC1 ./textures/object/Object_star.xpm
@@ -21,12 +21,12 @@ OC1 ./textures/object/Object_star.xpm
 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1
 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1
 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1
-1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1
+1 0 0 0 0 0 0 0 0 0 0 0 2 0 0 0 0 0 0 0 1
 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1
 1 0 0 0 0 0 0 0 0 0 M 0 0 0 0 0 0 0 0 0 1
 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1
-1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1
-1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1
+1 0 0 0 0 0 0 0 0 0 0 0 2 0 0 0 0 0 0 0 1
+1 0 0 0 0 0 0 0 0 0 2 3 4 0 0 0 0 0 0 0 1
 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1
 1 0 0 0 0 0 0 0 0 0 N 0 0 0 0 0 0 0 0 0 1
 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1

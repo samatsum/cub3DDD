@@ -206,12 +206,14 @@ static void
 		move_y = sin(cur->dir_angle) * speed;
 		/* X軸: 壁と他エンティティ(プレイヤー/敵)を避けて移動 */
 		set_pos(&next_pos, cur->sprite->pos.x + move_x, cur->sprite->pos.y);
-		if (IN_MAP(next_pos, game->config) && MAP(next_pos, game->config) != '1' && !is_blocked_by_entities(&cur->sprite->pos, &next_pos, game, cur->sprite)) {
+		// "MAP(next_pos, game->config) != '1'" <--> "!IS_BLOCKING(MAP(next_pos, game->config))" で、通過不可能オブジェクトを通過するか否かを決められる。
+		if (IN_MAP(next_pos, game->config) && !IS_BLOCKING(MAP(next_pos, game->config)) && !is_blocked_by_entities(&cur->sprite->pos, &next_pos, game, cur->sprite)) {
 			cur->sprite->pos.x += move_x;
 		}
 		/* Y軸: 壁と他エンティティ(プレイヤー/敵)を避けて移動 */
 		set_pos(&next_pos, cur->sprite->pos.x, cur->sprite->pos.y + move_y);
-		if (IN_MAP(next_pos, game->config) && MAP(next_pos, game->config) != '1' && !is_blocked_by_entities(&cur->sprite->pos, &next_pos, game, cur->sprite)) {
+		// "MAP(next_pos, game->config) != '1'" <--> "!IS_BLOCKING(MAP(next_pos, game->config))" で、通過不可能オブジェクトを通過するか否かを決められる。
+		if (IN_MAP(next_pos, game->config) && !IS_BLOCKING(MAP(next_pos, game->config)) && !is_blocked_by_entities(&cur->sprite->pos, &next_pos, game, cur->sprite)) {
 			cur->sprite->pos.y += move_y;
 		}
 	} else {
