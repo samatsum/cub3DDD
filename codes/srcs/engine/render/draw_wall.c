@@ -6,11 +6,10 @@
 /*   By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/03 07:32:33 by samatsum          #+#    #+#             */
-/*   Updated: 2026/06/06 22:38:49 by samatsum         ###   ########.fr       */
+/*   Updated: 2026/06/14 11:36:25 by samatsum         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <math.h>
 #include "config/config.h"
 #include "engine/render/render.h"
 #include "engine/texture/texture.h" /* get_tex_color, distance_shade 等を使うため */
@@ -30,6 +29,8 @@ void
 	t_pos	pixel;
 	t_tex*	tex;
 	int		i[2];
+	double	step;
+	double	tex_pos;
 
 	tex = &rnd->tex[r->direction];
 	set_pos(&pixel, r->column, MAX(0, rnd->w->half.y - (r->height / 2.)));
@@ -41,9 +42,23 @@ void
 	init_draw_wall(tex, r, &p_tex);
 	i[1] = MAX(0, rnd->w->half.y - (r->height / 2.));
 	i[0] = 0;
+	
+	/* 1ピクセル描画ごとのテクスチャY座標の増加量（ステップ値）を事前計算 */
+	step = 1.0 * tex->height / r->height;
+	/* テクスチャY座標の初期値を計算（壁が画面外にはみ出している場合を考慮） */
+	tex_pos = (i[1] - rnd->w->size.y / 2.0 + r->height / 2.0) * step;
+
 	while (i[0] < r->height && (pixel.y = i[1]++) < rnd->w->size.y) {
-		p_tex.y = (int)((pixel.y * 2 - rnd->w->size.y + r->height) * ((tex->height / 2.) / r->height));
+		p_tex.y = (int)tex_pos;
+		/* テクスチャサイズの超過を防ぐ安全対策 */
+		if (p_tex.y >= tex->height) {
+			p_tex.y = tex->height - 1;
+		} else if (p_tex.y < 0) {
+			p_tex.y = 0;
+		}
 		draw_pixel(rnd->w, &pixel, distance_shade(rnd->options, get_tex_color(tex, &p_tex), r->distance));
+		/* ループ内では浮動小数点の乗算を排除し、加算のみで更新 */
+		tex_pos += step;
 		i[0]++;
 	}
 }
