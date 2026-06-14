@@ -7,6 +7,8 @@
 // ゲーム全体のライフサイクルおよび主要ロジックを制御する公開関数
 int
 	main_loop(t_game* game);
+double
+	calc_time_mult(double delta_time);
 void
 	init_game(t_game* game);
 int

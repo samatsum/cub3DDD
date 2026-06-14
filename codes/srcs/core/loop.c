@@ -1,15 +1,15 @@
 #include <stddef.h>
 #include <sys/time.h>
+#include <unistd.h>
 #include "core/core.h"
 #include "tuning.h"
-#include "utils/utils.h"//PROFILEのため
-#include <unistd.h>
+#include "utils/utils.h"// PROFILE マクロのため
 
 /* ************************************************************************** */
-#define BASE_FPS	60.0
-
 int
 	main_loop(t_game* game);
+double
+	calc_time_mult(double delta_time);
 static double
 	frame_delta(t_game* game, double* time_mult);
 static int
@@ -25,13 +25,10 @@ int
 	double	delta_time;
 	double	time_mult;
 	int		update;
-	int unused;
 
 	delta_time = frame_delta(game, &time_mult);
 	if (delta_time < 0.0) {
-		unused = write(1, "delta_time < 0.0\n", 17);
-		(void)unused;
-		//usleep(1500);//30FPSならこんなもん.60FPSならusleep無しでOK。
+		usleep(1500);// 描画スキップ時の短いアイドル待機（CPU専有を避ける）
 		return (0);
 	}
 	PROFILE_START(IroIro);
@@ -52,7 +49,21 @@ int
 }
 
 /* ************************************************************************** */
-// 経過時間を算出してFPS制限を行い、60FPS基準の時間倍率を計算する（制限内は負値）
+// 経過時間(秒)をTARGET_FPS基準の時間倍率へ変換し、暴走防止のため上限でクランプする
+double
+	calc_time_mult(double delta_time)
+{
+	double	time_mult;
+
+	time_mult = delta_time * TARGET_FPS;
+	if (time_mult > MAX_TIME_MULT) {
+		time_mult = MAX_TIME_MULT;
+	}
+	return (time_mult);
+}
+
+/* ************************************************************************** */
+// 経過時間を算出してFPS制限を行い、時間倍率を計算する（制限内は負値を返す）
 static double
 	frame_delta(t_game* game, double* time_mult)
 {
@@ -68,10 +79,7 @@ static double
 		return (-1.0);
 	}
 	game->timing.last_time = now;
-	*time_mult = delta_time / (1.0 / BASE_FPS);
-	if (*time_mult > MAX_TIME_MULT) {
-		*time_mult = MAX_TIME_MULT;
-	}
+	*time_mult = calc_time_mult(delta_time);
 	return (delta_time);
 }
 

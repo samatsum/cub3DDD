@@ -4,7 +4,6 @@
 #include "core/core.h"
 #include "core/collision.h"
 #include "enemy/enemy.h"
-#include "tuning.h"
 #include "enemy/enemy_utils.h"
 
 /* ************************************************************************** */
@@ -22,10 +21,7 @@ void
 	double	move_y;
 	t_pos	next_pos;
 
-	time_mult = delta_time * TARGET_FPS;
-	if (time_mult > MAX_TIME_MULT) {
-		time_mult = MAX_TIME_MULT;
-	}
+	time_mult = calc_time_mult(delta_time);
 	speed = game->config.move_speed * speed_mult * time_mult;
 	move_x = cos(cur->dir_angle) * speed;
 	move_y = sin(cur->dir_angle) * speed;
