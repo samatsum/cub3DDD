@@ -6,7 +6,7 @@
 /*   By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/29 13:25:07 by samatsum          #+#    #+#             */
-/*   Updated: 2026/06/03 10:53:35 by samatsum         ###   ########.fr       */
+/*   Updated: 2026/06/14 10:50:56 by samatsum         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,19 @@
 
 # include <stdlib.h>
 # include <stdint.h>
+# include <sys/time.h>
+# include <stdio.h>
+
+/* ************************************************************************** */
+#define PROFILE_START(name) \
+    struct timeval start_##name, end_##name; \
+    gettimeofday(&start_##name, NULL);
+
+#define PROFILE_END(name) \
+    gettimeofday(&end_##name, NULL); \
+    double time_taken_##name = (end_##name.tv_sec - start_##name.tv_sec) * 1e6; \
+    time_taken_##name = (time_taken_##name + (end_##name.tv_usec - start_##name.tv_usec)) * 1e-3; \
+    printf("Time taken by %s: %f ms\n", #name, time_taken_##name);
 
 /* ************************************************************************** */
 # define PTR_CAST(a)	(void*)((uintptr_t)(a))

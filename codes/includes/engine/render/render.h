@@ -71,6 +71,17 @@ typedef struct s_render
 }	t_render;
 
 /* ************************************************************************** */
+//呼び出し元（draw_wall や draw_sky_floor など）でインライン展開。関数呼び出しのオーバーヘッドが消滅
+static inline void draw_pixel(t_window* w, t_pos* pos, int color)
+{
+	unsigned int* dst;
+	if (pos->x >= 0 && pos->x < w->size.x && pos->y >= 0 && pos->y < w->size.y) {
+		dst = (unsigned int*)w->screen.ptr;
+		dst[(int)pos->y * (w->screen.size_line / 4) + (int)pos->x] = (unsigned int)color;
+	}
+}
+
+/* ************************************************************************** */
 int
 	init_window(t_window* window, struct s_config* config);
 void
@@ -85,8 +96,6 @@ int
 	init_image(t_window* window, t_image* img);
 void
 	destroy_image(t_window* window, t_image* img);
-void
-	draw_pixel(t_window* w, t_pos* pos, int color);
 int
 	draw_vertical_line(t_window* window, t_pos* start, int length, int color);
 int

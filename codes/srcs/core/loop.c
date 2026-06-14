@@ -2,6 +2,8 @@
 #include <sys/time.h>
 #include "core/core.h"
 #include "tuning.h"
+#include "utils/utils.h"//PROFILEのため
+#include <unistd.h>
 
 /* ************************************************************************** */
 #define BASE_FPS	60.0
@@ -26,6 +28,7 @@ int
 
 	delta_time = frame_delta(game, &time_mult);
 	if (delta_time < 0.0) {
+		usleep(100);//もっと休ませられそう？
 		return (0);
 	}
 	update = apply_input(game, time_mult);
@@ -36,8 +39,12 @@ int
 	if (update) {
 		check_quest(game);
 	}
+	PROFILE_START(update_enemies);
 	update_enemies(game, delta_time);
+	PROFILE_END(update_enemies);
+	PROFILE_START(render_frame);
 	render_frame(game);
+	PROFILE_END(render_frame);
 	return (1);
 }
 
