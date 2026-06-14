@@ -17,7 +17,7 @@ OBJ_DIR         = codes/obj
 #   -Werror        : すべての警告をエラー扱いにし、警告ゼロを強制する
 #   -I $(INC_DIR)  : 自作ヘッダの探索パス（#include "..." の基準に codes/includes を追加）
 # ------------------------------------------------------------------------------
-CFLAGS          = -O3 -Wall -Wextra -Werror -I $(INC_DIR)
+CFLAGS          = -O3 -Wall -Wextra -Werror -pthread -I $(INC_DIR)
 
 # ==============================================================================
 # ソースファイル定義
@@ -67,6 +67,7 @@ SRCS_LIST       = main.c \
                   engine/render/screen.c \
                   engine/render/sprite.c \
                   engine/render/sprite_utils.c \
+                  engine/render/cast_columns.c \
                   engine/texture/color.c \
                   engine/texture/texture.c \
                   engine/input/input.c \

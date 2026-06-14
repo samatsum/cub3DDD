@@ -53,55 +53,49 @@ static void
 }
 
 /* ************************************************************************** */
-// スプライト全体を画面に描画する（最適化版：ループ不変量の外出し＋ステップ加算）
+// スプライト全体を描画する（陰影係数とX歩幅をループ外へ出して最適化）
 static void
 	draw_sprite(t_render* rnd, t_sprite* sprite, t_sprite_draw* spr, t_tex* tex)
 {
+	double	step_x;
 	double	step_y;
+	double	left_x;
 	double	tex_pos_y_start;
 	double	tex_pos_y;
+	double	shade;
 	t_pos	tex_pos;
 	t_pos	pixel;
 	int		color;
 
-	/* Y方向の1ピクセルあたりのテクスチャ進行度（ステップ）を事前計算 */
-	step_y = 1.0 * tex->height / spr->spr_s.y;
-	/* Y方向のテクスチャ開始座標 */
-	tex_pos_y_start = (spr->draw_y_org - rnd->w->size.y / 2.0 + spr->spr_s.y / 2.0) * step_y;
-
+	step_x = tex->width / spr->spr_s.x;
+	step_y = tex->height / spr->spr_s.y;
+	left_x = -spr->spr_s.x / 2. + spr->sprite_screen;
+	tex_pos_y_start = (spr->draw_y_org - rnd->w->size.y / 2. + spr->spr_s.y / 2.) * step_y;
+	shade = 1.0;
+	if (rnd->options & FLAG_SHADOWS) {
+		shade = sprite->distance / 3;
+	}
 	while (spr->draw_x.x < rnd->w->size.x && spr->draw_x.x < spr->draw_x.y) {
-		/* Zバッファ（depth）を用いた遮蔽判定 */
 		if (spr->transform.y > 0. && spr->transform.y < rnd->depth[(int)spr->draw_x.x]) {
-			
-			/* X方向のテクスチャ座標はYループ内で一定なため、外側で1度だけ計算する */
-			tex_pos.x = (int)(256 * (((int)(spr->draw_x.x) - (-spr->spr_s.x / 2. + spr->sprite_screen))) * tex->width / spr->spr_s.x) / 256;
-			
-			/* X座標が有効なテクスチャ範囲内の場合のみYループを回す（無駄なループを排除） */
+			tex_pos.x = (int)(((int)spr->draw_x.x - left_x) * step_x);
 			if (tex_pos.x >= tex->start.x && tex_pos.x <= tex->end.x) {
 				spr->draw_y.x = spr->draw_y_org;
 				tex_pos_y = tex_pos_y_start;
 				pixel.x = spr->draw_x.x;
-				
 				while (spr->draw_y.x < rnd->w->size.y && spr->draw_y.x < spr->draw_y.y) {
 					tex_pos.y = (int)tex_pos_y;
-					
-					/* テクスチャ範囲の超過を防ぐ安全対策 */
 					if (tex_pos.y >= tex->height) {
 						tex_pos.y = tex->height - 1;
 					} else if (tex_pos.y < 0) {
 						tex_pos.y = 0;
 					}
-
 					if (tex_pos.y > tex->start.y && tex_pos.y < tex->end.y) {
-						color = shade_color(get_tex_color(tex, &tex_pos), (rnd->options & FLAG_SHADOWS) ? sprite->distance / 3 : 1);
-						/* 下位24ビット(RGB成分)だけを取り出し、0(黒)でなければ描画する */
+						color = shade_color(get_tex_color(tex, &tex_pos), shade);
 						if ((color & 0x00FFFFFF)) {
 							pixel.y = spr->draw_y.x;
 							draw_pixel(rnd->w, &pixel, color);
 						}
 					}
-					
-					/* ループ内は重い乗除算を排除し、加算のみでテクスチャ座標を進める */
 					tex_pos_y += step_y;
 					spr->draw_y.x++;
 				}

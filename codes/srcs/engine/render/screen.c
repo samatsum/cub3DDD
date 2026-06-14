@@ -22,15 +22,13 @@ void
 }
 
 /* ************************************************************************** */
-// レイキャストを使用して画面の壁やスプライト、UIを描画する
+// 画面をクリアし、列群を並列レイキャストしてからスプライト・武器・UIを重ねる
 void
 	update_screen(t_game* game)
 {
-	t_raysult	ray;
 	t_render	rnd;
 	t_window*	w;
 	t_pos		start;
-	int			i;
 
 	w = &game->window;
 	set_pos(&start, 0, 0);
@@ -43,18 +41,7 @@ void
 	rnd.depth = game->cache.depth;
 	rnd.sf_dist = game->cache.sf_dist;
 	rnd.options = game->options;
-	i = 0;
-	while (i < w->size.x) {
-		ray.column = i;
-		ray_cast(&game->camera, &game->config, &ray, game->cache.camera_x[i]);
-		game->cache.depth[i] = ray.distance;
-		ray.height = fabs(w->size.y / ray.distance);
-		draw_wall(&rnd, &ray);
-		if (ray.height < game->window.size.y) {
-			draw_sky_floor(&rnd, &ray);
-		}
-		i++;
-	}
+	cast_columns(&rnd, game->cache.camera_x);
 	if (game->world.sprites) {
 		draw_sprites(&rnd, game->world.sprites);
 	}

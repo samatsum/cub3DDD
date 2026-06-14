@@ -70,6 +70,17 @@ typedef struct s_render
 	int					options;
 }	t_render;
 
+// 列データ並列の作業単位。各ワーカーが担当する列範囲[start,end)を保持する。
+// rnd は読み取り専用で共有し、書き込み先（画面の各列・depth[]）はスレッド間で
+// 重複しないため、ミューテックスなしで安全に並列実行できる
+typedef struct s_render_job
+{
+	t_render*	rnd;
+	double*		camera_x;
+	int			start;
+	int			end;
+}	t_render_job;
+
 /* ************************************************************************** */
 //呼び出し元（draw_wall や draw_sky_floor など）でインライン展開。関数呼び出しのオーバーヘッドが消滅
 static inline void draw_pixel(t_window* w, t_pos* pos, int color)
@@ -90,6 +101,8 @@ void
 	render_frame(struct s_game* game);
 void
 	update_screen(struct s_game* game);
+void
+	cast_columns(t_render* rnd, double* camera_x);
 void
 	draw_weapon(struct s_game* game);
 int

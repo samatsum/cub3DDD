@@ -6,7 +6,7 @@
 #include <unistd.h>
 
 /* ************************************************************************** */
-#define BASE_FPS	30.0
+#define BASE_FPS	60.0
 
 int
 	main_loop(t_game* game);
@@ -29,9 +29,9 @@ int
 
 	delta_time = frame_delta(game, &time_mult);
 	if (delta_time < 0.0) {
-		unused = write(1, "delta_time < 0.0\n", 18);
+		unused = write(1, "delta_time < 0.0\n", 17);
 		(void)unused;
-		usleep(1500);//30FPSならこんなもんやろ
+		//usleep(1500);//30FPSならこんなもん.60FPSならusleep無しでOK。
 		return (0);
 	}
 	PROFILE_START(IroIro);
