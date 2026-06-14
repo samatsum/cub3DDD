@@ -6,7 +6,7 @@
 #include <unistd.h>
 
 /* ************************************************************************** */
-#define BASE_FPS	60.0
+#define BASE_FPS	30.0
 
 int
 	main_loop(t_game* game);
@@ -25,12 +25,16 @@ int
 	double	delta_time;
 	double	time_mult;
 	int		update;
+	int unused;
 
 	delta_time = frame_delta(game, &time_mult);
 	if (delta_time < 0.0) {
-		usleep(100);//もっと休ませられそう？
+		unused = write(1, "delta_time < 0.0\n", 18);
+		(void)unused;
+		usleep(1500);//30FPSならこんなもんやろ
 		return (0);
 	}
+	PROFILE_START(IroIro);
 	update = apply_input(game, time_mult);
 	if (game->options != game->last_options) {
 		update = 1;
@@ -39,9 +43,8 @@ int
 	if (update) {
 		check_quest(game);
 	}
-	PROFILE_START(update_enemies);
 	update_enemies(game, delta_time);
-	PROFILE_END(update_enemies);
+	PROFILE_END(IroIro);
 	PROFILE_START(render_frame);
 	render_frame(game);
 	PROFILE_END(render_frame);

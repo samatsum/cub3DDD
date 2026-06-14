@@ -4,7 +4,7 @@
 /* ************************************************************************** */
 // ゲーム挙動のチューニング値（コンパイル時のみ。実行時の上書きは不可）
 # define BAREHAND_SPEED_MULT	1.3
-# define TARGET_FPS				60.0
+# define TARGET_FPS				30.0
 # define MAX_TIME_MULT			3.0
 // エンティティ(プレイヤー/敵)の当たり半径。0.5 で通行不可オブジェクト相当
 # define ENTITY_RADIUS			0.5
