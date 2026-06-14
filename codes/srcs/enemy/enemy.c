@@ -5,7 +5,7 @@
 
 /* ************************************************************************** */
 t_enemy*
-	add_enemy(t_enemy** enemies, t_sprite* sprite);
+	add_enemy(t_enemy** enemies, t_sprite* sprite, int hp);
 void
 	delete_enemy(t_enemy** enemies, t_sprite** sprites, t_sprite* target);
 void
@@ -14,9 +14,9 @@ void
 	damage_enemy(t_game* game, t_sprite* hit_sprite);
 
 /* ************************************************************************** */
-// 新しい敵を生成し、リストの先頭に追加する
+// 新しい敵を生成し、指定HPで初期化してリストの先頭に追加する
 t_enemy*
-	add_enemy(t_enemy** enemies, t_sprite* sprite)
+	add_enemy(t_enemy** enemies, t_sprite* sprite, int hp)
 {
 	t_enemy*	new_enemy;
 
@@ -24,7 +24,7 @@ t_enemy*
 	if (!new_enemy) {
 		return (NULL);
 	}
-	new_enemy->hp = ENEMY_MAX_HP;
+	new_enemy->hp = hp;
 	new_enemy->state = ENEMY_STATE_IDLE;
 	new_enemy->patrol_active = 0;
 	new_enemy->path_valid = 0;

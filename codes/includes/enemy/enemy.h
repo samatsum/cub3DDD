@@ -5,9 +5,6 @@
 # include "engine/render/render.h"
 
 /* ************************************************************************** */
-// 敵1体あたりの最大HP
-# define ENEMY_MAX_HP		10
-
 // 経路キャッシュが保持できる最大マス数。最短経路がこれを超える場合は始点側の
 // 先頭このマス数だけを保持し、敵が使い切った時点で現在地から再計算する（挙動は
 // 不変で再計算頻度のみ増える）。1マスあたり t_pos(16B) を消費する点に注意
@@ -57,7 +54,7 @@ typedef struct s_enemy
 
 /* ************************************************************************** */
 t_enemy*
-	add_enemy(t_enemy** enemies, t_sprite* sprite);
+	add_enemy(t_enemy** enemies, t_sprite* sprite, int hp);
 void
 	delete_enemy(t_enemy** enemies, t_sprite** sprites, t_sprite* target);
 void

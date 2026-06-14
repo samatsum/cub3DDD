@@ -45,6 +45,8 @@ static const t_key_def	g_keys[] = {
 	{"RS", C_RS},    // 回転速度        : 任意 (0 より大)
 	{"FOV", C_FOV},  // 視野角          : 任意 (大きいほど広角)
 	{"ET", C_ET},    // 敵の追跡秒数    : 任意 (見失うまでの秒数)
+	{"ES", C_ES},    // 敵の移動速度    : 任意 (0 より大, move_speed と独立)
+	{"EH", C_EH},    // 敵のHP          : 任意 (0 より大の整数)
 };
 
 /* ************************************************************************** */
@@ -60,6 +62,8 @@ static int
 	config_key(char const* line);
 static int
 	tag_matches(char const* line, char const* tag);
+static void
+	strip_comment(char* line);
 
 /* ************************************************************************** */
 // 設定情報を初期化する
@@ -88,6 +92,8 @@ void
 	config->move_speed = DEFAULT_MOVE_SPEED;
 	config->fov = DEFAULT_FOV;
 	config->enemy_track_seconds = DEFAULT_ENEMY_TRACK_SECONDS;
+	config->enemy_speed = DEFAULT_ENEMY_SPEED;
+	config->enemy_hp = DEFAULT_ENEMY_HP;
 	i = 0;
 	while (i < C_LAST) {
 		config->set[i++] = 0;
@@ -149,6 +155,7 @@ int
 	line = NULL;
 	ret = get_next_line(c_fd, &line);
 	while (ret > 0) {
+		strip_comment(line);
 		r = (r && parse_line(config, line, &map_buffer, &empty_map, &cont_after));
 		if (!r) {
 			printf("DEBUG: parse_line failed at line: [%s]\n", line);
@@ -201,7 +208,7 @@ static int
 		return (parse_texture(config, key, line));
 	} else if (key == C_F || key == C_C) {
 		return (parse_color(config, key, line));
-	} else if (key >= C_MS && key <= C_ET) {
+	} else if (key >= C_MS && key <= C_EH) {
 		return (parse_scalar(config, key, line));
 	}
 	config->set[key] = 1;
@@ -243,4 +250,22 @@ static int
 		i++;
 	}
 	return (line[i] == ' ' || line[i] == '\0');
+}
+
+/* ************************************************************************** */
+// 行中の '#' 以降をコメントとして除去する。'#' が行頭か空白/タブの直後にある場合
+// のみコメント開始と見なし、テクスチャパス途中の '#' は値の一部として残す
+static void
+	strip_comment(char* line)
+{
+	int	i;
+
+	i = 0;
+	while (line[i]) {
+		if (line[i] == '#' && (i == 0 || line[i - 1] == ' ' || line[i - 1] == '\t')) {
+			line[i] = '\0';
+			return ;
+		}
+		i++;
+	}
 }

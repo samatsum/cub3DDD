@@ -7,7 +7,8 @@
 /* ************************************************************************** */
 // 上書き可能なスカラー設定のレジストリ（キー→t_configフィールド→許容範囲）。
 // 新しいスカラー設定を増やすときは、この配列に1行追加し、対応キーを enum と
-// config_key に足すだけでよい（パーサ本体の分岐を増やす必要はない）
+// config_key に足すだけでよい（パーサ本体の分岐を増やす必要はない）。
+// enemy_hp は double で受け、生成時に int へ縮小する（範囲検証は下限 0 超のみ）
 typedef struct s_scalar_def
 {
 	int		key;
@@ -21,6 +22,8 @@ static const t_scalar_def	g_scalars[] = {
 	{C_RS, 0.0, 100.0, offsetof(t_config, rotate_speed)},
 	{C_FOV, 0.0, 10.0, offsetof(t_config, fov)},
 	{C_ET, 0.0, 3600.0, offsetof(t_config, enemy_track_seconds)},
+	{C_ES, 0.0, 100.0, offsetof(t_config, enemy_speed)},
+	{C_EH, 0.0, 100000.0, offsetof(t_config, enemy_hp)},
 };
 
 /* ************************************************************************** */
@@ -122,7 +125,7 @@ int
 }
 
 /* ************************************************************************** */
-// .cub のスカラー設定(MS/RS/FOV/ET)を解析し、対応フィールドを上書きする
+// .cub のスカラー設定(MS/RS/FOV/ET/ES/EH)を解析し、対応フィールドを上書きする
 int
 	parse_scalar(t_config* config, int key, char const* line)
 {

@@ -169,7 +169,7 @@ static int
 				if (!new_sprite) {
 					return (0);
 				}
-				add_enemy(&game->world.enemies, new_sprite);
+				add_enemy(&game->world.enemies, new_sprite, (int)game->config.enemy_hp);
 			}
 			j++;
 		}

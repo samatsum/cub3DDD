@@ -10,8 +10,8 @@
 # define ENTITY_RADIUS			0.5
 
 /* ************************************************************************** */
-// 敵の移動速度倍率（基準 move_speed に対する係数）と巡回の到達判定しきい値。
-// ARRIVE は1フレームの巡回移動量(move_speed*PATROL*MAX_TIME_MULT)より大きく取る
+// 敵の移動速度倍率（基準 enemy_speed に対する係数）と巡回の到達判定しきい値。
+// ARRIVE は1フレームの巡回移動量(enemy_speed*PATROL*MAX_TIME_MULT)より大きく取る
 # define ENEMY_TRACK_SPEED_MULT		0.5
 # define ENEMY_PATROL_SPEED_MULT	0.35
 # define ENEMY_PATROL_ARRIVE		0.2
