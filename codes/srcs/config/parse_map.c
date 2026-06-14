@@ -1,15 +1,3 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   parse_map.c                                        :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/11/29 15:24:13 by samatsum          #+#    #+#             */
-/*   Updated: 2026/06/03 08:25:37 by samatsum         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #include "config/config.h"
 
 /* ************************************************************************** */
@@ -17,13 +5,15 @@ int
 	parse_map(t_config* config, t_str* map_buffer);
 int
 	copy_map(t_config* config, t_str* map_buffer, int* map);
+static int
+	build_map_flags(t_config* config);
 
 /* ************************************************************************** */
 // バッファからマップデータを解析し、設定に格納する
 int
 	parse_map(t_config* config, t_str* map_buffer)
 {
-	int* map;
+	int*	map;
 
 	map = NULL;
 	config->map.columns = check_top_bottom_borders(map_buffer);
@@ -36,9 +26,13 @@ int
 		return (0);
 	}
 	if (copy_map(config, map_buffer, map) != 1) {
+		free(map);
 		return (0);
 	}
 	config->map.data = map;
+	if (!build_map_flags(config)) {
+		return (0);
+	}
 	return (1);
 }
 
@@ -71,4 +65,31 @@ int
 		i++;
 	}
 	return (has_camera);
+}
+
+/* ************************************************************************** */
+// マップ本体から静的なセル属性フラグ層を構築する（現状は P ロードのみを記録）
+static int
+	build_map_flags(t_config* config)
+{
+	unsigned char*	flags;
+	int				total;
+	int				i;
+
+	total = config->map.rows * config->map.columns;
+	flags = (unsigned char*)malloc(sizeof(*flags) * total);
+	if (!flags) {
+		return (0);
+	}
+	i = 0;
+	while (i < total) {
+		if (config->map.data[i] == 'P') {
+			flags[i] = CELL_PATROL;
+		} else {
+			flags[i] = 0;
+		}
+		i++;
+	}
+	config->map.flags = flags;
+	return (1);
 }

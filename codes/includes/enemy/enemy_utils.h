@@ -15,7 +15,11 @@ void
 	update_texture(t_enemy* cur, t_game* game, double target_angle);
 int
 	bfs_next_step(t_config* config, int sx, int sy, int gx, int gy, t_pos* next);
+int
+	bfs_to_nearest_patrol(t_config* config, int sx, int sy, t_pos* next);
 void
-	step_enemy(t_enemy* cur, t_game* game, double delta_time);
+	step_enemy(t_enemy* cur, t_game* game, double delta_time, double speed_mult);
+void
+	patrol_enemy(t_enemy* cur, t_game* game, double delta_time);
 
 #endif

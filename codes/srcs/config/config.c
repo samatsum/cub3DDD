@@ -81,6 +81,7 @@ void
 	config->colors[TEX_SKY] = 0x33C6E3;
 	config->colors[TEX_FLOOR] = 0xA0764C;
 	config->map.data = NULL;
+	config->map.flags = NULL;
 	config->map.rows = 0;
 	config->map.columns = 0;
 	config->rotate_speed = DEFAULT_ROTATE_SPEED;
@@ -112,6 +113,10 @@ int
 		free(config->map.data);
 	}
 	config->map.data = NULL;
+	if (config->map.flags) {
+		free(config->map.flags);
+	}
+	config->map.flags = NULL;
 	return (0);
 }
 

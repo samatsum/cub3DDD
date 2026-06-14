@@ -36,6 +36,7 @@ SRCS_LIST       = main.c \
                   enemy/enemy_sense.c \
                   enemy/enemy_path.c \
                   enemy/enemy_move.c \
+                  enemy/enemy_patrol.c \
                   config/config.c \
                   config/parse_map.c \
                   config/check_map.c \

@@ -9,7 +9,7 @@
 // マップ解析で使用する方向文字と有効なマップ文字の集合
 // （'a'〜'o' はオブジェクト3カテゴリ×5種）
 # define DIRECTIONS				"NSEW"
-# define VALID_MAP_CHARACTERS	" 01abcdefghijklmnoEWNSM"
+# define VALID_MAP_CHARACTERS	" 01abcdefghijklmnoEWNSMP"
 
 // ウィンドウ解像度の上限・下限（init時の既定要求サイズにも下限値を用いる）
 # define MAX_WIDTH				1920
@@ -31,6 +31,13 @@
 # define IN_MAP(p, c)			(CHECK_TOP(p) && CHECK_BOT(p, c))
 # define MAP(p, c)				(c).map.data[(FINT(p.y) * (c).map.columns) + FINT(p.x)]
 # define MAP_XY(x, y, c)		(c).map.data[(FINT(y) * (c).map.columns) + FINT(x)]
+
+/* ************************************************************************** */
+// セル属性フラグ層（map.data とは別レイヤ。起動時に一度だけ構築し以後不変。
+// 訪問済みマーカー 'A' の data 上書きから P ロード等の静的属性を保護する）
+// ビット0は将来の通行可フラグ用に予約
+# define CELL_PATROL			(1 << 1)
+# define FLAG_XY(x, y, c)		(c).map.flags[(FINT(y) * (c).map.columns) + FINT(x)]
 
 /* ************************************************************************** */
 // オブジェクトのマップ文字ブロック。カテゴリごとに連続した英小文字を割り当てる。
@@ -121,12 +128,13 @@ typedef enum e_texture_id
 	TEXTURES
 }				t_texture_id;
 
-// マップ本体（1次元配列）と寸法を保持する構造体
+// マップ本体（1次元配列）とセル属性フラグ層、寸法を保持する構造体
 typedef struct s_map
 {
-	int*	data;
-	int		columns;
-	int		rows;
+	int*			data;
+	unsigned char*	flags;
+	int				columns;
+	int				rows;
 }				t_map;
 
 // 解像度・色・テクスチャパス・速度・マップなど全設定を集約する構造体

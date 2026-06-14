@@ -26,8 +26,13 @@ t_enemy*
 	}
 	new_enemy->hp = ENEMY_MAX_HP;
 	new_enemy->state = ENEMY_STATE_IDLE;
+	new_enemy->patrol_active = 0;
 	new_enemy->dir_angle = 0.0;
 	new_enemy->track_timer = 0.0;
+	new_enemy->patrol_from.x = 0.0;
+	new_enemy->patrol_from.y = 0.0;
+	new_enemy->patrol_target.x = 0.0;
+	new_enemy->patrol_target.y = 0.0;
 	new_enemy->sprite = sprite;
 	new_enemy->next = *enemies;
 	*enemies = new_enemy;

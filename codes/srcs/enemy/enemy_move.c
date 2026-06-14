@@ -9,12 +9,12 @@
 
 /* ************************************************************************** */
 void
-	step_enemy(t_enemy* cur, t_game* game, double delta_time);
+	step_enemy(t_enemy* cur, t_game* game, double delta_time, double speed_mult);
 
 /* ************************************************************************** */
-// 記録済みの方向(dir_angle)へ、壁と他エンティティを避けつつ半速で1フレーム移動する
+// 記録済みの方向(dir_angle)へ、壁と他エンティティを避けつつ指定倍率で1フレーム移動する
 void
-	step_enemy(t_enemy* cur, t_game* game, double delta_time)
+	step_enemy(t_enemy* cur, t_game* game, double delta_time, double speed_mult)
 {
 	double	time_mult;
 	double	speed;
@@ -26,7 +26,7 @@ void
 	if (time_mult > MAX_TIME_MULT) {
 		time_mult = MAX_TIME_MULT;
 	}
-	speed = (game->config.move_speed / 2.0) * time_mult;
+	speed = game->config.move_speed * speed_mult * time_mult;
 	move_x = cos(cur->dir_angle) * speed;
 	move_y = sin(cur->dir_angle) * speed;
 	set_pos(&next_pos, cur->sprite->pos.x + move_x, cur->sprite->pos.y);

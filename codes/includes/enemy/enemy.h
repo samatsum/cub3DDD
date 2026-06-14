@@ -14,7 +14,8 @@ typedef enum e_enemy_state
 {
 	ENEMY_STATE_IDLE = 0,
 	ENEMY_STATE_WALK,
-	ENEMY_STATE_DEAD
+	ENEMY_STATE_DEAD,
+	ENEMY_STATE_PATROL
 }				t_enemy_state;
 
 // 敵テクスチャ配列の要素数（8方向ぶん。個々の要素は角度から算術的に参照される
@@ -28,13 +29,16 @@ typedef enum e_enemy_tex_id
 struct s_game;
 
 /* ************************************************************************** */
-// 敵の実体と状態を管理する専用構造体
+// 敵の実体と状態を管理する専用構造体（patrol_* は巡回モードの歩行状態）
 typedef struct s_enemy
 {
 	int				hp;
 	int				state;
+	int				patrol_active;
 	double			dir_angle;
-	double			track_timer; /* 追跡モードの残り時間（秒）を追加 */
+	double			track_timer;
+	t_pos			patrol_from;
+	t_pos			patrol_target;
 	t_sprite*		sprite;
 	struct s_enemy*	next;
 }	t_enemy;

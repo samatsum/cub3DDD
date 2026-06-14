@@ -2,6 +2,7 @@
 
 #include "core/core.h"
 #include "enemy/enemy.h"
+#include "tuning.h"
 #include "enemy/enemy_utils.h"
 
 /* ************************************************************************** */
@@ -37,17 +38,18 @@ void
 }
 
 /* ************************************************************************** */
-// 追跡タイマーに従い状態を切り替える。残時間が尽きていれば待機状態へ戻す
+// 追跡残時間があれば追跡、尽きていれば巡回へ振り分ける。追跡中は巡回状態を無効化する
 static void
 	move_enemy(t_enemy* cur, t_game* game, double delta_time)
 {
-	if (cur->track_timer <= 0.0) {
-		cur->state = ENEMY_STATE_IDLE;
+	if (cur->track_timer > 0.0) {
+		cur->track_timer -= delta_time;
+		cur->state = ENEMY_STATE_WALK;
+		cur->patrol_active = 0;
+		track_player(cur, game, delta_time);
 		return ;
 	}
-	cur->track_timer -= delta_time;
-	cur->state = ENEMY_STATE_WALK;
-	track_player(cur, game, delta_time);
+	patrol_enemy(cur, game, delta_time);
 }
 
 /* ************************************************************************** */
@@ -74,5 +76,5 @@ static void
 		aim_y = next.y + 0.5;
 	}
 	cur->dir_angle = atan2(aim_y - cur->sprite->pos.y, aim_x - cur->sprite->pos.x);
-	step_enemy(cur, game, delta_time);
+	step_enemy(cur, game, delta_time, ENEMY_TRACK_SPEED_MULT);
 }
