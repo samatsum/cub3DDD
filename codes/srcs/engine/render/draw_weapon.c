@@ -128,30 +128,41 @@ static void
 }
 
 /* ************************************************************************** */
-// テクスチャを画面上の指定位置・スケールで描画する
+// テクスチャを画面上の指定位置・スケールで描画する（最適化版）
 static void
 	draw_overlay(t_game* game, t_tex* tex, double start_x, double start_y, double scale)
 {
 	t_pos	pixel;
 	t_pos	p_tex;
 	int		color;
+	double	inv_scale;
 
-	if (!tex->tex) {
+	if (!tex->tex || scale == 0.0) {
 		return ;
 	}
+	/* 割り算を排除するための逆数計算 */
+	inv_scale = 1.0 / scale;
+	
 	pixel.y = start_y;
 	while (pixel.y < game->window.size.y) {
-		pixel.x = start_x;
-		while (pixel.x < start_x + (tex->width * scale)) {
-			p_tex.x = (int)((pixel.x - start_x) / scale);
-			p_tex.y = (int)((pixel.y - start_y) / scale);
-			if (p_tex.x >= 0 && p_tex.x < tex->width && p_tex.y >= 0 && p_tex.y < tex->height) {
-				color = get_tex_color(tex, &p_tex);
-				if ((color & 0x00FFFFFF) != 0x000000) {
-					draw_pixel(&game->window, &pixel, color);
+		/* ループ不変量の外出し: Y座標の計算はXループの外で行う */
+		p_tex.y = (int)((pixel.y - start_y) * inv_scale);
+		
+		/* Y座標がテクスチャ範囲内の場合のみXループを回す（無駄な走査を排除） */
+		if (p_tex.y >= 0 && p_tex.y < tex->height) {
+			pixel.x = start_x;
+			while (pixel.x < start_x + (tex->width * scale)) {
+				/* 重い割り算を掛け算に置換 */
+				p_tex.x = (int)((pixel.x - start_x) * inv_scale);
+				
+				if (p_tex.x >= 0 && p_tex.x < tex->width) {
+					color = get_tex_color(tex, &p_tex);
+					if ((color & 0x00FFFFFF) != 0x000000) {
+						draw_pixel(&game->window, &pixel, color);
+					}
 				}
+				pixel.x++;
 			}
-			pixel.x++;
 		}
 		pixel.y++;
 	}

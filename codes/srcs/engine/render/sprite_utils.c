@@ -1,13 +1,13 @@
 /* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   sprite_utils.c                                     :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/05/28 13:16:59 by samatsum          #+#    #+#             */
-/*   Updated: 2026/06/03 15:13:58 by samatsum         ###   ########.fr       */
-/*                                                                            */
+/* */
+/* :::      ::::::::   */
+/* sprite_utils.c                                     :+:      :+:    :+:   */
+/* +:+ +:+         +:+     */
+/* By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
+/* +#+#+#+#+#+   +#+           */
+/* Created: 2026/05/28 13:16:59 by samatsum          #+#    #+#             */
+/* Updated: 2026/06/14 12:45:00 by samatsum         ###   ########.fr       */
+/* */
 /* ************************************************************************** */
 
 #include <math.h>
@@ -26,7 +26,7 @@ void
 	clear_sprites(t_sprite** sprites);
 
 /* ************************************************************************** */
-// 全てのスプライトをカメラからの距離でソートしたリストを返す
+// 全てのスプライトをカメラからの距離でソートしたリストを返す（最適化版）
 t_sprite*
 	sort_sprites(t_camera* camera, t_sprite* sprites)
 {
@@ -36,7 +36,8 @@ t_sprite*
 	sorted = NULL;
 	copy_pos(&p, &camera->pos);
 	while (sprites) {
-		sprites->distance = fabs(((p.x - sprites->pos.x) * (p.x - sprites->pos.x) + (p.y - sprites->pos.y) * (p.y - sprites->pos.y)));
+		/* 実数の二乗和は必ず正になるため、無意味な fabs() の呼び出しを排除 */
+		sprites->distance = ((p.x - sprites->pos.x) * (p.x - sprites->pos.x) + (p.y - sprites->pos.y) * (p.y - sprites->pos.y));
 		sprites->sorted = NULL;
 		add_sorted_sprite(&sorted, sprites);
 		sprites = sprites->next;

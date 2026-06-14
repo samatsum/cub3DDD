@@ -1,15 +1,3 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   draw_sky_floor.c                                   :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/06/03 07:32:33 by samatsum          #+#    #+#             */
-/*   Updated: 2026/06/06 22:38:29 by samatsum         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #include "config/config.h"
 #include "engine/render/render.h"
 #include "engine/texture/texture.h" /* shade_color 関数を使うため */
@@ -77,7 +65,10 @@ static void
 	if (!tex->tex) {
 		draw_pixel(rnd->w, pixel, distance_shade(rnd->options, rnd->config->colors[TEX_FLOOR], rnd->sf_dist[ray->row]));
 	} else {
-		set_pos(p_tex, (int)(ray->c_floor.x * tex->width) % tex->width, (int)(ray->c_floor.y * tex->height) % tex->height);
+		/* 修正箇所: 重いモジュロ演算(%)を高速なビット論理積(&)に置き換え */
+		set_pos(p_tex, 
+			((int)(ray->c_floor.x * tex->width)) & (tex->width - 1), 
+			((int)(ray->c_floor.y * tex->height)) & (tex->height - 1));
 		draw_pixel(rnd->w, pixel, distance_shade(rnd->options, get_tex_color(tex, p_tex), rnd->sf_dist[ray->row]));
 	}
 }
@@ -93,7 +84,10 @@ static void
 	if (!tex->tex) {
 		draw_pixel(rnd->w, pixel, distance_shade(rnd->options, rnd->config->colors[TEX_SKY], rnd->sf_dist[ray->row]));
 	} else {
-		set_pos(p_tex, (int)(ray->c_floor.x * tex->width) % tex->width, (int)(ray->c_floor.y * tex->height) % tex->height);
+		/* 修正箇所: 重いモジュロ演算(%)を高速なビット論理積(&)に置き換え */
+		set_pos(p_tex, 
+			((int)(ray->c_floor.x * tex->width)) & (tex->width - 1), 
+			((int)(ray->c_floor.y * tex->height)) & (tex->height - 1));
 		draw_pixel(rnd->w, pixel, distance_shade(rnd->options, get_tex_color(tex, p_tex), rnd->sf_dist[ray->row]));
 	}
 }
