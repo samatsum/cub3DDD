@@ -1,20 +1,22 @@
 #include <stdlib.h>
 
 #include "config/config.h"
+#include "enemy/enemy.h"
 #include "enemy/enemy_utils.h"
 
 /* ************************************************************************** */
 int
-	bfs_next_step(t_config* config, int sx, int sy, int gx, int gy, t_pos* next);
+	bfs_fill_path(t_config* config, int sx, int sy, int gx, int gy, t_pos* path);
 int
 	bfs_to_nearest_patrol(t_config* config, int sx, int sy, t_pos* next);
 static int
 	cell_walkable(t_config* config, int x, int y);
 
 /* ************************************************************************** */
-// BFSで始点から終点への最短経路を探索し、始点の次に進むべき1マスを返す
+// BFSで最短経路を全探索し、始点から終点までのマス列を path[] に前方順で格納する。
+// 経路長が PATH_MAX を超える場合は始点側の先頭 PATH_MAX マスだけを保持する
 int
-	bfs_next_step(t_config* config, int sx, int sy, int gx, int gy, t_pos* next)
+	bfs_fill_path(t_config* config, int sx, int sy, int gx, int gy, t_pos* path)
 {
 	int					cols;
 	int					total;
@@ -26,6 +28,8 @@ int
 	int					goal_idx;
 	int					nx;
 	int					ny;
+	int					len;
+	int					f;
 	int*				came;
 	int*				queue;
 	static const int	off_x[4] = {1, -1, 0, 0};
@@ -71,14 +75,28 @@ int
 		free(queue);
 		return (0);
 	}
+	len = 1;
 	cur_idx = goal_idx;
-	while (came[cur_idx] != start_idx) {
+	while (cur_idx != start_idx) {
 		cur_idx = came[cur_idx];
+		len++;
 	}
-	set_pos(next, cur_idx % cols, cur_idx / cols);
+	cur_idx = goal_idx;
+	i = 0;
+	while (i < len) {
+		f = (len - 1) - i;
+		if (f < PATH_MAX) {
+			set_pos(&path[f], cur_idx % cols, cur_idx / cols);
+		}
+		cur_idx = came[cur_idx];
+		i++;
+	}
 	free(came);
 	free(queue);
-	return (1);
+	if (len > PATH_MAX) {
+		return (PATH_MAX);
+	}
+	return (len);
 }
 
 /* ************************************************************************** */

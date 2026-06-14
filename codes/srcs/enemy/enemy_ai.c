@@ -12,6 +12,10 @@ static void
 	move_enemy(t_enemy* cur, t_game* game, double delta_time);
 static void
 	track_player(t_enemy* cur, t_game* game, double delta_time);
+static void
+	ensure_path(t_enemy* cur, t_config* config, t_pos start, t_pos goal);
+static void
+	advance_path_index(t_enemy* cur, t_pos start);
 
 /* ************************************************************************** */
 // 毎フレーム検知判定を行い、追跡タイマー更新・移動・テクスチャ更新を実行する
@@ -53,28 +57,61 @@ static void
 }
 
 /* ************************************************************************** */
-// プレイヤーの現在地へBFSで最短経路を求め、次の1マスへ向かって前進する
+// キャッシュ済み経路上の次の1マスへ向かって1フレーム前進する
 static void
 	track_player(t_enemy* cur, t_game* game, double delta_time)
 {
-	t_pos	next;
-	int		sx;
-	int		sy;
-	int		gx;
-	int		gy;
+	t_pos	start;
+	t_pos	goal;
 	double	aim_x;
 	double	aim_y;
 
-	sx = (int)floor(cur->sprite->pos.x);
-	sy = (int)floor(cur->sprite->pos.y);
-	gx = (int)floor(game->camera.pos.x);
-	gy = (int)floor(game->camera.pos.y);
+	set_pos(&start, floor(cur->sprite->pos.x), floor(cur->sprite->pos.y));
+	set_pos(&goal, floor(game->camera.pos.x), floor(game->camera.pos.y));
 	aim_x = game->camera.pos.x;
 	aim_y = game->camera.pos.y;
-	if (!(sx == gx && sy == gy) && bfs_next_step(&game->config, sx, sy, gx, gy, &next)) {
-		aim_x = next.x + 0.5;
-		aim_y = next.y + 0.5;
+	if (!(start.x == goal.x && start.y == goal.y)) {
+		ensure_path(cur, &game->config, start, goal);
+		advance_path_index(cur, start);
+		if (cur->path_valid && cur->path_idx < cur->path_len) {
+			aim_x = cur->path[cur->path_idx].x + 0.5;
+			aim_y = cur->path[cur->path_idx].y + 0.5;
+		}
 	}
 	cur->dir_angle = atan2(aim_y - cur->sprite->pos.y, aim_x - cur->sprite->pos.x);
 	step_enemy(cur, game, delta_time, ENEMY_TRACK_SPEED_MULT);
+}
+
+/* ************************************************************************** */
+// 終点セルが変わったか経路を使い切った場合のみ、現在地からの最短経路を再計算する
+static void
+	ensure_path(t_enemy* cur, t_config* config, t_pos start, t_pos goal)
+{
+	int	len;
+
+	if (cur->path_valid && cur->path_goal.x == goal.x && cur->path_goal.y == goal.y && cur->path_idx < cur->path_len) {
+		return ;
+	}
+	len = bfs_fill_path(config, (int)start.x, (int)start.y, (int)goal.x, (int)goal.y, cur->path);
+	if (len <= 0) {
+		cur->path_valid = 0;
+		return ;
+	}
+	cur->path_len = len;
+	cur->path_idx = 1;
+	if (cur->path_idx >= len) {
+		cur->path_idx = len - 1;
+	}
+	copy_pos(&cur->path_goal, &goal);
+	cur->path_valid = 1;
+}
+
+/* ************************************************************************** */
+// 敵が既に到達した経路セルを読み飛ばし、次に向かうべき添字まで進める
+static void
+	advance_path_index(t_enemy* cur, t_pos start)
+{
+	while (cur->path_valid && cur->path_idx < cur->path_len && cur->path[cur->path_idx].x == start.x && cur->path[cur->path_idx].y == start.y) {
+		cur->path_idx++;
+	}
 }

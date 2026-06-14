@@ -14,7 +14,7 @@ int
 void
 	update_texture(t_enemy* cur, t_game* game, double target_angle);
 int
-	bfs_next_step(t_config* config, int sx, int sy, int gx, int gy, t_pos* next);
+	bfs_fill_path(t_config* config, int sx, int sy, int gx, int gy, t_pos* path);
 int
 	bfs_to_nearest_patrol(t_config* config, int sx, int sy, t_pos* next);
 void
