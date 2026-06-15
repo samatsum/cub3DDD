@@ -57,7 +57,7 @@ static void
 
 /* ************************************************************************** */
 
-// スプライト全体を描画する（列ごとにライトのコーン重みを反映して陰影を計算）
+// スプライト全体を描画する（距離を線形化し、列ごとのライトコーンで暗化を打ち消す）
 static void
 	draw_sprite(t_render* rnd, t_sprite* sprite, t_sprite_draw* spr, t_tex* tex)
 {
@@ -67,6 +67,7 @@ static void
 	double	tex_pos_y_start;
 	double	tex_pos_y;
 	double	shade;
+	double	sprite_dist;
 	double	light;
 	double	col_shade;
 	t_pos	tex_pos;
@@ -81,10 +82,11 @@ static void
 	if (rnd->options & FLAG_SHADOWS) {
 		shade = sprite->distance / 3;
 	}
+	sprite_dist = sqrt(sprite->distance);
 	while (spr->draw_x.x < rnd->w->size.x && spr->draw_x.x < spr->draw_x.y) {
 		if (spr->transform.y > 0. && spr->transform.y < rnd->depth[(int)spr->draw_x.x]) {
 			light = flashlight_weight(rnd, (int)spr->draw_x.x);
-			col_shade = flashlight_divide(shade, sprite->distance, light);
+			col_shade = flashlight_divide(shade, sprite_dist, light);
 			tex_pos.x = (int)(((int)spr->draw_x.x - left_x) * step_x);
 			if (tex_pos.x >= tex->start.x && tex_pos.x <= tex->end.x) {
 				spr->draw_y.x = spr->draw_y_org;

@@ -6,7 +6,7 @@
 /*   By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/28 13:16:59 by samatsum          #+#    #+#             */
-/*   Updated: 2026/06/15 12:06:22 by samatsum         ###   ########.fr       */
+/*   Updated: 2026/06/15 12:15:07 by samatsum         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,5 +47,5 @@ int
 	get_tex_color(t_tex* tex, t_pos* pos);
 double
 	flashlight_divide(double divide, double distance, double light);
-	
+
 #endif
