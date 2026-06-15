@@ -14,10 +14,10 @@ static void
 	build_status_text(char* buf, int collected, int to_collect);
 static void
 	draw_minimap(t_render* rnd, t_pos* start, t_pos* end);
+static void
+	draw_entity_dot(t_render* rnd, t_pos* pos, int color, int tile, int margin);
 static int
-	case_color(t_config* config, t_camera* camera, t_enemy* enemies, int x, int y);
-static int
-	enemy_in_cell(t_enemy* enemies, int x, int y);
+	case_color(t_config* config, int x, int y);
 static int
 	scale_ui_px(int base, int win_height);
 
@@ -84,70 +84,106 @@ static void
 }
 
 /* ************************************************************************** */
-// 画面右下にミニマップを描画する（タイル・余白は解像度に比例して拡大する）
+// 画面右下にミニマップを描画する（マス目描画後、実座標でエンティティを上書き）
 static void
 	draw_minimap(t_render* rnd, t_pos* start, t_pos* end)
 {
-	int	i;
-	int	j;
-	int	color;
-	int	tile;
-	int	margin;
+	int			i;
+	int			j;
+	int			color;
+	int			tile;
+	int			margin;
+	int			base_x;
+	int			base_y;
+	t_enemy*	e;
 
 	tile = scale_ui_px(MAP_TILE_SIZE, rnd->w->size.y);
 	margin = scale_ui_px(SCALE, rnd->w->size.y);
+	
+	// ミニマップ全体を描画する基準点（左上座標）。画面右端・下端から margin 分の余白を空ける
+	base_x = rnd->w->size.x - margin - (rnd->config->map.columns * tile);
+	base_y = rnd->w->size.y - margin - (rnd->config->map.rows * tile);
+
+	// 1. 背景のマス（壁・床など）をタイル単位で描画
 	i = 0;
 	while (i < rnd->config->map.rows) {
 		j = 0;
 		while (j < rnd->config->map.columns) {
-			color = case_color(rnd->config, rnd->camera, rnd->world->enemies, j, i);
+			color = case_color(rnd->config, j, i);
+			// マップ外の空白(-1)でない場合のみ描画する
 			if (color >= 0) {
-				set_pos(start,
-					rnd->w->size.x - (rnd->config->map.columns * tile) - margin + (j * tile),
-					rnd->w->size.y - (rnd->config->map.rows * tile) - margin + (i * tile));
-				set_pos(end,
-					rnd->w->size.x - (rnd->config->map.columns * tile) + (j * tile),
-					rnd->w->size.y - (rnd->config->map.rows * tile) + (i * tile));
+				set_pos(start, base_x + (j * tile), base_y + (i * tile));
+				set_pos(end, start->x + tile, start->y + tile); // 幅と高さを厳密に tile に設定
 				draw_rectangle(rnd->w, start, end, color);
 			}
 			j++;
 		}
 		i++;
 	}
+
+	// 2. 敵を実座標に基づいて描画
+	e = rnd->world->enemies;
+	while (e) {
+		draw_entity_dot(rnd, &e->sprite->pos, COLOR_MINIMAP_ENEMY, tile, margin);
+		e = e->next;
+	}
+
+	// 3. プレイヤーを実座標に基づいて描画（一番手前に表示するため最後に描画）
+	draw_entity_dot(rnd, &rnd->camera->pos, COLOR_MINIMAP_BG, tile, margin);
 }
 
 /* ************************************************************************** */
-// ミニマップの特定座標における色を判定して返す
+// エンティティを実座標ベースでミニマップ上に描画する（サイズはマスの60%に縮小）
+static void
+	draw_entity_dot(t_render* rnd, t_pos* pos, int color, int tile, int margin)
+{
+	t_pos	start;
+	t_pos	end;
+	double	cx;
+	double	cy;
+	double	dot_size;
+	double	base_x;
+	double	base_y;
+
+	// ミニマップの基準点（左上）を計算
+	base_x = rnd->w->size.x - margin - (rnd->config->map.columns * tile);
+	base_y = rnd->w->size.y - margin - (rnd->config->map.rows * tile);
+
+	// 実座標(pos->x, pos->y)を画面上のピクセル座標に変換
+	cx = base_x + (pos->x * tile);
+	cy = base_y + (pos->y * tile);
+	
+	// ドットのサイズをマスの60%とする
+	dot_size = tile * 0.6;
+	if (dot_size < 2.0) {
+		dot_size = 2.0;
+	}
+	set_pos(&start, cx - (dot_size / 2.0), cy - (dot_size / 2.0));
+	set_pos(&end, cx + (dot_size / 2.0), cy + (dot_size / 2.0));
+	draw_rectangle(rnd->w, &start, &end, color);
+}
+
+/* ************************************************************************** */
+// ミニマップの特定マスにおける背景色を判定して返す
 static int
-	case_color(t_config* config, t_camera* camera, t_enemy* enemies, int x, int y)
+	case_color(t_config* config, int x, int y)
 {
 	char	c;
 
 	c = MAP_XY(x, y, *config);
+	
+	// マップ外の空白領域（スペース等）は描画せず透明にする
+	if (c == ' ' || c == '\0') {
+		return (-1);
+	}
+	
 	if (IS_BLOCKING(c)) {
 		return (COLOR_MINIMAP_WALL);
-	} else if (y == (int)camera->pos.y && x == (int)camera->pos.x) {
-		return (COLOR_MINIMAP_BG);
-	} else if (enemy_in_cell(enemies, x, y)) {
-		return (COLOR_MINIMAP_ENEMY);
 	} else if (c == 'A') {
 		return (COLOR_UI_TEXT);
 	}
+	// '0'（床）など、実際に存在する通路は背景色で塗る
 	return (COLOR_MINIMAP_EMPTY);
-}
-
-/* ************************************************************************** */
-// 指定セルに敵がいるかを敵リストから判定する
-static int
-	enemy_in_cell(t_enemy* enemies, int x, int y)
-{
-	while (enemies) {
-		if ((int)enemies->sprite->pos.x == x && (int)enemies->sprite->pos.y == y) {
-			return (1);
-		}
-		enemies = enemies->next;
-	}
-	return (0);
 }
 
 /* ************************************************************************** */

@@ -37,15 +37,18 @@ int
 	if (hypot(dx, dy) > ENEMY_SIGHT_RANGE) {
 		return (0);
 	}
-	diff = target_angle - cur->dir_angle;
-	while (diff <= -M_PI) {
-		diff += 2.0 * M_PI;
-	}
-	while (diff > M_PI) {
-		diff -= 2.0 * M_PI;
-	}
-	if (fabs(diff) > ENEMY_FOV_HALF) {
-		return (0);
+	// 追跡中（track_timer > 0）でない場合のみ、厳密な視野角チェックを行う
+	if (cur->track_timer <= 0.0) {
+		diff = target_angle - cur->dir_angle;
+		while (diff <= -M_PI) {
+			diff += 2.0 * M_PI;
+		}
+		while (diff > M_PI) {
+			diff -= 2.0 * M_PI;
+		}
+		if (fabs(diff) > ENEMY_FOV_HALF) {
+			return (0);
+		}
 	}
 	return (has_line_of_sight(&cur->sprite->pos, &game->camera.pos, &game->config));
 }

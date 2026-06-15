@@ -21,7 +21,8 @@ int
 
 	e = world->enemies;
 	while (e) {
-		if (e->sprite != ignore && is_entity_blocking(cur, next, &e->sprite->pos, ENTITY_RADIUS)) {
+		// 共通のENTITY_RADIUSではなく、敵専用のENEMY_RADIUSを使用する
+		if (e->sprite != ignore && is_entity_blocking(cur, next, &e->sprite->pos, ENEMY_RADIUS)) {
 			return (1);
 		}
 		e = e->next;
@@ -34,6 +35,7 @@ int
 int
 	is_blocked_by_entities(t_pos* cur, t_pos* next, t_game* game, t_sprite* ignore)
 {
+	// プレイヤー（カメラ）の判定は元のENTITY_RADIUSのままとする
 	if (is_entity_blocking(cur, next, &game->camera.pos, ENTITY_RADIUS)) {
 		return (1);
 	}

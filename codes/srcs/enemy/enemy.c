@@ -52,6 +52,8 @@ void
 	t_enemy*	current;
 	t_enemy*	previous;
 	t_enemy*	tmp;
+	t_sprite*	s_curr;
+	t_sprite*	s_prev;
 
 	current = *enemies;
 	previous = NULL;
@@ -63,7 +65,24 @@ void
 			} else {
 				previous->next = tmp->next;
 			}
-			delete_sprite(sprites, &target->pos);
+			
+			// 座標ではなくポインタの一致で確実に対象スプライトのみを削除する
+			s_curr = *sprites;
+			s_prev = NULL;
+			while (s_curr) {
+				if (s_curr == target) {
+					if (!s_prev) {
+						*sprites = s_curr->next;
+					} else {
+						s_prev->next = s_curr->next;
+					}
+					free(s_curr);
+					break ;
+				}
+				s_prev = s_curr;
+				s_curr = s_curr->next;
+			}
+
 			free(tmp);
 			tmp = NULL;
 			return ;
