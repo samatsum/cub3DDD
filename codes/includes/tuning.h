@@ -6,11 +6,11 @@
 # define BAREHAND_SPEED_MULT	1.3
 # define TARGET_FPS				60.0
 # define MAX_TIME_MULT			3.0
-// エンティティ(プレイヤー)の当たり半径。0.5 で通行不可オブジェクト相当
-# define ENTITY_RADIUS			0.5
+// エンティティ(プレイヤー)の当たり半径。(動くものとの当たり半径)
+# define PLAYER_RADIUS			0.5
 
-// 敵の当たり半径（プレイヤーより大きくして重なりを防止・衝突を強調する）
-# define ENEMY_RADIUS			1.0
+// 敵の当たり半径（動くものとの当たり半径)
+# define ENEMY_RADIUS			0.8
 
 /* ************************************************************************** */
 // 敵の移動速度倍率（基準 enemy_speed に対する係数）と巡回の到達判定しきい値。
