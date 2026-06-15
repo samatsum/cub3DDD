@@ -18,6 +18,9 @@
 # define ENEMY_TRACK_SPEED_MULT		0.5
 # define ENEMY_PATROL_SPEED_MULT	0.35
 # define ENEMY_PATROL_ARRIVE		0.2
+// 徘徊中に曲がり角で向きを変える旋回速度[度/秒]。向きが揃うまで前進を止める
+// （0.5秒で45度・1秒で90度）。旋回中も視野(dir_angle)は連動して動く
+# define ENEMY_TURN_DEG_PER_SEC		90.0
 
 /* ************************************************************************** */
 // フォーマット上の不変条件（仕様で固定。チューニング対象ではない）

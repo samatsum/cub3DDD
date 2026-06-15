@@ -9,6 +9,10 @@
 /* ************************************************************************** */
 void
 	patrol_enemy(t_enemy* cur, t_game* game, double delta_time);
+static double
+	wrap_pi(double angle);
+static int
+	face_angle(t_enemy* cur, double target_angle, double delta_time);
 static int
 	is_patrol(t_config* config, int x, int y);
 static void
@@ -19,7 +23,8 @@ static void
 	seed_patrol(t_enemy* cur, t_config* config, int cx, int cy);
 
 /* ************************************************************************** */
-// 非追跡時の徘徊。P上なら時計回り巡回、P外なら最近接Pへ復帰、不可なら待機する
+// 非追跡時の徘徊。P上なら時計回り巡回、P外なら最近接Pへ復帰、不可なら待機する。
+// 曲がり角では face_angle で向きを揃えてから前進する（向きが合うまでは静止して回頭）
 void
 	patrol_enemy(t_enemy* cur, t_game* game, double delta_time)
 {
@@ -38,8 +43,9 @@ void
 			return ;
 		}
 		cur->state = ENEMY_STATE_PATROL;
-		cur->dir_angle = atan2((next.y + 0.5) - cur->sprite->pos.y, (next.x + 0.5) - cur->sprite->pos.x);
-		step_enemy(cur, game, delta_time, ENEMY_PATROL_SPEED_MULT);
+		if (face_angle(cur, atan2((next.y + 0.5) - cur->sprite->pos.y, (next.x + 0.5) - cur->sprite->pos.x), delta_time)) {
+			step_enemy(cur, game, delta_time, ENEMY_PATROL_SPEED_MULT);
+		}
 		return ;
 	}
 	if (!cur->patrol_active) {
@@ -55,8 +61,46 @@ void
 		tcx = cur->patrol_target.x + 0.5;
 		tcy = cur->patrol_target.y + 0.5;
 	}
-	cur->dir_angle = atan2(tcy - cur->sprite->pos.y, tcx - cur->sprite->pos.x);
-	step_enemy(cur, game, delta_time, ENEMY_PATROL_SPEED_MULT);
+	if (face_angle(cur, atan2(tcy - cur->sprite->pos.y, tcx - cur->sprite->pos.x), delta_time)) {
+		step_enemy(cur, game, delta_time, ENEMY_PATROL_SPEED_MULT);
+	}
+}
+
+/* ************************************************************************** */
+// 角度を (-π, π] へ正規化する。目標との差から最短の回転方向を求めるために使う
+static double
+	wrap_pi(double angle)
+{
+	while (angle <= -M_PI) {
+		angle += 2.0 * M_PI;
+	}
+	while (angle > M_PI) {
+		angle -= 2.0 * M_PI;
+	}
+	return (angle);
+}
+
+/* ************************************************************************** */
+// dir_angle を目標角へ旋回速度の上限で近づける。残り角が1フレーム分以下になれば
+// 目標角へ吸着して 1(整列済み=前進可) を返し、まだ向きが合わなければ 0 を返す
+static int
+	face_angle(t_enemy* cur, double target_angle, double delta_time)
+{
+	double	diff;
+	double	max_step;
+
+	diff = wrap_pi(target_angle - cur->dir_angle);
+	max_step = (ENEMY_TURN_DEG_PER_SEC * M_PI / 180.0 / TARGET_FPS) * calc_time_mult(delta_time);
+	if (fabs(diff) <= max_step) {
+		cur->dir_angle = target_angle;
+		return (1);
+	}
+	if (diff > 0.0) {
+		cur->dir_angle = wrap_pi(cur->dir_angle + max_step);
+	} else {
+		cur->dir_angle = wrap_pi(cur->dir_angle - max_step);
+	}
+	return (0);
 }
 
 /* ************************************************************************** */
