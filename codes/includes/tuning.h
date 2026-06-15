@@ -28,8 +28,8 @@
 
 /* ************************************************************************** */
 // フラッシュライト：正面コーンの半角[度]・届く距離[マス]・暗化の打消し量(1.0で全打消)
-# define LIGHT_CONE_DEG		30.0
+# define LIGHT_CONE_DEG		20.0
 # define LIGHT_RANGE		50.0
-# define LIGHT_BOOST		1.0
+# define LIGHT_BOOST		1.5
 
 #endif

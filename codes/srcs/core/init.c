@@ -32,7 +32,7 @@ int
 	paths[WTEX_PISTOL_IDLE] = "textures/arm/Arm_pistol_static.xpm";
 	paths[WTEX_PISTOL_SHOOT] = "textures/arm/Arm_pistol_shoot.xpm";
 	paths[WTEX_PISTOL_RECOIL] = "textures/arm/Arm_pistol_recoil.xpm";
-	paths[WTEX_FLASHLIGHT] = "textures/arm/Arm_flashlight_1.xpm";
+	paths[WTEX_FLASHLIGHT] = "textures/arm/Arm_flashlight.xpm";
 	paths[WTEX_HAND_LEFT] = "textures/arm/Arm_lefthand.xpm";
 	paths[WTEX_HAND_RIGHT] = "textures/arm/Arm_righthand.xpm";
 	i = 0;

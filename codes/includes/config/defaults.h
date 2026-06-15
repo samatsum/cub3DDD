@@ -3,8 +3,8 @@
 
 /* ************************************************************************** */
 // プレイヤー／カメラの初期パラメータ（.cub の MS / RS / FOV で上書き可能）
-# define DEFAULT_MOVE_SPEED			0.11
-# define DEFAULT_ROTATE_SPEED		0.11
+# define DEFAULT_MOVE_SPEED			0.05
+# define DEFAULT_ROTATE_SPEED		0.05
 # define DEFAULT_FOV				0.66
 
 /* ************************************************************************** */

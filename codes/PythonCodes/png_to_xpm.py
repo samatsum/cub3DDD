@@ -74,4 +74,4 @@ def convert_png_to_xpm(root_dir):
 
 
 if __name__ == "__main__":
-    convert_png_to_xpm("../")
+    convert_png_to_xpm("../../textures")
