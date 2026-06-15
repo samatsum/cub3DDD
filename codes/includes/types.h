@@ -20,6 +20,7 @@
 typedef struct s_sprite		t_sprite;
 typedef struct s_enemy		t_enemy;
 typedef struct s_tex		t_tex;
+typedef struct s_light		t_light;
 
 // 装備中の武器の種別
 typedef enum e_weapon_type
@@ -56,6 +57,8 @@ typedef struct s_world
 {
 	t_sprite*		sprites;
 	t_enemy*		enemies;
+	t_light*		lights;
+	int				light_count;
 	int				to_collect;
 	int				collected;
 }				t_world;

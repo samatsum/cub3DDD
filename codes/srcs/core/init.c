@@ -3,6 +3,7 @@
 #include "enemy/enemy.h"
 #include "../minilibx-linux/mlx.h"
 #include "tuning.h"
+#include "engine/render/light.h"
 
 /* ************************************************************************** */
 int
@@ -55,6 +56,9 @@ int
 	if (!find_sprites(game)) {
 		return (exit_error(game, "Error:\nfailed to malloc sprites.\n"));
 	}
+	if (!build_lights(&game->world, &game->config)) {
+		return (exit_error(game, "Error:\nfailed to malloc lights.\n"));
+	}
 	count_items(game);
 	make_tables(game);
 	return (1);
@@ -75,6 +79,8 @@ void
 	game->last_options = 0;
 	game->world.sprites = NULL;
 	game->world.enemies = NULL;
+	game->world.lights = NULL;
+	game->world.light_count = 0;
 	i = 0;
 	while (i < TEXTURES) {
 		game->assets.tex[i++].tex = NULL;

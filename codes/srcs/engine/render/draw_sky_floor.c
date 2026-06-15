@@ -1,6 +1,7 @@
 #include "config/config.h"
 #include "engine/render/render.h"
 #include "engine/texture/texture.h" /* shade_color 関数を使うため */
+#include "engine/render/light.h"
 
 /* ************************************************************************** */
 
@@ -60,23 +61,26 @@ static void
 }
 
 /* ************************************************************************** */
-
-// 床の1ピクセルを描画する
+// 床の1ピクセルを描画する（装飾スプライトのスポットライトで輝度を持ち上げる）
 static void
 	draw_floor_pixel(t_render* rnd, t_raysult* ray, t_pos* pixel, t_pos* p_tex, double light)
 {
 	t_tex*	tex;
+	int		color;
+	double	spot;
 
+	spot = spotlight_factor(rnd->world, ray->c_floor.x, ray->c_floor.y);
 	tex = &rnd->tex[TEX_FLOOR];
 	if (!tex->tex) {
-		draw_pixel(rnd->w, pixel, distance_shade(rnd->options, rnd->config->colors[TEX_FLOOR], rnd->sf_dist[ray->row], light));
+		color = distance_shade(rnd->options, rnd->config->colors[TEX_FLOOR], rnd->sf_dist[ray->row], light);
 	} else {
 		/* 修正箇所: 重いモジュロ演算(%)を高速なビット論理積(&)に置き換え */
 		set_pos(p_tex,
 			((int)(ray->c_floor.x * tex->width)) & (tex->width - 1),
 			((int)(ray->c_floor.y * tex->height)) & (tex->height - 1));
-		draw_pixel(rnd->w, pixel, distance_shade(rnd->options, get_tex_color(tex, p_tex), rnd->sf_dist[ray->row], light));
+		color = distance_shade(rnd->options, get_tex_color(tex, p_tex), rnd->sf_dist[ray->row], light);
 	}
+	draw_pixel(rnd->w, pixel, apply_spotlight(color, spot));
 }
 
 /* ************************************************************************** */

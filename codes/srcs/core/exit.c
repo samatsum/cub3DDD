@@ -2,6 +2,7 @@
 #include <unistd.h>
 #include "../minilibx-linux/mlx.h"
 #include "core/core.h"
+#include "engine/render/light.h"
 #include "gnl/get_next_line.h"
 
 /* ************************************************************************** */
@@ -41,6 +42,7 @@ int
 		clear_textures(&game->window, game->assets.tex);
 		clear_sprites(&game->world.sprites);
 		clear_enemies(&game->world.enemies);
+		clear_lights(&game->world);
 		clear_assets(game);
 		if (game->window.ptr) {
 			mlx_destroy_display(game->window.ptr);

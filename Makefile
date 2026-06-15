@@ -68,6 +68,7 @@ SRCS_LIST       = main.c \
                   engine/render/sprite.c \
                   engine/render/sprite_utils.c \
                   engine/render/cast_columns.c \
+                  engine/render/light.c \
                   engine/texture/color.c \
                   engine/texture/texture.c \
                   engine/input/input.c \
