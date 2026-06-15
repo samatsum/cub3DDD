@@ -4,6 +4,7 @@
 #include "engine/texture/texture.h" /* get_tex_color, distance_shade 等に必要 */
 
 /* ************************************************************************** */
+
 void
 	draw_sprites(t_render* rnd, t_sprite* sprites);
 static void
@@ -12,6 +13,7 @@ static void
 	draw_sprite(t_render* rnd, t_sprite* sprite, t_sprite_draw* spr, t_tex* tex);
 
 /* ************************************************************************** */
+
 // 全てのスプライトを距離順にソートして描画する
 void
 	draw_sprites(t_render* rnd, t_sprite* sprites)
@@ -32,6 +34,7 @@ void
 }
 
 /* ************************************************************************** */
+
 // スプライト描画用の座標計算と初期化を行う
 static void
 	init_draw_sprite(t_render* rnd, t_sprite* sprite, double inv_det, t_sprite_draw* spr)
@@ -53,7 +56,8 @@ static void
 }
 
 /* ************************************************************************** */
-// スプライト全体を描画する（陰影係数とX歩幅をループ外へ出して最適化）
+
+// スプライト全体を描画する（列ごとにライトのコーン重みを反映して陰影を計算）
 static void
 	draw_sprite(t_render* rnd, t_sprite* sprite, t_sprite_draw* spr, t_tex* tex)
 {
@@ -63,6 +67,8 @@ static void
 	double	tex_pos_y_start;
 	double	tex_pos_y;
 	double	shade;
+	double	light;
+	double	col_shade;
 	t_pos	tex_pos;
 	t_pos	pixel;
 	int		color;
@@ -77,6 +83,8 @@ static void
 	}
 	while (spr->draw_x.x < rnd->w->size.x && spr->draw_x.x < spr->draw_x.y) {
 		if (spr->transform.y > 0. && spr->transform.y < rnd->depth[(int)spr->draw_x.x]) {
+			light = flashlight_weight(rnd, (int)spr->draw_x.x);
+			col_shade = flashlight_divide(shade, sprite->distance, light);
 			tex_pos.x = (int)(((int)spr->draw_x.x - left_x) * step_x);
 			if (tex_pos.x >= tex->start.x && tex_pos.x <= tex->end.x) {
 				spr->draw_y.x = spr->draw_y_org;
@@ -90,7 +98,7 @@ static void
 						tex_pos.y = 0;
 					}
 					if (tex_pos.y > tex->start.y && tex_pos.y < tex->end.y) {
-						color = shade_color(get_tex_color(tex, &tex_pos), shade);
+						color = shade_color(get_tex_color(tex, &tex_pos), col_shade);
 						if ((color & 0x00FFFFFF)) {
 							pixel.y = spr->draw_y.x;
 							draw_pixel(rnd->w, &pixel, color);

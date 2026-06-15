@@ -13,6 +13,7 @@
 # define FLAG_SHADOWS		0x00000100
 # define FLAG_CROSSHAIR		0x00001000
 # define FLAG_SAVE			0x00000001
+# define FLAG_FLASHLIGHT	0x00010000
 
 /* ************************************************************************** */
 // 不完全構造体の前方宣言

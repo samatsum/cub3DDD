@@ -129,5 +129,7 @@ void
 	draw_sprites(t_render* rnd, t_sprite* sprites);
 void
 	clear_sprites(t_sprite** sprites);
+double
+	flashlight_weight(t_render* rnd, int column);
 
 #endif
