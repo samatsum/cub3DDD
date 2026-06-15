@@ -77,7 +77,6 @@ static void
 	bob_left = pow(fabs(sin(angle)), BOB_POWER);
 	bob_right = pow(fabs(cos(angle)), BOB_POWER);
 	
-	/* 左手 */
 	active_tex = &game->assets.weapon_tex[WTEX_HAND_LEFT];
 	if (active_tex->tex) {
 		scale = (game->window.size.y * WEAPON_SCALE) / active_tex->height;
@@ -86,7 +85,6 @@ static void
 		start_y = game->window.size.y - (active_tex->height * scale) + move_dist * bob_left;
 		draw_overlay(game, active_tex, start_x, start_y, scale);
 	}
-	/* 右手 */
 	active_tex = &game->assets.weapon_tex[WTEX_HAND_RIGHT];
 	if (active_tex->tex) {
 		scale = (game->window.size.y * WEAPON_SCALE) / active_tex->height;
@@ -115,8 +113,10 @@ static void
 		} else {
 			active_tex = &game->assets.weapon_tex[WTEX_PISTOL_IDLE];
 		}
-	} else {
+	} else if (game->input.current_weapon == WEP_FLASHLIGHT) {
 		active_tex = &game->assets.weapon_tex[WTEX_FLASHLIGHT];
+	} else {
+		return ;
 	}
 	if (!active_tex->tex) {
 		return ;
@@ -128,7 +128,7 @@ static void
 }
 
 /* ************************************************************************** */
-// テクスチャを画面上の指定位置・スケールで描画する（最適化版）
+// テクスチャを画面上の指定位置・スケールで描画する（ループの無駄を排除した最適化版）
 static void
 	draw_overlay(t_game* game, t_tex* tex, double start_x, double start_y, double scale)
 {
@@ -140,21 +140,15 @@ static void
 	if (!tex->tex || scale == 0.0) {
 		return ;
 	}
-	/* 割り算を排除するための逆数計算 */
 	inv_scale = 1.0 / scale;
 	
-	pixel.y = start_y;
-	while (pixel.y < game->window.size.y) {
-		/* ループ不変量の外出し: Y座標の計算はXループの外で行う */
+	pixel.y = start_y < 0 ? 0 : start_y;
+	while (pixel.y < game->window.size.y && pixel.y < start_y + (tex->height * scale)) {
 		p_tex.y = (int)((pixel.y - start_y) * inv_scale);
-		
-		/* Y座標がテクスチャ範囲内の場合のみXループを回す（無駄な走査を排除） */
 		if (p_tex.y >= 0 && p_tex.y < tex->height) {
-			pixel.x = start_x;
-			while (pixel.x < start_x + (tex->width * scale)) {
-				/* 重い割り算を掛け算に置換 */
+			pixel.x = start_x < 0 ? 0 : start_x;
+			while (pixel.x < game->window.size.x && pixel.x < start_x + (tex->width * scale)) {
 				p_tex.x = (int)((pixel.x - start_x) * inv_scale);
-				
 				if (p_tex.x >= 0 && p_tex.x < tex->width) {
 					color = get_tex_color(tex, &p_tex);
 					if ((color & 0x00FFFFFF) != 0x000000) {

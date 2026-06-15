@@ -5,10 +5,6 @@
 #include "engine/render/render.h"
 
 /* ************************************************************************** */
-#define KEY_NUM_1		49
-#define KEY_NUM_2		50
-#define KEY_NUM_3		51
-#define KEY_SPACE		32
 #define SHOOT_COOLDOWN	10
 
 // 移動・回転の制御軸ID（末尾の AXIS_COUNT は要素数を兼ねる）
@@ -28,7 +24,7 @@ typedef struct s_hold_key
 {
 	int	keycode;
 	int	axis;
-}			t_hold_key;
+}	t_hold_key;
 
 int
 	expose_hook(t_game* game);
