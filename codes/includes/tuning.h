@@ -29,6 +29,9 @@
 // 死亡時に全画面表示する画像のパス（UI を含む全レイヤーの上から重ねる）
 # define DEATH_TEX_PATH			"textures/full/Full_youdied.xpm"
 
+// 扉(ドア)のテクスチャ。defineを書き換えるだけで別の扉画像へ差し替えられる
+# define DOOR_TEX_PATH          "textures/interact/Interact_DOOR_3.xpm"
+
 /* ************************************************************************** */
 // 敵の移動速度倍率（基準 enemy_speed に対する係数）と巡回の到達判定しきい値。
 // ARRIVE は1フレームの巡回移動量(enemy_speed*PATROL*MAX_TIME_MULT)より大きく取る。

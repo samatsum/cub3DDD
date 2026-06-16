@@ -63,12 +63,13 @@ typedef struct s_world
 	int				collected;
 }				t_world;
 
-// 画像アセット（壁/床/天井・武器・敵・死亡画面のテクスチャ群）
+// 画像アセット（壁/床/天井・武器・敵・扉・死亡画面のテクスチャ群）
 typedef struct s_assets
 {
 	t_tex			tex[TEXTURES];
 	t_tex			weapon_tex[WEAPON_TEX_COUNT];
 	t_tex			enemy_tex[ENEMY_TEX_COUNT];
+	t_tex			door_tex;
 	t_tex			death_tex;
 }				t_assets;
 

@@ -6,6 +6,8 @@ void
 	check_quest(t_game* game);
 void
 	count_items(t_game* game);
+static void
+	open_doors(t_game* game);
 
 /* ************************************************************************** */
 // プレイヤーの現在位置にあるアイテムを取得したか判定し、状態を更新する
@@ -16,6 +18,9 @@ void
 		MAP(game->camera.pos, game->config) = 'A';
 		game->world.collected++;
 		delete_sprite(&game->world.sprites, &game->camera.pos);
+		if (game->world.to_collect > 0 && game->world.collected >= game->world.to_collect) {
+			open_doors(game);
+		}
 	}
 }
 
@@ -36,6 +41,24 @@ void
 				game->world.to_collect++;
 			}
 			j++;
+		}
+		i++;
+	}
+}
+
+/* ************************************************************************** */
+// 収集完了時に呼ばれ、マップ上の全ての扉(D)を床('0')へ書き換えて開放する
+static void
+	open_doors(t_game* game)
+{
+	int	total;
+	int	i;
+
+	total = game->config.map.rows * game->config.map.columns;
+	i = 0;
+	while (i < total) {
+		if (game->config.map.data[i] == DOOR_CHAR) {
+			game->config.map.data[i] = '0';
 		}
 		i++;
 	}

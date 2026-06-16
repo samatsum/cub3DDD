@@ -51,6 +51,10 @@ int
 	if (game->assets.death_tex.tex) {
 		game->assets.death_tex.ptr = mlx_get_data_addr(game->assets.death_tex.tex, &game->assets.death_tex.bpp, &game->assets.death_tex.size_line, &game->assets.death_tex.endian);
 	}
+	game->assets.door_tex.path = ft_strdup(DOOR_TEX_PATH);
+	if (game->assets.door_tex.tex) {
+		game->assets.door_tex.ptr = mlx_get_data_addr(game->assets.door_tex.tex, &game->assets.door_tex.bpp, &game->assets.door_tex.size_line, &game->assets.door_tex.endian);
+	}
 	if (!init_enemy_textures(game)) {
 		return (exit_error(game, "Error:\nfailed to load enemy textures.\n"));
 	}

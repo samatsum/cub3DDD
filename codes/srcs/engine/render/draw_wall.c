@@ -23,7 +23,11 @@ void
 	double	tex_pos;
 	double	light;
 
-	tex = &rnd->tex[r->direction];
+	if (r->is_door) {
+		tex = rnd->door_tex;
+	} else {
+		tex = &rnd->tex[r->direction];
+	}
 	light = flashlight_weight(rnd, r->column);
 	set_pos(&pixel, r->column, MAX(0, rnd->w->half.y - (r->height / 2.)));
 	if (!tex->tex) {

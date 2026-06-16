@@ -22,6 +22,7 @@ typedef struct s_raysult
 	double		distance;
 	int			direction;
 	int			side;
+	int			is_door;
 	int			height;
 	t_pos		ray_pos;
 	t_pos		ray_dir;

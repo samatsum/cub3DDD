@@ -65,6 +65,7 @@ typedef struct s_render
 	t_camera*			camera;
 	struct s_world*		world;
 	t_tex*				tex;
+	t_tex*				door_tex;
 	double*				depth;
 	double*				sf_dist;
 	int					options;

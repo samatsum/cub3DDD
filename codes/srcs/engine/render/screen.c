@@ -53,6 +53,7 @@ void
 	rnd.camera = &game->camera;
 	rnd.world = &game->world;
 	rnd.tex = game->assets.tex;
+	rnd.door_tex = &game->assets.door_tex;
 	rnd.depth = game->cache.depth;
 	rnd.sf_dist = game->cache.sf_dist;
 	rnd.options = game->options;

@@ -6,7 +6,7 @@
 /*   By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/28 13:16:59 by samatsum          #+#    #+#             */
-/*   Updated: 2026/06/11 23:53:38 by samatsum         ###   ########.fr       */
+/*   Updated: 2026/06/16 18:24:08 by samatsum         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@ static void
 	init_ray(t_raysult* r, t_camera* c, double camera_x);
 
 /* ************************************************************************** */
-// カメラから光線を飛ばし、壁との交点や距離を計算する
+// カメラから光線を飛ばし、壁・扉との交点や距離を計算する
 void
 	ray_cast(t_camera* camera, t_config* config, t_raysult* ray, double cam_x)
 {
@@ -36,6 +36,7 @@ void
 	copy_pos(&ray->ray_pos, &camera->pos);
 	init_ray(ray, camera, cam_x);
 	hit = 0;
+	ray->is_door = 0;
 	while (!hit) {
 		next_side = (ray->side_dist.x < ray->side_dist.y);
 		ray->side_dist.x += ((next_side) ? ray->delta_dist.x : 0.);
@@ -48,6 +49,9 @@ void
 			ray->map_pos.y -= ((ray->side) ? ray->step.y : 0.);
 			hit = 1;
 		} else if (MAP(ray->map_pos, *config) == '1') {
+			hit = 1;
+		} else if (IS_DOOR(MAP(ray->map_pos, *config))) {
+			ray->is_door = 1;
 			hit = 1;
 		}
 	}
