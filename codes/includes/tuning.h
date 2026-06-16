@@ -3,7 +3,11 @@
 
 /* ************************************************************************** */
 // ゲーム挙動のチューニング値（コンパイル時のみ。実行時の上書きは不可）
-# define BAREHAND_SPEED_MULT	1.3
+// プレイヤーの速度倍率（config->move_speed への係数）。素手(3キー)装備で走行モードに
+// なり、歩行の PLAYER_RUN_BOOST 倍速で動く。速さの比率は PLAYER_RUN_BOOST だけで調整できる
+# define PLAYER_RUN_BOOST		1.5
+# define PLAYER_WALK_SPEED_MULT	1.0
+# define PLAYER_RUN_SPEED_MULT	(PLAYER_WALK_SPEED_MULT * PLAYER_RUN_BOOST)
 # define TARGET_FPS				60.0
 # define MAX_TIME_MULT			3.0
 // エンティティ(プレイヤー)の当たり半径。(動くものとの当たり半径)
@@ -27,9 +31,12 @@
 
 /* ************************************************************************** */
 // 敵の移動速度倍率（基準 enemy_speed に対する係数）と巡回の到達判定しきい値。
-// ARRIVE は1フレームの巡回移動量(enemy_speed*PATROL*MAX_TIME_MULT)より大きく取る
-# define ENEMY_TRACK_SPEED_MULT		0.5
-# define ENEMY_PATROL_SPEED_MULT	0.35
+// ARRIVE は1フレームの巡回移動量(enemy_speed*PATROL*MAX_TIME_MULT)より大きく取る。
+// 追跡倍率は巡回倍率に ENEMY_TRACK_BOOST を掛けて導出する。
+// 速さの比率を変えたいときは ENEMY_TRACK_BOOST だけを調整すればよい
+# define ENEMY_TRACK_BOOST			1.5
+# define ENEMY_PATROL_SPEED_MULT	1.0
+# define ENEMY_TRACK_SPEED_MULT		(ENEMY_PATROL_SPEED_MULT * ENEMY_TRACK_BOOST)
 # define ENEMY_PATROL_ARRIVE		0.2
 // 徘徊中に曲がり角で向きを変える旋回速度[度/秒]。向きが揃うまで前進を止める
 // （0.5秒で45度・1秒で90度）。旋回中も視野(dir_angle)は連動して動く

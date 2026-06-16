@@ -35,6 +35,7 @@ int
 	PROFILE_START(IroIro);
 	if (is_player_dead(game)) {
 		update_death(game, delta_time);
+		update_enemies(game, delta_time);
 	} else {
 		update = apply_input(game, time_mult);
 		if (game->options != game->last_options) {
@@ -90,16 +91,16 @@ static double
 }
 
 /* ************************************************************************** */
-// 入力状態をカメラへ反映する（WEP_HANDS装備時は移動速度を1.3倍に補正）
+// 入力状態をカメラへ反映する（素手装備＝走行モード時は PLAYER_RUN_BOOST 倍速に補正）
 static int
 	apply_input(t_game* game, double time_mult)
 {
 	double	speed_mult;
 	int		update;
 
-	speed_mult = 1.0;
+	speed_mult = PLAYER_WALK_SPEED_MULT;
 	if (game->input.current_weapon == WEP_HANDS) {
-		speed_mult = BAREHAND_SPEED_MULT;
+		speed_mult = PLAYER_RUN_SPEED_MULT;
 	}
 	update = 0;
 	if (game->input.move.x || game->input.move.y) {
