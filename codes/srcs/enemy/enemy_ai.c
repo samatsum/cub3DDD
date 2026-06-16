@@ -4,6 +4,7 @@
 #include "enemy/enemy.h"
 #include "tuning.h"
 #include "enemy/enemy_utils.h"
+#include "core/respawn.h"
 
 /* ************************************************************************** */
 void
@@ -18,7 +19,8 @@ static void
 	advance_path_index(t_enemy* cur, t_pos start);
 
 /* ************************************************************************** */
-// 毎フレーム検知判定を行い、追跡タイマー更新・移動・テクスチャ更新を実行する
+// 毎フレーム検知判定を行い、追跡タイマー更新・移動・テクスチャ更新を実行する。
+// プレイヤー死亡中は検知を止め、追跡時間を 0 に落として即座に徘徊モードへ戻す
 void
 	update_enemies(t_game* game, double delta_time)
 {
@@ -32,7 +34,9 @@ void
 		dx = game->camera.pos.x - cur->sprite->pos.x;
 		dy = game->camera.pos.y - cur->sprite->pos.y;
 		target_angle = atan2(dy, dx);
-		if (enemy_sees_player(cur, game, target_angle)) {
+		if (is_player_dead(game)) {
+			cur->track_timer = 0.0;
+		} else if (enemy_sees_player(cur, game, target_angle)) {
 			cur->track_timer = game->config.enemy_track_seconds;
 		}
 		move_enemy(cur, game, delta_time);

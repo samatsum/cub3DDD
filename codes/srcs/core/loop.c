@@ -2,6 +2,7 @@
 #include <sys/time.h>
 #include <unistd.h>
 #include "core/core.h"
+#include "core/respawn.h"
 #include "tuning.h"
 #include "utils/utils.h"// PROFILE マクロのため
 
@@ -18,7 +19,7 @@ static long long
 	get_current_time_ms(void);
 
 /* ************************************************************************** */
-// 毎フレーム実行されるメインループ。FPS制限・入力反映・更新・描画を統括する
+// 毎フレーム実行。死亡中はタイマーのみ進め、生存中は入力・敵更新・接触判定を行う
 int
 	main_loop(t_game* game)
 {
@@ -32,15 +33,20 @@ int
 		return (0);
 	}
 	PROFILE_START(IroIro);
-	update = apply_input(game, time_mult);
-	if (game->options != game->last_options) {
-		update = 1;
-		game->last_options = game->options;
+	if (is_player_dead(game)) {
+		update_death(game, delta_time);
+	} else {
+		update = apply_input(game, time_mult);
+		if (game->options != game->last_options) {
+			update = 1;
+			game->last_options = game->options;
+		}
+		if (update) {
+			check_quest(game);
+		}
+		update_enemies(game, delta_time);
+		check_enemy_contact(game);
 	}
-	if (update) {
-		check_quest(game);
-	}
-	update_enemies(game, delta_time);
 	PROFILE_END(IroIro);
 	PROFILE_START(render_frame);
 	render_frame(game);

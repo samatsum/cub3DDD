@@ -63,12 +63,13 @@ typedef struct s_world
 	int				collected;
 }				t_world;
 
-// 画像アセット（壁/床/天井・武器・敵のテクスチャ群）
+// 画像アセット（壁/床/天井・武器・敵・死亡画面のテクスチャ群）
 typedef struct s_assets
 {
 	t_tex			tex[TEXTURES];
 	t_tex			weapon_tex[WEAPON_TEX_COUNT];
 	t_tex			enemy_tex[ENEMY_TEX_COUNT];
+	t_tex			death_tex;
 }				t_assets;
 
 // 描画前計算のキャッシュ（カメラ平面比率・深度・床天井距離・回転三角関数）
@@ -85,17 +86,20 @@ typedef struct s_timing
 	long long		last_time;
 }				t_timing;
 
-// 各サブシステムを集約するファサード構造体
+// 各サブシステムを集約するファサード構造体（spawn は初期スポーン状態のスナップショット、
+// death_timer は死亡演出の残り秒数で 0 超なら死亡中＝全画面の死亡画像を表示する）
 typedef struct s_game
 {
 	t_config		config;
 	t_window		window;
 	t_camera		camera;
+	t_camera		spawn;
 	t_input			input;
 	t_world			world;
 	t_assets		assets;
 	t_render_cache	cache;
 	t_timing		timing;
+	double			death_timer;
 	int				options;
 	int				last_options;
 }				t_game;

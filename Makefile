@@ -30,6 +30,7 @@ SRCS_LIST       = main.c \
                   core/loop.c \
                   core/shoot.c \
                   core/collision.c \
+                  core/respawn.c \
                   enemy/enemy.c \
                   enemy/enemy_ai.c \
                   enemy/enemy_assets.c \

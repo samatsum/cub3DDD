@@ -55,7 +55,7 @@ int
 }
 
 /* ************************************************************************** */
-// 武器(6種)と敵(8方向)のテクスチャ画像とパス文字列をすべて解放する
+// 武器(6種)・敵(8方向)・死亡画面のテクスチャ画像とパス文字列をすべて解放する
 static void
 	clear_assets(t_game* game)
 {
@@ -84,6 +84,14 @@ static void
 			game->assets.enemy_tex[i].path = NULL;
 		}
 		i++;
+	}
+	if (game->assets.death_tex.tex && game->window.ptr) {
+		mlx_destroy_image(game->window.ptr, game->assets.death_tex.tex);
+		game->assets.death_tex.tex = NULL;
+	}
+	if (game->assets.death_tex.path) {
+		free(game->assets.death_tex.path);
+		game->assets.death_tex.path = NULL;
 	}
 }
 

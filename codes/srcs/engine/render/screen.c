@@ -1,5 +1,6 @@
 #include <math.h>
 #include "core/core.h"            /* ゲーム設定の取得に必要 */
+#include "core/respawn.h"         /* is_player_dead に必要 */
 #include "engine/raycast/raycast.h"
 #include "engine/render/render.h" /* 描画関数群の呼び出しに必要 */
 #include "ui/ui.h"                /* update_ui, display_crosshair に必要 */
@@ -16,13 +17,20 @@ void
 	update_window(t_window* w, int options, int collected, int to_collect);
 double
 	flashlight_weight(t_render* rnd, int column);
+static void
+	draw_death_screen(t_game* game);
 
 /* ************************************************************************** */
 
-// ゲームの1フレーム全体を描画し、画面を更新する
+// 1フレーム全体を描画する。死亡中はUIを含む全レイヤーを伏せ、死亡画像だけを表示する
 void
 	render_frame(t_game* game)
 {
+	if (is_player_dead(game)) {
+		draw_death_screen(game);
+		mlx_put_image_to_window(game->window.ptr, game->window.win, game->window.screen.img, 0, 0);
+		return ;
+	}
 	update_screen(game);
 	update_window(&game->window, game->options, game->world.collected, game->world.to_collect);
 }
@@ -100,4 +108,36 @@ double
 		return (0.0);
 	}
 	return (1.0 - angle / limit);
+}
+
+/* ************************************************************************** */
+
+// バッファを黒で塗ってから死亡画像を画面全体へ引き伸ばす（未ロード時は黒画面）
+static void
+	draw_death_screen(t_game* game)
+{
+	t_window*	w;
+	t_tex*		tex;
+	t_pos		pixel;
+	t_pos		texel;
+
+	w = &game->window;
+	set_pos(&pixel, 0, 0);
+	draw_rectangle(w, &pixel, &w->size, 0x000000);
+	tex = &game->assets.death_tex;
+	if (!tex->tex) {
+		return ;
+	}
+	pixel.y = 0;
+	while (pixel.y < w->size.y) {
+		texel.y = (int)(pixel.y * tex->height / w->size.y);
+		pixel.x = 0;
+		while (pixel.x < w->size.x) {
+			texel.x = (int)(pixel.x * tex->width / w->size.x);
+			draw_pixel(w, &pixel, get_tex_color(tex, &texel));
+			pixel.x++;
+		}
+		pixel.x = 0;
+		pixel.y++;
+	}
 }

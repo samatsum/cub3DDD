@@ -4,6 +4,7 @@
 #include "../minilibx-linux/mlx.h"
 #include "tuning.h"
 #include "engine/render/light.h"
+#include "core/respawn.h"
 
 /* ************************************************************************** */
 int
@@ -45,11 +46,20 @@ int
 		}
 		i++;
 	}
+	game->assets.death_tex.path = ft_strdup(DEATH_TEX_PATH);
+	game->assets.death_tex.tex = mlx_xpm_file_to_image(game->window.ptr, game->assets.death_tex.path, &game->assets.death_tex.width, &game->assets.death_tex.height);
+	if (game->assets.death_tex.tex) {
+		game->assets.death_tex.ptr = mlx_get_data_addr(game->assets.death_tex.tex, &game->assets.death_tex.bpp, &game->assets.death_tex.size_line, &game->assets.death_tex.endian);
+	}
 	if (!init_enemy_textures(game)) {
 		return (exit_error(game, "Error:\nfailed to load enemy textures.\n"));
 	}
 	find_start_pos(&game->config, &game->camera);
 	find_start_angle(&game->config, &game->camera);
+	save_spawn(game);
+	if (!load_textures(&game->window, game->assets.tex, &game->config)) {
+		return (exit_error(game, "Error:\nfailed to load texture(s).\n"));
+	}
 	if (!load_textures(&game->window, game->assets.tex, &game->config)) {
 		return (exit_error(game, "Error:\nfailed to load texture(s).\n"));
 	}
@@ -81,6 +91,9 @@ void
 	game->world.enemies = NULL;
 	game->world.lights = NULL;
 	game->world.light_count = 0;
+	game->death_timer = 0.0;
+	game->assets.death_tex.tex = NULL;
+	game->assets.death_tex.path = NULL;
 	i = 0;
 	while (i < TEXTURES) {
 		game->assets.tex[i++].tex = NULL;
