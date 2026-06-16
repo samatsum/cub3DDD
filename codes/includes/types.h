@@ -5,7 +5,7 @@
 # include "config/config.h"
 # include "engine/raycast/raycast.h"
 # include "engine/render/render.h"
-# include "enemy/enemy.h"
+# include "enemy/enemy_types.h"
 
 /* ************************************************************************** */
 // 描画オプションの状態フラグ（UI・影・照準・スクリーンショット）

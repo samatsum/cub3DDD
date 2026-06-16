@@ -19,9 +19,17 @@ from typing import Iterable, Iterator, Optional, Sequence
 # 共通定数 / 正規表現（プロジェクト全体で唯一の定義）
 # --------------------------------------------------------------------------- #
 
-#: 検査対象ディレクトリと拡張子のデフォルト
+#: 検査対象ディレクトリと拡張子のデフォルト（"srcs"/"includes" は論理カテゴリ名）
 DEFAULT_DIRS: tuple[str, ...] = ("srcs", "includes")
 DEFAULT_EXTS: tuple[str, ...] = (".c", ".h")
+
+#: 論理カテゴリ → 実ディレクトリ（プロジェクトルートからの相対）。
+#: common/fps/rsp 分割後のレイアウトに対応しつつ、分割前の単一 srcs/ も
+#: 後方互換で残す（存在しないものは iter_sources が黙ってスキップする）。
+CATEGORY_DIRS: dict[str, tuple[str, ...]] = {
+    "srcs": ("srcs", "common/srcs", "fps/srcs", "rsp/srcs"),
+    "includes": ("includes",),
+}
 
 #: 関数定義（コーディングルール 6 準拠）:
 #: 「戻り値型の行」+ 改行 + タブ + 関数名 + 引数 + 改行 + '{'
@@ -86,18 +94,21 @@ def strip_comments(text: str, *, strings: bool = False) -> str:
 
 
 def find_project_root(start: Optional[Path] = None) -> Path:
-    """srcs/ と includes/ を同時に含むディレクトリを上方向に探索して返す。
+    """includes/ と、いずれかのソースツリーを同時に含むディレクトリを返す。
 
     実行時のカレントディレクトリに依存しないため、リポジトリのどこから
-    呼んでも（Makefile からでも）動作する。
+    呼んでも（Makefile からでも）動作する。common/fps/rsp 分割後・分割前の
+    どちらのレイアウトでも codes/ をルートとして検出できる。
     """
     base = Path(start or __file__).resolve()
     for d in [base, *base.parents]:
-        if (d / "srcs").is_dir() and (d / "includes").is_dir():
+        if (d / "includes").is_dir() and any(
+            (d / s).is_dir() for s in CATEGORY_DIRS["srcs"]
+        ):
             return d
     raise FileNotFoundError(
-        "srcs/ と includes/ を含むプロジェクトルートが見つかりませんでした。"
-        " --root で明示的に指定してください。"
+        "includes/ とソースツリー（srcs/ または common|fps|rsp/srcs）を含む"
+        "プロジェクトルートが見つかりませんでした。--root で明示してください。"
     )
 
 
@@ -106,8 +117,16 @@ def iter_sources(
     dirs: Sequence[str] = DEFAULT_DIRS,
     exts: Sequence[str] = DEFAULT_EXTS,
 ) -> Iterator[Path]:
-    """root 配下の対象ディレクトリから .c / .h を昇順で列挙する。"""
-    for d in dirs:
+    """root 配下の対象ディレクトリから .c / .h を昇順で列挙する。
+
+    dirs には論理カテゴリ名（"srcs"/"includes"）を渡す。CATEGORY_DIRS で
+    実ディレクトリ（common/srcs 等）へ展開してから走査する。存在しない
+    ツリーは黙ってスキップする。
+    """
+    real_dirs: list[str] = []
+    for logical in dirs:
+        real_dirs.extend(CATEGORY_DIRS.get(logical, (logical,)))
+    for d in real_dirs:
         base = root / d
         if not base.is_dir():
             continue
@@ -139,12 +158,21 @@ class SourceFile:
 
     @property
     def rel(self) -> str:
-        """ルートからの相対表示パス（例: srcs/config/config.c）。"""
+        """ルートからの相対表示パス（例: common/srcs/config/config.c）。"""
         return self.path.relative_to(self.root).as_posix()
 
     @property
     def top_dir(self) -> str:
-        """ルート直下のディレクトリ名（srcs / includes）。"""
+        """論理カテゴリ名（'srcs' / 'includes'）を返す。
+
+        common/fps/rsp 分割後も Context.select(("srcs",), ...) が一致するよう、
+        物理パス（common/srcs/... 等）を論理カテゴリへ正規化する。
+        """
+        rel = self.path.relative_to(self.root).as_posix()
+        for category, trees in CATEGORY_DIRS.items():
+            for tree in trees:
+                if rel == tree or rel.startswith(tree + "/"):
+                    return category
         return self.path.relative_to(self.root).parts[0]
 
     @cached_property

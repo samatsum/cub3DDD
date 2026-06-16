@@ -3,6 +3,7 @@
 #include <unistd.h>
 #include "core/core.h"
 #include "core/respawn.h"
+#include "enemy/enemy.h"
 #include "tuning.h"
 #include "utils/utils.h"// PROFILE マクロのため
 

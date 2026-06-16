@@ -4,6 +4,7 @@
 #include "core/core.h"
 #include "engine/render/light.h"
 #include "gnl/get_next_line.h"
+#include "enemy/enemy.h"
 
 /* ************************************************************************** */
 int
