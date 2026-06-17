@@ -1,3 +1,4 @@
+#include <time.h>
 #include "engine/raycast/raycast.h"
 #include "core/core.h"
 #include "enemy/enemy.h"
@@ -5,7 +6,6 @@
 #include "tuning.h"
 #include "engine/render/light.h"
 #include "core/respawn.h"
-#include <time.h>
 
 /* ************************************************************************** */
 int
