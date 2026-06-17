@@ -9,8 +9,9 @@ t_hand
 
 /* ************************************************************************** */
 
-// 手aから見た勝敗を返す。Rock=0,Scissors=1,Paper=2 の循環順により、
-// (a - b + 3) % 3 が 0=あいこ / 1=aの勝ち / 2=aの負け に一致する
+// 手aから見た勝敗を返す。Rock=0,Scissors=1,Paper=2 の循環順では a は「1つ後ろ」の
+// 手に勝つ（Rock→Scissors→Paper→Rock）。よって (a - b + 3) % 3 は
+// 0=あいこ / 1=aの負け / それ以外(2)=aの勝ち に一致する
 t_rsp_result
 	rsp_outcome(t_hand a, t_hand b)
 {
@@ -20,9 +21,9 @@ t_rsp_result
 	if (diff == 0) {
 		return (RSP_DRAW);
 	} else if (diff == 1) {
-		return (RSP_WIN);
-	} else {
 		return (RSP_LOSE);
+	} else {
+		return (RSP_WIN);
 	}
 }
 
