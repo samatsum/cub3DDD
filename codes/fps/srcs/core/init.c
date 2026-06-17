@@ -19,6 +19,14 @@ int
 	init_image(t_window* window, t_image* img);
 static int
 	find_sprites(t_game* game);
+static int
+	setup_rsp_combatants(t_game* game);
+static int
+	place_combatants(t_game* game, int* pts, int player);
+static void
+	set_player_rsp(t_game* game, t_spawn_point* sp, t_team team, int hand);
+static int
+	spawn_rsp_npc(t_game* game, t_spawn_point* sp, t_team team, int hand);
 
 /* ************************************************************************** */
 // ゲームの初期化処理を完了させ、必要なリソースを準備する
@@ -170,7 +178,8 @@ int
 
 /* ************************************************************************** */
 // マップ上のスプライトを検索し、オブジェクト(通行不可/通行可/収集)と敵(M)を登録する。
-// N/S/E/W のスポーンマスには、チーム色のマーカー(光る装飾)を自動配置する(案Q-1)
+// N/S/E/W のスポーンマスには、チーム色のマーカー(光る装飾)を自動配置する(案Q-1)。
+// RSPモードでは最後に setup_rsp_combatants でチーム/手とプレイヤー/NPCを確定する
 static int
 	find_sprites(t_game* game)
 {
@@ -220,5 +229,97 @@ static int
 		}
 		i++;
 	}
+	if (game->mode == MODE_RSP && !setup_rsp_combatants(game)) {
+		return (0);
+	}
+	return (1);
+}
+
+/* ************************************************************************** */
+
+// RSPの戦闘員を確定する。赤(N/W)から2地点、青(S/E)から2地点を重複なく選び、
+// 各チーム2地点に満たなければ 0。プレイヤーを4地点から1つランダムに選び、残りを
+// NPCにする。前提（各チーム2地点以上）が崩れたマップでは生成失敗とする
+static int
+	setup_rsp_combatants(t_game* game)
+{
+	int	pts[RSP_COMBATANTS];
+	int	n;
+	int	player;
+
+	n = pick_spawn_indices(&game->config, RSP_RED_DIRS, &game->rsp_seed, pts, RSP_TEAM_SPAWNS);
+	n += pick_spawn_indices(&game->config, RSP_BLUE_DIRS, &game->rsp_seed, pts + n, RSP_TEAM_SPAWNS);
+	if (n < RSP_COMBATANTS) {
+		return (0);
+	}
+	player = (int)((unsigned int)rand_r(&game->rsp_seed) % RSP_COMBATANTS);
+	return (place_combatants(game, pts, player));
+}
+
+/* ************************************************************************** */
+
+// 4地点を順に処理する。前半 RSP_TEAM_SPAWNS 個が赤、後半が青。各員の初期手は
+// ランダム。player 番だけプレイヤー（カメラ＋player_rsp）、他は NPC を生成する
+static int
+	place_combatants(t_game* game, int* pts, int player)
+{
+	t_team	team;
+	int		hand;
+	int		i;
+
+	i = 0;
+	while (i < RSP_COMBATANTS) {
+		team = TEAM_RED;
+		if (i >= RSP_TEAM_SPAWNS) {
+			team = TEAM_BLUE;
+		}
+		hand = (int)((unsigned int)rand_r(&game->rsp_seed) % HAND_COUNT);
+		if (i == player) {
+			set_player_rsp(game, &game->config.spawns[pts[i]], team, hand);
+		} else if (!spawn_rsp_npc(game, &game->config.spawns[pts[i]], team, hand)) {
+			return (0);
+		}
+		i++;
+	}
+	return (1);
+}
+
+/* ************************************************************************** */
+
+// プレイヤーを指定スポーンへ配置し、チーム・手・初期リスポーン地点・生存を記録する
+static void
+	set_player_rsp(t_game* game, t_spawn_point* sp, t_team team, int hand)
+{
+	apply_spawn(&game->config, &game->camera, sp);
+	game->player_rsp.team = team;
+	game->player_rsp.hand = (t_hand)hand;
+	copy_pos(&game->player_rsp.spawn, &sp->pos);
+	game->player_rsp.alive = 1;
+}
+
+/* ************************************************************************** */
+
+// NPC1体を生成する。team×hand のハンドテクスチャでスプライトを作り、敵リストへ
+// 追加して rsp 状態（チーム・手・初期リスポーン地点・生存）を埋める
+static int
+	spawn_rsp_npc(t_game* game, t_spawn_point* sp, t_team team, int hand)
+{
+	t_tex*		tex;
+	t_sprite*	sprite;
+	t_enemy*	enemy;
+
+	tex = &game->assets.hand_tex[team * HAND_COUNT + hand];
+	sprite = add_front_sprite(&game->world.sprites, 0., &sp->pos, tex);
+	if (!sprite) {
+		return (0);
+	}
+	enemy = add_enemy(&game->world.enemies, sprite, (int)game->config.enemy_hp);
+	if (!enemy) {
+		return (0);
+	}
+	enemy->rsp.team = team;
+	enemy->rsp.hand = (t_hand)hand;
+	copy_pos(&enemy->rsp.spawn, &sp->pos);
+	enemy->rsp.alive = 1;
 	return (1);
 }

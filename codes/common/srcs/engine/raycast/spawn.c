@@ -11,6 +11,8 @@ void
 	apply_spawn(t_config* config, t_camera* camera, t_spawn_point* sp);
 int
 	pick_spawn_index(t_config* config, char const* allowed, unsigned int* seed);
+int
+	pick_spawn_indices(t_config* config, char const* allowed, unsigned int* seed, int* out, int want);
 
 /* ************************************************************************** */
 
@@ -86,4 +88,36 @@ int
 		return (-1);
 	}
 	return (candidates[(int)((unsigned int)rand_r(seed) % (unsigned int)count)]);
+}
+
+/* ************************************************************************** */
+
+// allowed に該当する地点から重複なしで最大 want 個ランダムに選び out[] へ格納し、
+// 選べた個数を返す。選んだ候補を末尾と入れ替えて除外することで重複を避ける。
+// RSPのチーム別2地点選出（赤 "NW" / 青 "SE"）に使う
+int
+	pick_spawn_indices(t_config* config, char const* allowed, unsigned int* seed, int* out, int want)
+{
+	int	cand[MAX_SPAWNS];
+	int	count;
+	int	i;
+	int	picked;
+	int	r;
+
+	count = 0;
+	i = 0;
+	while (i < config->spawn_count) {
+		if (ft_in_set(config->spawns[i].dir, allowed)) {
+			cand[count++] = i;
+		}
+		i++;
+	}
+	picked = 0;
+	while (picked < want && count > 0) {
+		r = (int)((unsigned int)rand_r(seed) % (unsigned int)count);
+		out[picked++] = cand[r];
+		count--;
+		cand[r] = cand[count];
+	}
+	return (picked);
 }
