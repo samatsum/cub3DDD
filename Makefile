@@ -49,7 +49,7 @@ FPS_SRCS        = main.c \
                   render/draw_weapon.c \
                   ui/ui.c ui/crosshair.c
 
-RSP_SRCS        = core/rsp_rule.c
+RSP_SRCS        = core/rsp_rule.c core/rsp_assets.c
 
 OBJS            = $(addprefix $(OBJ_DIR)/common/, $(COMMON_SRCS:.c=.o)) \
                   $(addprefix $(OBJ_DIR)/fps/, $(FPS_SRCS:.c=.o)) \
