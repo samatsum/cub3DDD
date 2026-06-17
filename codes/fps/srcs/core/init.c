@@ -40,7 +40,7 @@ int
 	i = 0;
 	while (i < WEAPON_TEX_COUNT) {
 		game->assets.weapon_tex[i].path = ft_strdup(paths[i]);
-		game->assets.weapon_tex[i].tex = mlx_xpm_file_to_image(game->window.ptr, game->assets.weapon_tex[i].path, &game->assets.weapon_tex[i].width, &game->assets.weapon_tex[i].height);
+		game->assets.weapon_tex[i].tex = mlx_xpm_file_to_image(game->window.ptr,game->assets.weapon_tex[i].path, &game->assets.weapon_tex[i].width, &game->assets.weapon_tex[i].height);
 		if (game->assets.weapon_tex[i].tex) {
 			game->assets.weapon_tex[i].ptr = mlx_get_data_addr(game->assets.weapon_tex[i].tex, &game->assets.weapon_tex[i].bpp, &game->assets.weapon_tex[i].size_line, &game->assets.weapon_tex[i].endian);
 		}
@@ -55,15 +55,14 @@ int
 	game->assets.door_tex.tex = mlx_xpm_file_to_image(game->window.ptr, game->assets.door_tex.path, &game->assets.door_tex.width, &game->assets.door_tex.height);
 	if (game->assets.door_tex.tex) {
 		printf("Success to load door texture: %s\n", game->assets.door_tex.path);
-		game->assets.door_tex.ptr = mlx_get_data_addr(game->assets.door_tex.tex, &game->assets.door_tex.bpp, &game->assets.door_tex.size_line, &game->assets.door_tex.endian);
+		game->assets.door_tex.ptr = mlx_get_data_addr(game->assets.door_tex.tex,&game->assets.door_tex.bpp, &game->assets.door_tex.size_line, &game->assets.door_tex.endian);
 	} else {
 		printf("Failed to load door texture: %s\n", game->assets.door_tex.path);
 	}
 	if (!init_enemy_textures(game)) {
 		return (exit_error(game, "Error:\nfailed to load enemy textures.\n"));
 	}
-	find_start_pos(&game->config, &game->camera);
-	find_start_angle(&game->config, &game->camera);
+	collect_spawns(&game->config);
 	save_spawn(game);
 	if (!load_textures(&game->window, game->assets.tex, &game->config)) {
 		return (exit_error(game, "Error:\nfailed to load texture(s).\n"));

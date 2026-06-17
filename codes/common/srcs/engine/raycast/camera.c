@@ -7,64 +7,12 @@
 #include "tuning.h"
 
 /* ************************************************************************** */
-void
-	find_start_pos(t_config* config, t_camera* camera);
-void
-	find_start_angle(t_config* config, t_camera* camera);
 int
 	move_camera(t_camera* c, t_config* config, struct s_world* world, int direction, double time_mult);
 int
 	move_perp_camera(t_camera* c, t_config* config, struct s_world* world, int direction, double time_mult);
 int
 	rotate_camera(t_camera* c, t_config* config, int dir, double time_mult);
-
-/* ************************************************************************** */
-// プレイヤーの初期スポーン地点を探索し、設定する
-void
-	find_start_pos(t_config* config, t_camera* camera)
-{
-	int	stop;
-
-	stop = 0;
-	camera->pos.y = 0;
-	while (!stop && camera->pos.y < config->map.rows) {
-		camera->pos.x = 0;
-		while (!stop && camera->pos.x < config->map.columns) {
-			if (ft_in_set(MAP(camera->pos, *config), DIRECTIONS)) {
-				stop = 1;
-				break;
-			}
-			(camera->pos.x)++;
-		}
-		if (!stop) {
-			(camera->pos.y)++;
-		}
-	}
-	camera->pos.x += .5;
-	camera->pos.y += .5;
-}
-
-/* ************************************************************************** */
-// スポーン地点の方向文字から初期の視界角度とカメラの平面を設定する
-void
-	find_start_angle(t_config* config, t_camera* camera)
-{
-	if (MAP(camera->pos, *config) == 'N') {
-		set_pos(&camera->dir, 0., -1.);
-		set_pos(&camera->plane, config->fov, 0.);
-	} else if (MAP(camera->pos, *config) == 'E') {
-		set_pos(&camera->dir, 1., 0.);
-		set_pos(&camera->plane, 0., config->fov);
-	} else if (MAP(camera->pos, *config) == 'S') {
-		set_pos(&camera->dir, 0., 1.);
-		set_pos(&camera->plane, -config->fov, 0.);
-	} else if (MAP(camera->pos, *config) == 'W') {
-		set_pos(&camera->dir, -1., 0.);
-		set_pos(&camera->plane, 0., -config->fov);
-	}
-	set_pos(&camera->x_dir, camera->dir.y, -camera->dir.x);
-	MAP(camera->pos, *config) = 'A';
-}
 
 /* ************************************************************************** */
 // 前後へ移動。壁・通行不可・他エンティティの判定と訪問済みマーキングを行う
@@ -86,7 +34,7 @@ int
 	if (IN_MAP(n_pos, *config) && !IS_BLOCKING(MAP(n_pos, *config)) && !is_blocked_by_enemies(&c->pos, &n_pos, world, NULL)) {
 		copy_pos(&c->pos, &n_pos);
 	}
-	if (!IS_COLLECTIBLE(MAP(c->pos, *config))) {
+	if (!IS_COLLECTIBLE(MAP(c->pos, *config)) && !ft_in_set(MAP(c->pos, *config), DIRECTIONS)) {
 		MAP(c->pos, *config) = 'A';
 	}
 	return (1);
@@ -112,7 +60,7 @@ int
 	if (IN_MAP(n_pos, *config) && !IS_BLOCKING(MAP(n_pos, *config)) && !is_blocked_by_enemies(&c->pos, &n_pos, world, NULL)) {
 		copy_pos(&c->pos, &n_pos);
 	}
-	if (!IS_COLLECTIBLE(MAP(c->pos, *config))) {
+	if (!IS_COLLECTIBLE(MAP(c->pos, *config)) && !ft_in_set(MAP(c->pos, *config), DIRECTIONS)) {
 		MAP(c->pos, *config) = 'A';
 	}
 	return (1);

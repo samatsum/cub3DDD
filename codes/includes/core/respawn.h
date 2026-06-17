@@ -5,9 +5,11 @@
 
 /* ************************************************************************** */
 // スポーン状態の保存・復元、死亡演出（タイマー）の進行、敵との接触判定を提供する。
-// スポーン状態は t_game.spawn、死亡中フラグは t_game.death_timer(>0) で表す
+// スポーン地点プールは t_config.spawns[]、死亡中フラグは t_game.death_timer(>0)
 void
 	save_spawn(t_game* game);
+void
+	respawn_at(t_game* game, char const* allowed);
 void
 	respawn_player(t_game* game);
 int

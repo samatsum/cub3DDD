@@ -8,6 +8,8 @@
 void
 	save_spawn(t_game* game);
 void
+	respawn_at(t_game* game, char const* allowed);
+void
 	respawn_player(t_game* game);
 int
 	is_player_dead(t_game* game);
@@ -19,25 +21,41 @@ static void
 	kill_player(t_game* game);
 
 /* ************************************************************************** */
-// 初期化直後のカメラ状態（位置・視線・平面）をスポーン地点として保存する
+// 初期スポーンを適用する。全 N/S/E/W から1つランダムに選ぶ（1つなら必然そこ）。
+// FPSの開始配置。RSPはチーム別 respawn_at で上書きする
 void
 	save_spawn(t_game* game)
 {
-	copy_pos(&game->spawn.pos, &game->camera.pos);
-	copy_pos(&game->spawn.dir, &game->camera.dir);
-	copy_pos(&game->spawn.x_dir, &game->camera.x_dir);
-	copy_pos(&game->spawn.plane, &game->camera.plane);
+	int	idx;
+
+	idx = pick_spawn_index(&game->config, DIRECTIONS, &game->rsp_seed);
+	if (idx < 0) {
+		return ;
+	}
+	apply_spawn(&game->config, &game->camera, &game->config.spawns[idx]);
 }
 
 /* ************************************************************************** */
-// プレイヤーを初期スポーン地点へ戻す（位置と視線方向をまとめて復元する）
+// allowed の向き文字に該当するスポーンから1つランダムに選んで配置する。
+// FPS=DIRECTIONS（全方向）、RSP=赤 "NW" / 青 "SE"。毎回選び直す
+void
+	respawn_at(t_game* game, char const* allowed)
+{
+	int	idx;
+
+	idx = pick_spawn_index(&game->config, allowed, &game->rsp_seed);
+	if (idx < 0) {
+		return ;
+	}
+	apply_spawn(&game->config, &game->camera, &game->config.spawns[idx]);
+}
+
+/* ************************************************************************** */
+// プレイヤーを初期スポーン地点へ戻す（FPS用。全方向プールから1つ選ぶ）
 void
 	respawn_player(t_game* game)
 {
-	copy_pos(&game->camera.pos, &game->spawn.pos);
-	copy_pos(&game->camera.dir, &game->spawn.dir);
-	copy_pos(&game->camera.x_dir, &game->spawn.x_dir);
-	copy_pos(&game->camera.plane, &game->spawn.plane);
+	respawn_at(game, DIRECTIONS);
 }
 
 /* ************************************************************************** */

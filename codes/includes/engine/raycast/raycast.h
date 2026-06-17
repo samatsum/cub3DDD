@@ -2,6 +2,7 @@
 # define RAYCAST_H
 
 # include "utils/utils.h"
+# include "config/config.h"
 
 /* ************************************************************************** */
 # define COLLISION_MARGIN	0.00001
@@ -41,9 +42,11 @@ struct s_world;
 
 /* ************************************************************************** */
 void
-	find_start_pos(struct s_config* config, t_camera* camera);
+	collect_spawns(t_config* config);
 void
-	find_start_angle(struct s_config* config, t_camera* camera);
+	apply_spawn(t_config* config, t_camera* camera, t_spawn_point* sp);
+int
+	pick_spawn_index(t_config* config, char const* allowed, unsigned int* seed);
 int
 	move_camera(t_camera* c, struct s_config* config, struct s_world* world, int direction, double time_mult);
 int

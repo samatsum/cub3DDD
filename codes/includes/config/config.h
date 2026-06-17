@@ -17,6 +17,9 @@
 # define MIN_WIDTH				848
 # define MIN_HEIGHT				480
 
+// スポーン地点プールの最大数（N/S/E/W の総数の上限）
+# define MAX_SPAWNS				64
+
 // 色成分(R/G/B)入力の最大値
 # define RGB_MAX				255
 
@@ -133,6 +136,15 @@ typedef enum e_texture_id
 	TEXTURES
 }				t_texture_id;
 
+// 1つのスポーン地点（マップ上の位置と向き文字 N/S/E/W）。N/S/E/W はマップに
+// 複数あってよく、起動時に全て spawns[] へ収集する。move 系が踏んでも 'A' に
+// 潰さないため、収集はいつ行ってもよい
+typedef struct s_spawn_point
+{
+	t_pos	pos;
+	char	dir;
+}				t_spawn_point;
+
 // マップ本体（1次元配列）とセル属性フラグ層、寸法を保持する構造体
 typedef struct s_map
 {
@@ -157,6 +169,8 @@ typedef struct s_config
 	unsigned int	requested_height;
 	unsigned int	colors[TEXTURES];
 	int				set[C_LAST];
+	t_spawn_point	spawns[MAX_SPAWNS];
+	int				spawn_count;
 	t_map			map;
 }				t_config;
 
