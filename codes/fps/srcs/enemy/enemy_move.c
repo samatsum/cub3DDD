@@ -5,6 +5,7 @@
 #include "core/collision.h"
 #include "enemy/enemy.h"
 #include "enemy/enemy_utils.h"
+#include "tuning.h"
 
 /* ************************************************************************** */
 void
@@ -24,6 +25,9 @@ void
 
 	time_mult = calc_time_mult(delta_time);
 	speed = game->config.enemy_speed * speed_mult * time_mult;
+	if (game->mode == MODE_RSP) {
+		speed = speed * RSP_ENEMY_SPEED_MULT;
+	}
 	move_x = cos(cur->dir_angle) * speed;
 	move_y = sin(cur->dir_angle) * speed;
 	set_pos(&next_pos, cur->sprite->pos.x + move_x, cur->sprite->pos.y);

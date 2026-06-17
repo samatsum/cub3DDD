@@ -101,7 +101,9 @@ typedef struct s_timing
 // death_timer は死亡演出の残り秒数で 0 超なら死亡中＝全画面の死亡画像を表示する。
 // player_rsp/rsp_seed は RSPモード専用。player_rsp はプレイヤーの team/hand/spawn/alive、
 // rsp_seed は rsp_rehand 用の乱数状態。FPSモードでは未使用。
-// mode は e_game_mode の値（MODE_FPS / MODE_RSP）で、argv[2] の有無で決まる）
+// mode は e_game_mode の値（MODE_FPS / MODE_RSP）で、argv[2] の有無で決まる。
+// rsp_on_home は前フレームでプレイヤーが自陣スポーンマスに乗っていたかで、
+// 自陣を踏み直した瞬間に手を変える検出に使う）
 typedef struct s_game
 {
 	t_config		config;
@@ -119,6 +121,7 @@ typedef struct s_game
 	int				options;
 	int				last_options;
 	int				mode;
+	int				rsp_on_home;
 }				t_game;
 
 #endif

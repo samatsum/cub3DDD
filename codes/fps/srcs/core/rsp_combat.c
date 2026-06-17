@@ -10,6 +10,8 @@
 void
 	resolve_rsp_combat(t_game* game);
 static void
+	rsp_home_rehand(t_game* game);
+static void
 	resolve_player_npc(t_game* game, t_enemy* npc);
 static void
 	resolve_npc_pair(t_game* game, t_enemy* a, t_enemy* b);
@@ -28,6 +30,7 @@ void
 	t_enemy*	a;
 	t_enemy*	b;
 
+	rsp_home_rehand(game);
 	a = game->world.enemies;
 	while (a) {
 		resolve_player_npc(game, a);
@@ -38,6 +41,25 @@ void
 		}
 		a = a->next;
 	}
+}
+
+/* ************************************************************************** */
+
+// プレイヤーが自陣スポーンマス（赤=N/W、青=S/E）へ新たに踏み込んだ瞬間に、手を
+// rsp_rehand で今と違う手へ変える。乗りっぱなしでは変えない（入った1回だけ）
+static void
+	rsp_home_rehand(t_game* game)
+{
+	int	c;
+	int	on_home;
+
+	c = MAP(game->camera.pos, game->config);
+	on_home = ((game->player_rsp.team == TEAM_RED && IS_RED_SPAWN(c))
+			|| (game->player_rsp.team == TEAM_BLUE && IS_BLUE_SPAWN(c)));
+	if (on_home && !game->rsp_on_home) {
+		game->player_rsp.hand = rsp_rehand(game->player_rsp.hand, &game->rsp_seed);
+	}
+	game->rsp_on_home = on_home;
 }
 
 /* ************************************************************************** */

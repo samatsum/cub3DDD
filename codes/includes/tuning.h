@@ -40,6 +40,10 @@
 # define ENEMY_TRACK_BOOST			1.5
 # define ENEMY_PATROL_SPEED_MULT	1.0
 # define ENEMY_TRACK_SPEED_MULT		(ENEMY_PATROL_SPEED_MULT * ENEMY_TRACK_BOOST)
+// RSPのNPC共通の速度係数（追跡・逃走・徘徊すべてに掛かる）。基準 enemy_speed が
+// プレイヤーの move_speed より速いため、RSPでは全体を遅くしてプレイヤーが追える/
+// 逃げられるようにする。0.3 で既定の追跡速度がプレイヤーの歩行をわずかに下回る
+# define RSP_ENEMY_SPEED_MULT		0.3
 # define ENEMY_PATROL_ARRIVE		0.2
 // 徘徊中に曲がり角で向きを変える旋回速度[度/秒]。向きが揃うまで前進を止める
 // （0.5秒で45度・1秒で90度）。旋回中も視野(dir_angle)は連動して動く
