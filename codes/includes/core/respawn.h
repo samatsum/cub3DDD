@@ -12,6 +12,8 @@ void
 	respawn_at(t_game* game, char const* allowed);
 void
 	respawn_player(t_game* game);
+void
+	respawn_rsp_player(t_game* game);
 int
 	is_player_dead(t_game* game);
 void
