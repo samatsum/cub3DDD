@@ -30,6 +30,13 @@ typedef enum e_weapon_type
 	WEP_HANDS
 }				t_weapon_type;
 
+// ゲームモード（FPS=通常モード / RSP=じゃんけん鬼ごっこモード）
+typedef enum e_game_mode
+{
+	MODE_FPS = 0,
+	MODE_RSP
+}				t_game_mode;
+
 // 武器・手のテクスチャ配列のインデックス
 typedef enum e_weapon_tex_id
 {
@@ -90,7 +97,8 @@ typedef struct s_timing
 // 各サブシステムを集約するファサード構造体（spawn は初期スポーン状態のスナップショット、
 // death_timer は死亡演出の残り秒数で 0 超なら死亡中＝全画面の死亡画像を表示する。
 // player_rsp/rsp_seed は RSPモード専用。player_rsp はプレイヤーの team/hand/spawn/alive、
-// rsp_seed は rsp_rehand 用の乱数状態。FPSモードでは未使用）
+// rsp_seed は rsp_rehand 用の乱数状態。FPSモードでは未使用。
+// mode は e_game_mode の値（MODE_FPS / MODE_RSP）で、argv[2] の有無で決まる）
 typedef struct s_game
 {
 	t_config		config;
@@ -107,6 +115,7 @@ typedef struct s_game
 	double			death_timer;
 	int				options;
 	int				last_options;
+	int				mode;
 }				t_game;
 
 #endif
