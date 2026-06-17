@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   check_map.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: samatsum  <samatsum@student.42.jp   >      +#+  +:+       +#+        */
+/*   By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/03 07:32:33 by samatsum          #+#    #+#             */
-/*   Updated: 2026/06/03 08:17:58 by samatsum         ###   ########.fr       */
+/*   Updated: 2026/06/17 14:32:08 by samatsum         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,8 +27,8 @@ int
 int
 	count_check_columns(char const* line)
 {
-	int i;
-	int j;
+	int	i;
+	int	j;
 
 	i = 0;
 	j = 0;
@@ -73,9 +73,9 @@ int
 int
 	check_left_right_borders(t_str* map_buffer)
 {
-	int i;
-	int first;
-	int last;
+	int	i;
+	int	first;
+	int	last;
 
 	if (!map_buffer) {
 		return (0);
@@ -87,15 +87,21 @@ int
 			first++;
 		}
 		last = ft_strlen(map_buffer->content) - 1;
-		while (last > 0 && last == ' ') {
+		while (last > 0 && map_buffer->content[last] == ' ') {
 			last--;
 		}
+		printf("DEBUG row %d: first='%c'(%d) last='%c'(%d) len=%d [%s]\n",
+			i, map_buffer->content[first], map_buffer->content[first],
+			map_buffer->content[last], map_buffer->content[last],
+			ft_strlen(map_buffer->content), map_buffer->content);
 		if (last <= 1 || map_buffer->content[first] != '1' || map_buffer->content[last] != '1') {
+			printf("DEBUG --> rejected at row %d\n", i);
 			return (0);
 		}
 		map_buffer = map_buffer->next;
 		i++;
 	}
+	printf("DEBUG check_LR returning i=%d\n", i);
 	return (i);
 }
 
@@ -104,8 +110,8 @@ int
 int
 	check_valid(t_config* config, t_str* map_buffer)
 {
-	int i;
-	int col;
+	int	i;
+	int	col;
 
 	while (map_buffer) {
 		i = 0;

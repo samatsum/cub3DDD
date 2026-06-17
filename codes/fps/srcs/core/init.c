@@ -5,6 +5,7 @@
 #include "tuning.h"
 #include "engine/render/light.h"
 #include "core/respawn.h"
+#include <time.h>
 
 /* ************************************************************************** */
 int
@@ -101,6 +102,7 @@ void
 	game->death_timer = 0.0;
 	game->assets.death_tex.tex = NULL;
 	game->assets.death_tex.path = NULL;
+	game->rsp_seed = (unsigned int)time(NULL);
 	i = 0;
 	while (i < TEXTURES) {
 		game->assets.tex[i++].tex = NULL;
@@ -163,7 +165,8 @@ int
 }
 
 /* ************************************************************************** */
-// マップ上のスプライトを検索し、オブジェクト(通行不可/通行可/収集)と敵(M)を登録する
+// マップ上のスプライトを検索し、オブジェクト(通行不可/通行可/収集)と敵(M)を登録する。
+// N/S/E/W のスポーンマスには、チーム色のマーカー(光る装飾)を自動配置する(案Q-1)
 static int
 	find_sprites(t_game* game)
 {
@@ -196,6 +199,14 @@ static int
 					return (0);
 				}
 				add_enemy(&game->world.enemies, new_sprite, (int)game->config.enemy_hp);
+			} else if (IS_SPAWN(c)) {
+				tex = &game->assets.tex[spawn_marker_slot(c)];
+				if (tex->tex) {
+					new_sprite = add_front_sprite(&game->world.sprites, 0., &pos, tex);
+					if (!new_sprite) {
+						return (0);
+					}
+				}
 			}
 			j++;
 		}

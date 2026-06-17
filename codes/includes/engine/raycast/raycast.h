@@ -61,5 +61,7 @@ double
 	ray_distance(t_camera* camera, t_raysult* ray);
 void
 	make_tables(struct s_game* game);
-
+int
+	spawn_marker_slot(char c);
+	
 #endif

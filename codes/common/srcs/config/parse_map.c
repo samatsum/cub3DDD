@@ -16,8 +16,12 @@ int
 	int*	map;
 
 	map = NULL;
+	
+	printf("DEBUG parse_map: map_buffer=%p\n", (void*)map_buffer);
 	config->map.columns = check_top_bottom_borders(map_buffer);
+	printf("DEBUG after TB: map_buffer=%p columns=%d\n", (void*)map_buffer, config->map.columns);
 	config->map.rows = check_left_right_borders(map_buffer);
+	printf("DEBUG after LR: rows=%d\n", config->map.rows);
 	if (config->map.columns <= 2 || config->map.rows <= 2 || !check_valid(config, map_buffer)) {
 		return (0);
 	}
@@ -25,7 +29,7 @@ int
 	if (!map) {
 		return (0);
 	}
-	if (copy_map(config, map_buffer, map) != 1) {
+	if (copy_map(config, map_buffer, map) < 1) {
 		free(map);
 		return (0);
 	}

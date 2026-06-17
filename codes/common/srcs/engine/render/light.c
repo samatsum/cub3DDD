@@ -107,8 +107,9 @@ int
 	b = clamp_255((int)((color & 0xFF) * gain));
 	return ((r << 16) | (g << 8) | b);
 }
+
 /* ************************************************************************** */
-// マップ全体を走査し、通行可オブジェクト(装飾スプライト)のマス数を数える
+// マップ全体を走査し、通行可オブジェクトとスポーンマーカーのマス数を数える
 static int
 	count_passable(struct s_config* config)
 {
@@ -121,7 +122,8 @@ static int
 	while (i < config->map.rows) {
 		j = 0;
 		while (j < config->map.columns) {
-			if (IS_PASSABLE(config->map.data[i * config->map.columns + j])) {
+			if (IS_PASSABLE(config->map.data[i * config->map.columns + j])
+				|| IS_SPAWN(config->map.data[i * config->map.columns + j])) {
 				count++;
 			}
 			j++;
@@ -132,7 +134,7 @@ static int
 }
 
 /* ************************************************************************** */
-// 通行可オブジェクトのマス中心(+0.5)を各光源のワールド座標として書き込む
+// 通行可オブジェクトとスポーンマーカーのマス中心(+0.5)を各光源の座標に書き込む
 static void
 	fill_lights(t_light* lights, struct s_config* config)
 {
@@ -145,7 +147,8 @@ static void
 	while (i < config->map.rows) {
 		j = 0;
 		while (j < config->map.columns) {
-			if (IS_PASSABLE(config->map.data[i * config->map.columns + j])) {
+			if (IS_PASSABLE(config->map.data[i * config->map.columns + j])
+				|| IS_SPAWN(config->map.data[i * config->map.columns + j])) {
 				set_pos(&lights[k].pos, j + 0.5, i + 0.5);
 				k++;
 			}
