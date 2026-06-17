@@ -123,14 +123,10 @@ int
 }
 
 /* ************************************************************************** */
-// プレイヤーの被弾を処理する。FPSは死亡演出を開始（待機秒数をセットし、復帰は
-// update_death が担う）。RSPは死亡演出を使わず、即時に自チームへ復帰させる
+// 死亡演出を開始する（待機秒数をセット。実際の復帰は update_death が担う）。
+// FPS専用。RSPの接触は resolve_rsp_combat 側で勝敗判定して即リスポーンする
 static void
 	kill_player(t_game* game)
 {
-	if (game->mode == MODE_RSP) {
-		respawn_rsp_player(game);
-	} else {
-		game->death_timer = DEATH_DURATION;
-	}
+	game->death_timer = DEATH_DURATION;
 }
