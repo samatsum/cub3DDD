@@ -70,12 +70,15 @@ typedef struct s_world
 	int				collected;
 }				t_world;
 
-// 画像アセット（壁/床/天井・武器・敵・扉・死亡画面のテクスチャ群）
+// 画像アセット（壁/床/天井・武器・敵・扉・死亡画面のテクスチャ群）。
+// hand_tex は RSPモード専用で team * HAND_COUNT + hand の並びで引く6枚
+// （Hand_<Team>_<Hand>.xpm）。FPSモードでは読み込まず未使用
 typedef struct s_assets
 {
 	t_tex			tex[TEXTURES];
 	t_tex			weapon_tex[WEAPON_TEX_COUNT];
 	t_tex			enemy_tex[ENEMY_TEX_COUNT];
+	t_tex			hand_tex[TEAM_COUNT * HAND_COUNT];
 	t_tex			door_tex;
 	t_tex			death_tex;
 }				t_assets;

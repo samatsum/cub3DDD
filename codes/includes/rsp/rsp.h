@@ -4,11 +4,13 @@
 # include "utils/utils.h"
 
 /* ************************************************************************** */
-// チーム識別。赤＝プレイヤー＋味方NPC、青＝敵NPC2体
+// チーム識別。赤＝プレイヤー＋味方NPC、青＝敵NPC2体。TEAM_COUNT は要素数で、
+// ハンドテクスチャ配列のサイズ（TEAM_COUNT * HAND_COUNT）や添字計算に使う
 typedef enum e_team
 {
 	TEAM_RED = 0,
-	TEAM_BLUE
+	TEAM_BLUE,
+	TEAM_COUNT
 }				t_team;
 
 // 手の種別。Rock=0,Scissors=1,Paper=2 の順にすることで、勝敗を
