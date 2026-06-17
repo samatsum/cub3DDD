@@ -174,6 +174,7 @@ static int
 	t_tex*		tex;
 	int			i;
 	int			j;
+	int			slot;
 	char		c;
 	t_sprite*	new_sprite;
 
@@ -200,11 +201,14 @@ static int
 				}
 				add_enemy(&game->world.enemies, new_sprite, (int)game->config.enemy_hp);
 			} else if (IS_SPAWN(c)) {
-				tex = &game->assets.tex[spawn_marker_slot(c)];
-				if (tex->tex) {
-					new_sprite = add_front_sprite(&game->world.sprites, 0., &pos, tex);
-					if (!new_sprite) {
-						return (0);
+				slot = spawn_marker_slot(c);
+				if (slot >= 0) {
+					tex = &game->assets.tex[slot];
+					if (tex->tex) {
+						new_sprite = add_front_sprite(&game->world.sprites, 0., &pos, tex);
+						if (!new_sprite) {
+							return (0);
+						}
 					}
 				}
 			}

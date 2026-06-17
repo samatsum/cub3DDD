@@ -59,8 +59,10 @@
 # define IS_DOOR(c)			((c) == DOOR_CHAR)
 # define IS_OBJECT(c)		(IS_IMPASSABLE(c) || IS_PASSABLE(c) || IS_COLLECTIBLE(c))
 # define IS_BLOCKING(c)		((c) == '1' || (c) == DOOR_CHAR || IS_IMPASSABLE(c))
+
 # define IS_SPAWN(c)		((c) == 'N' || (c) == 'S' || (c) == 'E' || (c) == 'W')
 # define IS_RED_SPAWN(c)	((c) == 'N' || (c) == 'W')
+# define IS_BLUE_SPAWN(c)	((c) == 'S' || (c) == 'E')
 
 /* ************************************************************************** */
 // マップ文字 → テクスチャスロット番号（連番の t_texture_id を前提に算術で引く）
