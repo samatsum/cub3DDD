@@ -21,5 +21,7 @@ struct s_game;
 /* ************************************************************************** */
 int
 	init_hand_textures(struct s_game* game);
+void
+	resolve_rsp_combat(struct s_game* game);
 
 #endif
