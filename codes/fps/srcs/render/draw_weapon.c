@@ -15,6 +15,8 @@
 void
 	draw_weapon(t_game* game);
 static void
+	render_rsp_hand(t_game* game);
+static void
 	update_weapon_timer(t_game* game, long long current_time);
 static void
 	render_hands(t_game* game, long long current_time);
@@ -24,13 +26,18 @@ static void
 	draw_overlay(t_game* game, t_tex* tex, double start_x, double start_y, double scale);
 
 /* ************************************************************************** */
-// 状態に合わせて武器や手のテクスチャを描画する（司令塔）
+// 状態に合わせて武器や手のテクスチャを描画する（司令塔）。RSPでは銃を出さず、
+// 自分のじゃんけんの手を画面下部に常時表示する
 void
 	draw_weapon(t_game* game)
 {
 	struct timeval	tv;
 	long long		current_time;
 
+	if (game->mode == MODE_RSP) {
+		render_rsp_hand(game);
+		return ;
+	}
 	gettimeofday(&tv, NULL);
 	current_time = (tv.tv_sec * 1000LL) + (tv.tv_usec / 1000);
 	update_weapon_timer(game, current_time);
@@ -39,6 +46,27 @@ void
 	} else {
 		render_item(game);
 	}
+}
+
+/* ************************************************************************** */
+
+// RSPのプレイヤーUI。自分のチーム×手のハンドテクスチャを画面下部中央へ描画する
+static void
+	render_rsp_hand(t_game* game)
+{
+	t_tex*	tex;
+	double	scale;
+	double	start_x;
+	double	start_y;
+
+	tex = &game->assets.hand_tex[game->player_rsp.team * HAND_COUNT + game->player_rsp.hand];
+	if (!tex->tex) {
+		return ;
+	}
+	scale = (game->window.size.y * WEAPON_SCALE) / tex->height;
+	start_x = (game->window.size.x - (tex->width * scale)) / 2.0;
+	start_y = game->window.size.y - (tex->height * scale);
+	draw_overlay(game, tex, start_x, start_y, scale);
 }
 
 /* ************************************************************************** */
