@@ -15,16 +15,15 @@ static int
 
 // RSPのNPC1体ぶんのAI。最寄りの敵チーム戦闘員を見て、勝てる手なら直進で追跡、
 // 負ける手なら直進で逃走、あいこ・相手なしは徘徊。移動は step_enemy が壁と他
-// エンティティを避ける。手の動的差し替えはタスクGのため、見た目は update_texture
+// エンティティを避ける。見た目は team×手のハンドテクスチャを毎フレーム反映する
+// （リスポーンで手が変わると自動で差し替わる）
 void
 	update_rsp_enemy(t_enemy* cur, t_game* game, double delta_time)
 {
 	t_pos			target;
 	t_hand			hand;
 	t_rsp_result	res;
-	double			cam_angle;
 
-	cam_angle = atan2(game->camera.pos.y - cur->sprite->pos.y, game->camera.pos.x - cur->sprite->pos.x);
 	if (nearest_opponent(cur, game, &target, &hand)) {
 		res = rsp_outcome(cur->rsp.hand, hand);
 		cur->state = ENEMY_STATE_WALK;
@@ -40,7 +39,7 @@ void
 	} else {
 		patrol_enemy(cur, game, delta_time);
 	}
-	update_texture(cur, game, cam_angle);
+	cur->sprite->tex = &game->assets.hand_tex[cur->rsp.team * HAND_COUNT + cur->rsp.hand];
 }
 
 /* ************************************************************************** */

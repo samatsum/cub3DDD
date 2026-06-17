@@ -131,7 +131,8 @@ static void
 		game->input.current_weapon = WEP_FLASHLIGHT;
 	} else if (keycode == KEY_NUM_3) {
 		game->input.current_weapon = WEP_HANDS;
-	} else if (keycode == KEY_SPACE && game->input.current_weapon == WEP_PISTOL) {
+	} else if (keycode == KEY_SPACE && game->input.current_weapon == WEP_PISTOL
+		&& game->mode != MODE_RSP) {
 		if (game->input.is_shooting == 0) {
 			game->input.is_shooting = SHOOT_COOLDOWN;
 			shoot_target(game);
