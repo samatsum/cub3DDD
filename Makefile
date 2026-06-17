@@ -45,7 +45,7 @@ FPS_SRCS        = main.c \
                   core/item.c core/respawn.c core/rsp_combat.c \
                   enemy/enemy.c enemy/enemy_ai.c enemy/enemy_assets.c \
                   enemy/enemy_sense.c enemy/enemy_path.c enemy/enemy_move.c \
-                  enemy/enemy_patrol.c \
+                  enemy/enemy_patrol.c enemy/rsp_ai.c \
                   render/draw_weapon.c \
                   ui/ui.c ui/crosshair.c
 

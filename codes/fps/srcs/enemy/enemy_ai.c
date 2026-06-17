@@ -10,6 +10,8 @@
 void
 	update_enemies(t_game* game, double delta_time);
 static void
+	update_fps_enemy(t_enemy* cur, t_game* game, double delta_time);
+static void
 	move_enemy(t_enemy* cur, t_game* game, double delta_time);
 static void
 	track_player(t_enemy* cur, t_game* game, double delta_time);
@@ -19,30 +21,44 @@ static void
 	advance_path_index(t_enemy* cur, t_pos start);
 
 /* ************************************************************************** */
-// 毎フレーム検知判定を行い、追跡タイマー更新・移動・テクスチャ更新を実行する。
-// プレイヤー死亡中は検知を止め、追跡時間を 0 に落として即座に徘徊モードへ戻す
+// 毎フレーム全敵を更新する。モードで分岐し、RSPはじゃんけんAI、FPSは従来の
+// プレイヤー追跡AIを各敵に適用する
 void
 	update_enemies(t_game* game, double delta_time)
 {
 	t_enemy*	cur;
-	double		dx;
-	double		dy;
-	double		target_angle;
 
 	cur = game->world.enemies;
 	while (cur) {
-		dx = game->camera.pos.x - cur->sprite->pos.x;
-		dy = game->camera.pos.y - cur->sprite->pos.y;
-		target_angle = atan2(dy, dx);
-		if (is_player_dead(game)) {
-			cur->track_timer = 0.0;
-		} else if (enemy_sees_player(cur, game, target_angle)) {
-			cur->track_timer = game->config.enemy_track_seconds;
+		if (game->mode == MODE_RSP) {
+			update_rsp_enemy(cur, game, delta_time);
+		} else {
+			update_fps_enemy(cur, game, delta_time);
 		}
-		move_enemy(cur, game, delta_time);
-		update_texture(cur, game, target_angle);
 		cur = cur->next;
 	}
+}
+
+/* ************************************************************************** */
+// FPSの敵1体ぶんの更新。検知判定で追跡タイマーを更新し、移動とテクスチャを反映する。
+// プレイヤー死亡中は検知を止め、追跡時間を 0 に落として即座に徘徊モードへ戻す
+static void
+	update_fps_enemy(t_enemy* cur, t_game* game, double delta_time)
+{
+	double	dx;
+	double	dy;
+	double	target_angle;
+
+	dx = game->camera.pos.x - cur->sprite->pos.x;
+	dy = game->camera.pos.y - cur->sprite->pos.y;
+	target_angle = atan2(dy, dx);
+	if (is_player_dead(game)) {
+		cur->track_timer = 0.0;
+	} else if (enemy_sees_player(cur, game, target_angle)) {
+		cur->track_timer = game->config.enemy_track_seconds;
+	}
+	move_enemy(cur, game, delta_time);
+	update_texture(cur, game, target_angle);
 }
 
 /* ************************************************************************** */
