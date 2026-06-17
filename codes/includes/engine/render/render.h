@@ -83,10 +83,12 @@ typedef struct s_render_job
 }	t_render_job;
 
 /* ************************************************************************** */
-//呼び出し元（draw_wall や draw_sky_floor など）でインライン展開。関数呼び出しのオーバーヘッドが消滅
-static inline void draw_pixel(t_window* w, t_pos* pos, int color)
+// 呼び出し元でインライン展開。関数呼び出しのオーバーヘッドが消滅
+static inline void
+	draw_pixel(t_window* w, t_pos* pos, int color)
 {
-	unsigned int* dst;
+	unsigned int*	dst;
+
 	if (pos->x >= 0 && pos->x < w->size.x && pos->y >= 0 && pos->y < w->size.y) {
 		dst = (unsigned int*)w->screen.ptr;
 		dst[(int)pos->y * (w->screen.size_line / 4) + (int)pos->x] = (unsigned int)color;
