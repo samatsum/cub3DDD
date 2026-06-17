@@ -21,5 +21,7 @@ void
 	step_enemy(t_enemy* cur, t_game* game, double delta_time, double speed_mult);
 void
 	patrol_enemy(t_enemy* cur, t_game* game, double delta_time);
+void
+	update_rsp_enemy(t_enemy* cur, t_game* game, double delta_time);
 
 #endif
