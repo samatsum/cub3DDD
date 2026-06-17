@@ -3,6 +3,7 @@
 #include "core/core.h"
 #include "core/respawn.h"
 #include "tuning.h"
+#include "rsp/rsp_game.h"
 
 /* ************************************************************************** */
 void
@@ -11,6 +12,8 @@ void
 	respawn_at(t_game* game, char const* allowed);
 void
 	respawn_player(t_game* game);
+void
+	respawn_rsp_player(t_game* game);
 int
 	is_player_dead(t_game* game);
 void
@@ -56,6 +59,20 @@ void
 	respawn_player(t_game* game)
 {
 	respawn_at(game, DIRECTIONS);
+}
+
+/* ************************************************************************** */
+// RSPのプレイヤー復帰。自チームのスポーンプール（赤=N/W、青=S/E）から1つ選んで
+// 即時に配置し、手を rsp_rehand で必ず別の手へ変える。チームは不変
+void
+	respawn_rsp_player(t_game* game)
+{
+	if (game->player_rsp.team == TEAM_BLUE) {
+		respawn_at(game, RSP_BLUE_DIRS);
+	} else {
+		respawn_at(game, RSP_RED_DIRS);
+	}
+	game->player_rsp.hand = rsp_rehand(game->player_rsp.hand, &game->rsp_seed);
 }
 
 /* ************************************************************************** */
@@ -106,9 +123,14 @@ int
 }
 
 /* ************************************************************************** */
-// 死亡演出を開始する（待機秒数をセット。実際の復帰は update_death が担う）
+// プレイヤーの被弾を処理する。FPSは死亡演出を開始（待機秒数をセットし、復帰は
+// update_death が担う）。RSPは死亡演出を使わず、即時に自チームへ復帰させる
 static void
 	kill_player(t_game* game)
 {
-	game->death_timer = DEATH_DURATION;
+	if (game->mode == MODE_RSP) {
+		respawn_rsp_player(game);
+	} else {
+		game->death_timer = DEATH_DURATION;
+	}
 }
