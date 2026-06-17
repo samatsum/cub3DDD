@@ -354,3 +354,41 @@ def check_static_leak(ctx: Context) -> Iterable[Finding]:
                     f"static 関数 '{func_name}' がヘッダに漏れている",
                     f"定義元: {src_path.name}",
                 )
+
+
+# --------------------------------------------------------------------------- #
+# 依存方向（レイヤリング）：common は fps 専用ヘッダを include してはいけない
+# --------------------------------------------------------------------------- #
+
+#: fps 専用ヘッダ（common から include されたら違反）。B2 で fps/includes/ へ
+#: 移す対象でもある。enemy/enemy_types.h は common 側のデータモデルなので除外。
+_FPS_ONLY_HEADERS: frozenset[str] = frozenset(
+    {
+        "enemy/enemy.h",
+        "enemy/enemy_utils.h",
+    }
+)
+
+#: #include "..." の取り込み先パスを取り出す（山括弧 <> の標準ヘッダは対象外）
+_LOCAL_INCLUDE_RE = re.compile(r'^\s*#\s*include\s+"([^"]+)"')
+
+
+@check("layering", "common は fps 専用ヘッダに依存してはいけない（一方通行）")
+def check_layering(ctx: Context) -> Iterable[Finding]:
+    for sf in ctx.select(("srcs", "includes"), (".c", ".h")):
+        # 検査対象は common 側のファイルのみ。fps 側は fps ヘッダを使ってよい
+        if not sf.rel.startswith("common/"):
+            continue
+        for n, line in enumerate(sf.raw.splitlines(), 1):
+            m = _LOCAL_INCLUDE_RE.match(line)
+            if not m:
+                continue
+            target = m.group(1)
+            if target in _FPS_ONLY_HEADERS:
+                yield _err(
+                    sf.path,
+                    n,
+                    "common→fps の禁止された依存",
+                    f'#include "{target}" は fps 専用。'
+                    f"common からは enemy/enemy_types.h を使う",
+                )

@@ -88,7 +88,9 @@ typedef struct s_timing
 }				t_timing;
 
 // 各サブシステムを集約するファサード構造体（spawn は初期スポーン状態のスナップショット、
-// death_timer は死亡演出の残り秒数で 0 超なら死亡中＝全画面の死亡画像を表示する）
+// death_timer は死亡演出の残り秒数で 0 超なら死亡中＝全画面の死亡画像を表示する。
+// player_rsp/rsp_seed は RSPモード専用。player_rsp はプレイヤーの team/hand/spawn/alive、
+// rsp_seed は rsp_rehand 用の乱数状態。FPSモードでは未使用）
 typedef struct s_game
 {
 	t_config		config;
@@ -100,6 +102,8 @@ typedef struct s_game
 	t_assets		assets;
 	t_render_cache	cache;
 	t_timing		timing;
+	t_rsp_state		player_rsp;
+	unsigned int	rsp_seed;
 	double			death_timer;
 	int				options;
 	int				last_options;

@@ -10,7 +10,7 @@ FT ./textures/wall/Wall_tile.xpm
 
 OI1 ./textures/object/Object_barrel.xpm
 OI2 ./textures/object/Object_barrel.xpm
-OP1 ./textures/object/Object_greenlight.xpm
+OP1 ./textures/object/Object_Green_Light.xpm
 OC1 ./textures/object/Object_star.xpm
 
 ES 0.05      # 敵の移動速度 (任意, 0 より大。既定 0.11)

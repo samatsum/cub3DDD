@@ -6,14 +6,17 @@ RM              = rm -rf
 # ディレクトリ設定（srcs を common / fps / rsp の3系統に分割）
 # ==============================================================================
 INC_DIR         = codes/includes
+RSP_INC         = codes/rsp/includes
 OBJ_DIR         = codes/obj
 COMMON_DIR      = codes/common/srcs
 FPS_DIR         = codes/fps/srcs
+RSP_DIR         = codes/rsp/srcs
 
 # ------------------------------------------------------------------------------
 # コンパイルフラグ（ヘッダは当面 codes/includes 共有。一方通行の-I強制はプランBで）
+# rsp/includes は t_rsp_state を common の enemy_types.h が参照するため全体に渡す
 # ------------------------------------------------------------------------------
-CFLAGS          = -O3 -Wall -Wextra -Werror -pthread -I $(INC_DIR)
+CFLAGS          = -O3 -Wall -Wextra -Werror -pthread -I $(INC_DIR) -I $(RSP_INC)
 
 # ==============================================================================
 # ソース定義
@@ -45,8 +48,11 @@ FPS_SRCS        = main.c \
                   render/draw_weapon.c \
                   ui/ui.c ui/crosshair.c
 
+RSP_SRCS        = core/rsp_rule.c
+
 OBJS            = $(addprefix $(OBJ_DIR)/common/, $(COMMON_SRCS:.c=.o)) \
-                  $(addprefix $(OBJ_DIR)/fps/, $(FPS_SRCS:.c=.o))
+                  $(addprefix $(OBJ_DIR)/fps/, $(FPS_SRCS:.c=.o)) \
+                  $(addprefix $(OBJ_DIR)/rsp/, $(RSP_SRCS:.c=.o))
 
 # ==============================================================================
 # Linux(X11) ライブラリ設定
@@ -68,6 +74,10 @@ $(OBJ_DIR)/common/%.o: $(COMMON_DIR)/%.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
 $(OBJ_DIR)/fps/%.o: $(FPS_DIR)/%.c
+	@mkdir -p $(@D)
+	$(CC) $(CFLAGS) -c $< -o $@
+
+$(OBJ_DIR)/rsp/%.o: $(RSP_DIR)/%.c
 	@mkdir -p $(@D)
 	$(CC) $(CFLAGS) -c $< -o $@
 

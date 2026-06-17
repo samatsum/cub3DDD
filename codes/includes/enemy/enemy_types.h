@@ -2,6 +2,7 @@
 # define ENEMY_TYPES_H
 
 # include "engine/render/render.h"
+# include "rsp/rsp.h"
 
 /* ************************************************************************** */
 // 経路キャッシュが保持できる最大マス数。最短経路がこれを超える場合は始点側の
@@ -29,7 +30,10 @@ typedef enum e_enemy_tex_id
 /* ************************************************************************** */
 // 敵の実体と状態を管理する専用構造体（patrol_* は巡回モードの歩行状態、
 // path[] は追跡経路キャッシュ。path_idx が次に向かうマスの添字、path_goal は
-// 経路計算時のプレイヤーセル。プレイヤーがセルをまたぐまで再計算しない）
+// 経路計算時のプレイヤーセル。プレイヤーがセルをまたぐまで再計算しない）。
+// rsp は RSPモード専用の状態（team/hand/spawn/alive）。案Xにより common の
+// 共有モデルへ直接埋め込んでいる。FPSモードでは未使用。将来 common を rsp 型に
+// 依存させない方針（案Y）へ移すなら、この1メンバを外部テーブルへ剥がす
 typedef struct s_enemy
 {
 	int				hp;
@@ -45,6 +49,7 @@ typedef struct s_enemy
 	t_pos			path_goal;
 	t_pos			path[PATH_MAX];
 	t_sprite*		sprite;
+	t_rsp_state		rsp;
 	struct s_enemy*	next;
 }	t_enemy;
 
