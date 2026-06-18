@@ -33,6 +33,11 @@
 // FPSは全リスポーン地点を青で表示する）
 # define COLOR_MINIMAP_SPAWN_RED	0xE02020
 # define COLOR_MINIMAP_SPAWN_BLUE	0x2060E0
+
+// RSPモードのNPCドット色（チーム別。味方＝プレイヤーと同チーム色、敵＝相手色）。
+// スポーンマスより明るくして、自陣スポーンマス上でもドットが埋もれないようにする
+# define COLOR_MINIMAP_NPC_RED	0xFF4D4D
+# define COLOR_MINIMAP_NPC_BLUE	0x4DA6FF
 # define COLOR_UI_BG			0xFFFFFF
 # define COLOR_UI_TEXT			0xCCCCCC
 # define COLOR_UI_FONT			0x000000
