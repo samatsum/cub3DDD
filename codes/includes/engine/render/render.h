@@ -69,6 +69,7 @@ typedef struct s_render
 	double*				depth;
 	double*				sf_dist;
 	int					options;
+	int					mode;
 }	t_render;
 
 // 列データ並列の作業単位。各ワーカーが担当する列範囲[start,end)を保持する。

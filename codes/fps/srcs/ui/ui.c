@@ -17,7 +17,7 @@ static void
 static void
 	draw_entity_dot(t_render* rnd, t_pos* pos, int color, int tile, int margin);
 static int
-	case_color(t_config* config, int x, int y);
+	case_color(t_config* config, int mode, int x, int y);
 static int
 	scale_ui_px(int base, int win_height);
 
@@ -109,7 +109,7 @@ static void
 	while (i < rnd->config->map.rows) {
 		j = 0;
 		while (j < rnd->config->map.columns) {
-			color = case_color(rnd->config, j, i);
+			color = case_color(rnd->config, rnd->mode, j, i);
 			// マップ外の空白(-1)でない場合のみ描画する
 			if (color >= 0) {
 				set_pos(start, base_x + (j * tile), base_y + (i * tile));
@@ -166,20 +166,29 @@ static void
 /* ************************************************************************** */
 // ミニマップの特定マスにおける背景色を判定して返す
 static int
-	case_color(t_config* config, int x, int y)
+	case_color(t_config* config, int mode, int x, int y)
 {
 	char	c;
 
 	c = MAP_XY(x, y, *config);
-	
+
 	// マップ外の空白領域（スペース等）は描画せず透明にする
 	if (c == ' ' || c == '\0') {
 		return (-1);
 	}
-	
+
 	if (IS_BLOCKING(c)) {
 		return (COLOR_MINIMAP_WALL);
-	} else if (c == 'A') {
+	}
+	// リスポーン地点(N/S/E/W)はチーム別に塗る。ただしFPSモードはチームがないため
+	// 全リスポーン地点を青で統一する
+	if (IS_SPAWN(c)) {
+		if (mode == MODE_FPS || IS_BLUE_SPAWN(c)) {
+			return (COLOR_MINIMAP_SPAWN_BLUE);
+		}
+		return (COLOR_MINIMAP_SPAWN_RED);
+	}
+	if (c == 'A') {
 		return (COLOR_UI_TEXT);
 	}
 	// '0'（床）など、実際に存在する通路は背景色で塗る
