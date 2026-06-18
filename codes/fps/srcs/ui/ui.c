@@ -19,6 +19,8 @@ static void
 static int
 	case_color(t_config* config, int mode, int x, int y);
 static int
+	npc_dot_color(int mode, t_enemy* e);
+static int
 	scale_ui_px(int base, int win_height);
 
 /* ************************************************************************** */
@@ -121,10 +123,10 @@ static void
 		i++;
 	}
 
-	// 2. 敵を実座標に基づいて描画
+	// 2. 敵(NPC)を実座標に基づいて描画。RSPはチーム色、FPSは従来どおり赤
 	e = rnd->world->enemies;
 	while (e) {
-		draw_entity_dot(rnd, &e->sprite->pos, COLOR_MINIMAP_ENEMY, tile, margin);
+		draw_entity_dot(rnd, &e->sprite->pos, npc_dot_color(rnd->mode, e), tile, margin);
 		e = e->next;
 	}
 
@@ -193,6 +195,21 @@ static int
 	}
 	// '0'（床）など、実際に存在する通路は背景色で塗る
 	return (COLOR_MINIMAP_EMPTY);
+}
+
+/* ************************************************************************** */
+// ミニマップ上のNPCドット色を返す。FPSは全NPC赤。RSPはNPCのチーム色で塗り、
+// 味方(プレイヤーと同チーム)＝同色・敵＝相手色として区別できるようにする
+static int
+	npc_dot_color(int mode, t_enemy* e)
+{
+	if (mode != MODE_RSP) {
+		return (COLOR_MINIMAP_ENEMY);
+	}
+	if (e->rsp.team == TEAM_RED) {
+		return (COLOR_MINIMAP_NPC_RED);
+	}
+	return (COLOR_MINIMAP_NPC_BLUE);
 }
 
 /* ************************************************************************** */
