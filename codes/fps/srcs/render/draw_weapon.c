@@ -10,6 +10,9 @@
 #define BOB_PERIOD			2000.0
 #define BOB_POWER			3.0
 #define WEAPON_SCALE		0.6
+// 銃/ライト(FPS)とRSPの手の表示サイズ。3キーの走行用の手(WEAPON_SCALE)より
+// 小さく、その約2/3に縮小する。走行用の手はこの縮小の対象外
+#define WEAPON_SCALE_SMALL	0.4
 #define HAND_MOVE_RATIO		0.8
 
 void
@@ -63,7 +66,7 @@ static void
 	if (!tex->tex) {
 		return ;
 	}
-	scale = (game->window.size.y * WEAPON_SCALE) / tex->height;
+	scale = (game->window.size.y * WEAPON_SCALE_SMALL) / tex->height;
 	start_x = (game->window.size.x - (tex->width * scale)) / 2.0;
 	start_y = game->window.size.y - (tex->height * scale);
 	draw_overlay(game, tex, start_x, start_y, scale);
@@ -149,7 +152,7 @@ static void
 	if (!active_tex->tex) {
 		return ;
 	}
-	scale = (game->window.size.y * WEAPON_SCALE) / active_tex->height;
+	scale = (game->window.size.y * WEAPON_SCALE_SMALL) / active_tex->height;
 	start_x = (game->window.size.x / 2.0) - ((active_tex->width * scale) / 2.0);
 	start_y = game->window.size.y - (active_tex->height * scale);
 	draw_overlay(game, active_tex, start_x, start_y, scale);
