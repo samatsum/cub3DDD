@@ -57,6 +57,7 @@ void
 	rnd.depth = game->cache.depth;
 	rnd.sf_dist = game->cache.sf_dist;
 	rnd.options = game->options;
+	rnd.mode = game->mode;
 	if (game->input.current_weapon == WEP_FLASHLIGHT) {
 		rnd.options = rnd.options | FLAG_FLASHLIGHT;
 	}

@@ -28,6 +28,11 @@
 # define COLOR_MINIMAP_BG		0x10CC10
 # define COLOR_MINIMAP_EMPTY	0xFFFFFF
 # define COLOR_MINIMAP_ENEMY	0xFF0000
+
+// リスポーン地点マスの色（RSPはチーム別＝赤チーム N/W / 青チーム S/E、
+// FPSは全リスポーン地点を青で表示する）
+# define COLOR_MINIMAP_SPAWN_RED	0xE02020
+# define COLOR_MINIMAP_SPAWN_BLUE	0x2060E0
 # define COLOR_UI_BG			0xFFFFFF
 # define COLOR_UI_TEXT			0xCCCCCC
 # define COLOR_UI_FONT			0x000000
