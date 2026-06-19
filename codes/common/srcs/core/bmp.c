@@ -10,7 +10,7 @@
 int
 	screenshot(t_game* game);
 int
-	save_bmp(t_game* game);
+	save_bmp(t_game* game, int fd);
 static void
 	get_screenshot_path(char* buffer, size_t size);
 static int
@@ -23,12 +23,10 @@ static int
 	get_color(t_window* w, int x, int y);
 
 /* ************************************************************************** */
-// スクリーンショットを撮ってファイルに保存し、ゲームを終了する。日時付きパスを作り、
-// 作成可否を確認してから最新フレームを描画し save_bmp で書き出す。撮影後は成否に関わらず
-// exit_game で終了する。
-// ※既知の不整合: ここで開く fd は作成可否の確認用だが close されず、実際の書き出しは
-//   save_bmp 内のハードコード名 "screenshot.bmp" に対して行われる。そのため日時付きパスには
-//   空ファイルが残り、fd もリークする。パスの一本化と fd 解放は今後の整理対象
+// スクリーンショットを撮ってファイルに保存し、ゲームを終了する。日時付きパスを作って開き、
+// その fd を save_bmp に渡して最新フレームを書き出す。撮影は1回限りで、成功・失敗どちらの
+// 経路でも fd を close してから exit_game / exit_error で終了する（書き込み先を日時付きパスに
+// 一本化し、以前の二重オープンと fd リークを解消済み）
 int
 	screenshot(t_game* game)
 {
@@ -41,41 +39,35 @@ int
 		return (exit_error(game, "Error:\nFailed to create screenshot file in ~/bmp/.\n"));
 	}
 	render_frame(game);
-	if (!save_bmp(game)) {
+	if (!save_bmp(game, fd)) {
+		close(fd);
 		exit_error(game, "Error:\nfailed to save screenshot.\n");
 	}
+	close(fd);
 	return (exit_game(game, EXIT_SUCCESS));
 }
 
 /* ************************************************************************** */
-// 画面のピクセルデータを24bit BMP としてファイルに書き出す。1行を4バイト境界に揃える
-// ためのパディング pad を計算し、ヘッダ54バイト＋(幅+pad)*高さ*3 をファイルサイズに。
-// ヘッダ→データの順に書き、いずれか失敗したら開いた fd を close して 0 を返す（成功時も
-// 最後に close）。header/data 失敗経路での close 漏れ＝fdリークを修正済み
+// 呼び出し側 screenshot が開いた fd（日時付きパス）へ画面ピクセルを24bit BMP として書き出す。
+// 1行を4バイト境界に揃えるパディング pad を計算し、ヘッダ54バイト＋(幅+pad)*高さ*3 を
+// ファイルサイズに。ヘッダ→データの順に書き、いずれか失敗で 0 を返す。fd の open/close は
+// 呼び出し側が一元管理するため、ここでは行わない（以前はここで別名を再オープンしていた）
 int
-	save_bmp(t_game* game)
+	save_bmp(t_game* game, int fd)
 {
 	t_window*	w;
 	int			filesize;
-	int			file;
 	int			pad;
 
 	w = &game->window;
 	pad = (4 - ((int)w->size.x * 3) % 4) % 4;
 	filesize = 54 + (3 * ((int)w->size.x + pad) * (int)w->size.y);
-	file = open("screenshot.bmp", O_WRONLY | O_CREAT | O_TRUNC | O_APPEND, 0644);
-	if (file < 0) {
+	if (!write_bmp_header(fd, filesize, game)) {
 		return (0);
 	}
-	if (!write_bmp_header(file, filesize, game)) {
-		close(file);
+	if (!write_bmp_data(fd, w, pad)) {
 		return (0);
 	}
-	if (!write_bmp_data(file, w, pad)) {
-		close(file);
-		return (0);
-	}
-	close(file);
 	return (1);
 }
 

@@ -311,13 +311,13 @@ include 順序・ポインタ表記・制御構文の空白・`else` 形・終�
 
 実装と乖離している点、リファクタしたい点を列挙します。新しく入ってきた人はまずここを見てください。
 
-### (a) パーサに残るデバッグ出力
+### (a) パーサに残るデバッグ出力（解決済み）
 
-`config/config.c` の `parse_config` には、原因切り分け用の `printf("DEBUG: ...")` が複数残っています。リリース時には除去するか、`stderr` + デバッグフラグでガードすべきです。
+以前 `config/config.c`・`config/parse_map.c`・`config/check_map.c` にあった `printf("DEBUG: ...")` は全て除去済みです。
 
-### (b) `screenshot()` がエントリから呼ばれていない／二重オープン
+### (b) `screenshot()` がエントリから呼ばれていない
 
-`core/bmp.c` の `screenshot()` は実装済みですが、`main.c` / `input.c` のどこからも呼ばれていません（`FLAG_SAVE` フラグも定義のみで未使用）。さらに `screenshot()` は `get_screenshot_path` が組み立てた `~/bmp/screenshot_YYYY_MMDD_HHMM.bmp` を `open` する一方、`save_bmp()` は固定名 `screenshot.bmp` を別途 `open` するため、**ファイルパスの不一致と二重オープン**が残っています。BMP 機能を生かすなら、コマンドライン引数（例: `-save`）かキーバインドで呼び出す導線を引き、両者の書き込み先を統合してください。
+`core/bmp.c` の `screenshot()` は実装済みですが、`main.c` / `input.c` のどこからも呼ばれていません（`FLAG_SAVE` フラグも定義のみで未使用）。BMP 機能を生かすなら、コマンドライン引数（例: `-save`）かキーバインドで呼び出す導線を引いてください。（※以前あった「日時付きパス `~/bmp/screenshot_YYYY_MMDD_HHMM.bmp` と固定名 `screenshot.bmp` の二重オープン／パス不一致」は解消済み: `screenshot()` が開いた `fd` を `save_bmp()` に渡し、書き込み先を日時付きパスへ統合しました。）
 
 ### (c) ヘッダの include グラフが太い
 
