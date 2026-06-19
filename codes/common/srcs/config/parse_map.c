@@ -9,19 +9,20 @@ static int
 	build_map_flags(t_config* config);
 
 /* ************************************************************************** */
-// バッファからマップデータを解析し、設定に格納する
+// マップ行バッファを検証し、整数配列 map.data とフラグ層 map.flags に確定する。
+// 上下端の枠から列数(columns)、左右端の枠から行数(rows)を求め、2以下（枠だけで中身が
+// 無い）か不正文字があれば失敗。malloc 後 copy_map でコピーし、その戻り値（カメラ＝
+// スポーン文字 N/S/E/W の数）が 1 未満なら「スポーン無し」として失敗。data 確定後に
+// build_map_flags で P マスの巡回フラグ層を作る。確保済み data は失敗時も呼び出し側の
+// clear_config で解放されるため、ここでは二重 free しない
 int
 	parse_map(t_config* config, t_str* map_buffer)
 {
 	int*	map;
 
 	map = NULL;
-	
-	printf("DEBUG parse_map: map_buffer=%p\n", (void*)map_buffer);
 	config->map.columns = check_top_bottom_borders(map_buffer);
-	printf("DEBUG after TB: map_buffer=%p columns=%d\n", (void*)map_buffer, config->map.columns);
 	config->map.rows = check_left_right_borders(map_buffer);
-	printf("DEBUG after LR: rows=%d\n", config->map.rows);
 	if (config->map.columns <= 2 || config->map.rows <= 2 || !check_valid(config, map_buffer)) {
 		return (0);
 	}
@@ -41,7 +42,9 @@ int
 }
 
 /* ************************************************************************** */
-// マップバッファの内容を配列にコピーし、カメラの数を返す
+// マップ行リストを1次元 int 配列 map にコピーし、見つかったカメラ（スポーン文字
+// N/S/E/W）の数を返す。各行で空白を読み飛ばしつつ1マスずつ格納し、line が列インデックス。
+// 戻り値のカメラ数を呼び出し側が 1 未満＝スポーン無しとして弾くために使う
 int
 	copy_map(t_config* config, t_str* map_buffer, int* map)
 {
@@ -72,7 +75,9 @@ int
 }
 
 /* ************************************************************************** */
-// マップ本体から静的なセル属性フラグ層を構築する（現状は P ロードのみを記録）
+// マップ本体 data と同要素数のフラグ層 flags を確保し、各マスの静的属性を記録する。
+// 現状は 'P'（巡回ポイント）のマスに CELL_PATROL ビットを立てるのみ。data とは別レイヤに
+// することで、移動時の訪問済みマーカー等が data を上書きしても静的属性が壊れないようにする
 static int
 	build_map_flags(t_config* config)
 {

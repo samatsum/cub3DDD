@@ -1,4 +1,3 @@
-#include <stdio.h>
 #include <fcntl.h>  /* open, O_RDONLY 用 */
 #include <unistd.h> /* close 用 */
 #include "config/config.h"
@@ -66,7 +65,10 @@ static void
 	strip_comment(char* line);
 
 /* ************************************************************************** */
-// 設定情報を初期化する
+// 設定情報を既定値で初期化する。tex_path は全て NULL（テクスチャ未指定）、colors は
+// テクスチャが無い面に使うフォールバック色、map は空。速度・FOV・敵パラメータは
+// defaults.h の既定値を入れる。set[] は「そのキーが .cub に既出か」を表す重複検出
+// フラグで、ここで全要素 0（未設定）に戻しておく
 void
 	init_config(t_config* config)
 {
@@ -101,7 +103,9 @@ void
 }
 
 /* ************************************************************************** */
-// 設定情報に関するメモリを解放する
+// 設定が確保した動的メモリ（テクスチャパス文字列・マップ本体 data・セル属性フラグ層
+// flags）を解放する。二重解放を防ぐため、解放後は各ポインタを NULL に戻す。戻り値 0 は
+// 「失敗を表す 0」を呼び出し側がそのまま return できるようにするための慣用（常に 0 を返す）
 int
 	clear_config(t_config* config)
 {
@@ -127,7 +131,12 @@ int
 }
 
 /* ************************************************************************** */
-// 設定ファイルを解析し、設定情報を読み込む
+// 設定ファイル(.cub)を解析する本体。拡張子確認→オープン→get_next_line で1行ずつ
+// 読み、strip_comment 後 parse_line で振り分け→蓄積したマップ行 map_buffer を最後に
+// parse_map で確定、という流れ。r はここまでの解析が全て成功したかのフラグ、ret は
+// get_next_line の戻り値（>0 継続 / 0 EOF / <0 読み取りエラー）。empty_map/cont_after は
+// マップ後の空行を跨いで設定やマップ行が再出現する不正配置を検出するための状態。
+// どの失敗経路でも map_buffer を str_clear で必ず解放してから抜ける
 int
 	parse_config(t_config* config, char const* conf_path)
 {
@@ -140,12 +149,10 @@ int
 	t_str*	map_buffer;
 
 	if (!ft_endwith(conf_path, ".cub")) {
-		printf("DEBUG: File extension is not .cub\n");
 		return (0);
 	}
 	c_fd = open(conf_path, O_RDONLY);
 	if (c_fd < 0) {
-		printf("DEBUG: Failed to open file: %s\n", conf_path);
 		return (0);
 	}
 	map_buffer = NULL;
@@ -157,9 +164,6 @@ int
 	while (ret > 0) {
 		strip_comment(line);
 		r = (r && parse_line(config, line, &map_buffer, &empty_map, &cont_after));
-		if (!r) {
-			printf("DEBUG: parse_line failed at line: [%s]\n", line);
-		}
 		free(line);
 		line = NULL;
 		ret = get_next_line(c_fd, &line);
@@ -169,11 +173,9 @@ int
 		r = 0;
 	}
 	if (!r) {
-		printf("DEBUG: parse failed during file reading.\n");
 		return (str_clear(&map_buffer));
 	}
 	if (!parse_map(config, map_buffer)) {
-		printf("DEBUG: parse_map failed (Invalid map structure).\n");
 		return (str_clear(&map_buffer));
 	}
 	str_clear(&map_buffer);
@@ -181,7 +183,11 @@ int
 }
 
 /* ************************************************************************** */
-// 読み込んだ行を解析し、適切な処理に振り分ける
+// 1行を種別ごとに振り分ける。空行はマップ開始後(set[C_MAP])なら empty_map を立て、
+// さらにマップ後の空行を跨いで行が再出現したら(cont_after)不正配置として弾く。重複キー
+// （既に set 済み）やマップ確定後の設定行も拒否する。R/テクスチャ/色/スカラーは各パーサへ
+// 委譲し、それ以外（マップ本体）は ft_strdup して map_buffer 末尾に追加し後段の parse_map へ
+// 渡す。最後の !! は str_add_back の戻り値ポインタを 0/1 の真偽値に正規化している
 static int
 	parse_line(t_config* config, char const* line, t_str** map_buffer, int* empty_map, int* cont_after)
 {
@@ -219,7 +225,8 @@ static int
 }
 
 /* ************************************************************************** */
-// 行の先頭トークンを対応表と照合し、設定キーを判定する
+// 行頭トークンを g_keys の各タグと照合し、一致したキー種別を返す。どのタグにも一致
+// しなければ C_MAP（＝マップ本体の行）とみなす。キー数は固定少数なので線形探索で十分
 static int
 	config_key(char const* line)
 {
@@ -236,7 +243,8 @@ static int
 }
 
 /* ************************************************************************** */
-// 行頭が tag と一致し、かつ直後がトークン境界（空白か行末）であるかを判定する
+// 行頭が tag と前方一致し、かつ tag の直後がトークン境界（空白か行末）かを判定する。
+// この境界チェックにより "N"(北スポーン) と "NO"(北テクスチャ) のような接頭辞の誤一致を防ぐ
 static int
 	tag_matches(char const* line, char const* tag)
 {

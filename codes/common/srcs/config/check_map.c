@@ -1,15 +1,3 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   check_map.c                                        :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/06/03 07:32:33 by samatsum          #+#    #+#             */
-/*   Updated: 2026/06/17 14:32:08 by samatsum         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #include "config/config.h"
 
 /* ************************************************************************** */
@@ -23,7 +11,8 @@ int
 	check_valid(t_config* config, t_str* map_buffer);
 
 /* ************************************************************************** */
-// 行内の '1' の数を数え、有効な文字のみが含まれているかチェックする
+// 枠行（上端・下端）に含まれる '1' の個数を数えて返す。'1' と空白以外の文字が混じって
+// いれば 0 を返して不正とする（枠行は壁 '1' と空白のみで構成されるべきだから）
 int
 	count_check_columns(char const* line)
 {
@@ -44,7 +33,9 @@ int
 }
 
 /* ************************************************************************** */
-// マップの上端と下端の境界が正しいかチェックする
+// マップ上端行と下端行が枠として正しいかを検査し、正しければ列数（＝枠行の '1' の数）を
+// 返す。先頭行と最終行の '1' 数が一致する場合のみその値を返し、不一致や不正文字なら 0。
+// この戻り値がそのまま config.map.columns になる
 int
 	check_top_bottom_borders(t_str* map_buffer)
 {
@@ -69,7 +60,9 @@ int
 }
 
 /* ************************************************************************** */
-// マップの左端と右端の境界が正しいかチェックする
+// 全行の左端・右端が壁 '1' で閉じているかを検査し、正しければ行数を返す（config.map.rows に
+// なる）。各行で前後の空白を除いた最初と最後の文字を見て、どちらかが '1' でない、または
+// 実質長さが短すぎる(last<=1)行があれば 0 を返す。i は走査した行数のカウンタ
 int
 	check_left_right_borders(t_str* map_buffer)
 {
@@ -90,23 +83,18 @@ int
 		while (last > 0 && map_buffer->content[last] == ' ') {
 			last--;
 		}
-		printf("DEBUG row %d: first='%c'(%d) last='%c'(%d) len=%d [%s]\n",
-			i, map_buffer->content[first], map_buffer->content[first],
-			map_buffer->content[last], map_buffer->content[last],
-			ft_strlen(map_buffer->content), map_buffer->content);
 		if (last <= 1 || map_buffer->content[first] != '1' || map_buffer->content[last] != '1') {
-			printf("DEBUG --> rejected at row %d\n", i);
 			return (0);
 		}
 		map_buffer = map_buffer->next;
 		i++;
 	}
-	printf("DEBUG check_LR returning i=%d\n", i);
 	return (i);
 }
 
 /* ************************************************************************** */
-// マップ全体が有効な文字のみで構成され、列数が正しいかチェックする
+// マップ全行が VALID_MAP_CHARACTERS のみで構成され、かつ各行の有効マス数（空白を除いた
+// 列数）が columns と一致するかを検査する。不正文字か列数不一致があれば 0、全行 OK なら 1
 int
 	check_valid(t_config* config, t_str* map_buffer)
 {

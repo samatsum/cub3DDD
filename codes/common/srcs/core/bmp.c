@@ -1,16 +1,3 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   bmp.c                                              :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/12/10 18:13:15 by samatsum          #+#    #+#             */
-/*   Updated: 2026/06/03 14:44:09 by samatsum         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
-
 #include <time.h>   /* time, localtime用 */
 #include <stdlib.h> /* getenv用 */
 #include <stdio.h>  /* snprintf用 */
@@ -36,7 +23,12 @@ static int
 	get_color(t_window* w, int x, int y);
 
 /* ************************************************************************** */
-// 画面のスクリーンショットを撮影し、ファイルに保存してゲームを終了する
+// スクリーンショットを撮ってファイルに保存し、ゲームを終了する。日時付きパスを作り、
+// 作成可否を確認してから最新フレームを描画し save_bmp で書き出す。撮影後は成否に関わらず
+// exit_game で終了する。
+// ※既知の不整合: ここで開く fd は作成可否の確認用だが close されず、実際の書き出しは
+//   save_bmp 内のハードコード名 "screenshot.bmp" に対して行われる。そのため日時付きパスには
+//   空ファイルが残り、fd もリークする。パスの一本化と fd 解放は今後の整理対象
 int
 	screenshot(t_game* game)
 {
@@ -46,17 +38,20 @@ int
 	get_screenshot_path(filepath, sizeof(filepath));
 	fd = open(filepath, O_CREAT | O_WRONLY | O_TRUNC, 0644);
 	if (fd < 0) {
-		return (exit_error(game, "Error\nFailed to create screenshot file in ~/bmp/.\n"));
+		return (exit_error(game, "Error:\nFailed to create screenshot file in ~/bmp/.\n"));
 	}
 	render_frame(game);
 	if (!save_bmp(game)) {
-		exit_error(game, "Error:\nfailed to save screenshot.");
+		exit_error(game, "Error:\nfailed to save screenshot.\n");
 	}
 	return (exit_game(game, EXIT_SUCCESS));
 }
 
 /* ************************************************************************** */
-// 画面のピクセルデータをBMP形式のファイルとして書き出す
+// 画面のピクセルデータを24bit BMP としてファイルに書き出す。1行を4バイト境界に揃える
+// ためのパディング pad を計算し、ヘッダ54バイト＋(幅+pad)*高さ*3 をファイルサイズに。
+// ヘッダ→データの順に書き、いずれか失敗したら開いた fd を close して 0 を返す（成功時も
+// 最後に close）。header/data 失敗経路での close 漏れ＝fdリークを修正済み
 int
 	save_bmp(t_game* game)
 {
@@ -73,9 +68,11 @@ int
 		return (0);
 	}
 	if (!write_bmp_header(file, filesize, game)) {
+		close(file);
 		return (0);
 	}
 	if (!write_bmp_data(file, w, pad)) {
+		close(file);
 		return (0);
 	}
 	close(file);
@@ -83,7 +80,8 @@ int
 }
 
 /* ************************************************************************** */
-// ホームディレクトリと現在時刻からスクリーンショットのファイルパスを生成する
+// 現在時刻から "<home>/bmp/screenshot_YYYY_MMDD_HHMM.bmp" 形式のパスを buffer に生成する。
+// home は暫定で "."（カレントディレクトリ）固定。snprintf で size を超えないよう切り詰める
 static void
 	get_screenshot_path(char* buffer, size_t size)
 {
@@ -104,7 +102,9 @@ static void
 }
 
 /* ************************************************************************** */
-// BMPファイルのヘッダー情報を書き込む
+// BMP の54バイトヘッダ（14バイトのファイルヘッダ＋40バイトの情報ヘッダ）を組み立てて書く。
+// 先頭を 'B''M'、オフセット2にファイルサイズ、10にデータ開始位置(54)、14に情報ヘッダサイズ
+// (40)、18/22に幅・高さ、27に面数(1)、28にビット深度(24)を設定。write 失敗時は 0 を返す
 static int
 	write_bmp_header(int fd, int filesize, t_game* game)
 {
@@ -131,7 +131,8 @@ static int
 }
 
 /* ************************************************************************** */
-// 整数値を4バイトの文字配列にリトルエンディアンで設定する
+// 32bit 整数を start から4バイトにリトルエンディアン（下位バイトが先頭）で書き込む。
+// BMP ヘッダの数値フィールドはリトルエンディアン規定のため、この順で格納する
 static void
 	set_int_in_char(unsigned char* start, int value)
 {
@@ -142,7 +143,8 @@ static void
 }
 
 /* ************************************************************************** */
-// ウィンドウのピクセルデータをBMPのデータ領域として書き込む
+// 画面ピクセルを BMP のデータ領域として1行ずつ書き出す。BMP は1ピクセル3バイト(BGR)で、
+// 行末を4バイト境界に揃えるため pad バイトのゼロを書き足す。write 失敗時は 0 を返す
 static int
 	write_bmp_data(int file, t_window* w, int pad)
 {
@@ -170,7 +172,8 @@ static int
 }
 
 /* ************************************************************************** */
-// 指定された座標のピクセルの色（RGB値）を取得する
+// 画面バッファから (x, y) のピクセル色を取得する。BMP は最下行から上へ並ぶ「ボトムアップ」
+// 形式のため、行を (高さ-1-y) に反転して読む。返すのは下位24bit(0xRRGGBB)
 static int
 	get_color(t_window* w, int x, int y)
 {
@@ -178,6 +181,6 @@ static int
 	int	color;
 
 	color = *(int*)(w->screen.ptr + (BYTES_PER_PIXEL * (int)w->size.x * ((int)w->size.y - 1 - y)) + (BYTES_PER_PIXEL * x));
-	rgb = (color & 0xFF0000) | (color & 0x00FF00) | (color & 0x0000FF);
+	rgb = color & 0xFFFFFF;
 	return (rgb);
 }
