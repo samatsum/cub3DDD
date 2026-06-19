@@ -74,6 +74,6 @@
 // 装飾スプライト(通行可オブジェクト)のスポットライト：影響半径[マス]と
 // 乗算による明るさの底上げ量(中心の最大ゲインは 1.0 + SPOT_GAIN 倍)
 # define SPOT_RADIUS		4.0
-# define SPOT_GAIN			1.0
+# define SPOT_GAIN			4.0
 
 #endif
