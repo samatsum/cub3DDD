@@ -25,7 +25,7 @@ COMMON_SRCS     = config/config.c config/parse_map.c config/check_map.c \
                   config/parse_params.c config/parse_texture.c \
                   utils/ft_strlen.c utils/ft_substr.c utils/ft_in_set.c \
                   utils/str.c utils/ft_strdup.c utils/ft_split.c utils/ft_atoi.c \
-                  utils/pos.c utils/ft_itoa.c utils/ft_memmove.c utils/ft_strcmp.c \
+                  utils/pos.c utils/ft_strcmp.c \
                   utils/ft_write.c utils/ft_endwith.c \
                   gnl/get_next_line.c gnl/get_next_line_utils.c \
                   engine/raycast/camera.c engine/raycast/raycast.c \
