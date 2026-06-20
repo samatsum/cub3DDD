@@ -1,9 +1,8 @@
-#include "config/config.h"
+#include "config/config.h"          /* colors[] / TEX_* のため */
 #include "engine/render/render.h"
 #include "engine/texture/texture.h" /* get_tex_color, distance_shade 等を使うため */
 
 /* ************************************************************************** */
-
 void
 	draw_wall(t_render* rnd, t_raysult* r);
 static void
@@ -12,8 +11,9 @@ static void
 	draw_textured_column(t_render* rnd, t_raysult* r, t_tex* tex, t_pos* p_tex, double light);
 
 /* ************************************************************************** */
-
-// 1列分の壁を描画する
+// 1列分の壁を描画する。扉なら扉テクスチャ、通常壁なら衝突面の向き direction のテクスチャを
+// 選ぶ。テクスチャ未指定(tex->tex が NULL)なら距離暗化＋フラッシュライト補正をかけた単色の
+// 縦線で代用し、ある場合はテクスチャX座標を求めてからテクスチャ列を描く
 void
 	draw_wall(t_render* rnd, t_raysult* r)
 {
@@ -39,8 +39,9 @@ void
 }
 
 /* ************************************************************************** */
-
-// 壁描画のためのテクスチャX座標を計算する
+// 壁テクスチャのX座標を求める。衝突点が壁マスのどこを通ったか wall_x(0〜1の小数部)を計算し、
+// テクスチャ幅へ写してテクスチャ列 p_tex->x にする。side と光線の向きの組み合わせによっては
+// テクスチャが左右反転して見えるため、該当ケースで列を反転(width-x-1)して向きを揃える
 static void
 	init_draw_wall(t_tex* tex, t_raysult* ray, t_pos* p_tex)
 {
@@ -59,10 +60,10 @@ static void
 }
 
 /* ************************************************************************** */
-
-// テクスチャ付き壁を1列ぶん、境界チェック無しでバックバッファへ直接書き込む。
-// 列xは画面内に必ず収まり、yも開始(start_y>=0)と終端(end)で挟むため、draw_pixelの
-// 毎ピクセル境界判定とdouble→int変換を省ける。dstを行ストライド刻みで縦に進める
+// テクスチャ付き壁を1列ぶん、境界チェック無しでバックバッファへ直接書き込む。列xは画面内に
+// 必ず収まり、yも開始(start_y>=0)と終端(end)で挟むため、draw_pixel の毎ピクセル境界判定と
+// double→int 変換を省ける。step はテクスチャYの1ピクセルあたり増分、tex_pos は壁が画面外へ
+// はみ出す分を見込んだ初期Y。ループ内は乗算を排し、dst を行ストライド刻みで縦に進める
 static void
 	draw_textured_column(t_render* rnd, t_raysult* r, t_tex* tex, t_pos* p_tex, double light)
 {
@@ -76,25 +77,19 @@ static void
 
 	stride = rnd->w->screen.size_line / 4;
 	start_y = (int)MAX(0, rnd->w->half.y - (r->height / 2.));
-	/* 1ピクセル描画ごとのテクスチャY座標の増加量（ステップ値）を事前計算 */
 	step = 1.0 * tex->height / r->height;
-	/* テクスチャY座標の初期値を計算（壁が画面外にはみ出している場合を考慮） */
 	tex_pos = (start_y - rnd->w->size.y / 2.0 + r->height / 2.0) * step;
-	/* 列の先頭ポインタと、この列の終端（画面下端）を確定する */
 	dst = (unsigned int*)rnd->w->screen.ptr + (int)r->column + start_y * stride;
 	end = (unsigned int*)rnd->w->screen.ptr + (int)r->column + (int)rnd->w->size.y * stride;
 	i = 0;
 	while (i < r->height && dst < end) {
 		p_tex->y = (int)tex_pos;
-		/* テクスチャサイズの超過を防ぐ安全対策 */
 		if (p_tex->y >= tex->height) {
 			p_tex->y = tex->height - 1;
 		} else if (p_tex->y < 0) {
 			p_tex->y = 0;
 		}
-		/* 境界判定済みなので draw_pixel を介さず直接書き込む */
 		*dst = (unsigned int)distance_shade(rnd->options, get_tex_color(tex, p_tex), r->distance, light);
-		/* ループ内では浮動小数点の乗算を排除し、加算とポインタ前進のみで更新 */
 		dst += stride;
 		tex_pos += step;
 		i++;
