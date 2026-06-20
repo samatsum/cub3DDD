@@ -1,10 +1,7 @@
-#include <stddef.h>
-
 #include "engine/raycast/raycast.h"
-#include "config/config.h"
+#include "config/config.h"     /* MAP_XY / DIRECTIONS / MAX_SPAWNS 等のマクロ展開のため */
 
 /* ************************************************************************** */
-
 void
 	collect_spawns(t_config* config);
 void
@@ -15,9 +12,9 @@ int
 	pick_spawn_indices(t_config* config, char const* allowed, unsigned int* seed, int* out, int want);
 
 /* ************************************************************************** */
-
-// マップ全体を1度走査し、N/S/E/W のセルを位置と向き文字つきで spawns[] へ全収集
-// する。スポーン文字は 'A' に潰さない方針のため、起動時に1度呼べばよい
+// マップ全体を1度走査し、N/S/E/W のセルを位置と向き文字つきで spawns[] へ全収集する。
+// 位置はマス中心になるよう +0.5 する。スポーン文字は移動時に 'A'(訪問済み)へ潰さない方針
+// なので、起動時に1度呼べば以後の選び直し(リスポーン)でも使い回せる。上限は MAX_SPAWNS
 void
 	collect_spawns(t_config* config)
 {
@@ -42,9 +39,9 @@ void
 }
 
 /* ************************************************************************** */
-
-// スポーン地点1つをカメラへ適用する（位置と、向き文字に応じた視線・平面）。
-// 旧 find_start_angle の向き設定を集約。マップ文字は潰さない
+// スポーン地点1つをカメラへ適用する。位置 pos を写し、向き文字 N/E/S/W に応じて視線 dir と
+// カメラ平面 plane を設定する（plane の大きさ＝fov で視野角を決める）。最後に直交ベクトル
+// x_dir を dir から導出(90度回転)してストレイフ移動に備える。マップ文字は書き換えない
 void
 	apply_spawn(t_config* config, t_camera* camera, t_spawn_point* sp)
 {
@@ -66,9 +63,9 @@ void
 }
 
 /* ************************************************************************** */
-
-// spawns[] のうち allowed に含まれる向き文字の地点から1つをランダムに選び添字を
-// 返す。allowed=DIRECTIONS なら全スポーンが対象（FPS）。該当なしは -1
+// spawns[] のうち allowed に含まれる向き文字の地点を候補に集め、その中から1つを乱数
+// (rand_r で seed を更新する再入可能な擬似乱数)で選んで添字を返す。allowed=DIRECTIONS なら
+// 全スポーンが対象(FPSの初期配置)。候補が無ければ -1 を返し、呼び出し側で配置失敗を扱う
 int
 	pick_spawn_index(t_config* config, char const* allowed, unsigned int* seed)
 {
@@ -91,10 +88,9 @@ int
 }
 
 /* ************************************************************************** */
-
-// allowed に該当する地点から重複なしで最大 want 個ランダムに選び out[] へ格納し、
-// 選べた個数を返す。選んだ候補を末尾と入れ替えて除外することで重複を避ける。
-// RSPのチーム別2地点選出（赤 "NW" / 青 "SE"）に使う
+// allowed に該当する地点から重複なしで最大 want 個を乱数で選び out[] へ格納し、選べた個数を
+// 返す。選んだ候補を末尾要素と入れ替えてから候補数を1減らすことで、同じ地点の二重選出を
+// O(1)で防ぐ（フィッシャー＝イェーツの部分抽出）。RSPのチーム別2地点選出(赤"NW"/青"SE")に使う
 int
 	pick_spawn_indices(t_config* config, char const* allowed, unsigned int* seed, int* out, int want)
 {
