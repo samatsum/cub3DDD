@@ -1,10 +1,9 @@
-#include "config/config.h"
+#include "config/config.h"          /* colors[] / TEX_SKY / TEX_FLOOR のため */
 #include "engine/render/render.h"
-#include "engine/texture/texture.h" /* shade_color 関数を使うため */
-#include "engine/render/light.h"
+#include "engine/texture/texture.h" /* get_tex_color, distance_shade を使うため */
+#include "engine/render/light.h"    /* spotlight_factor, apply_spotlight のため */
 
 /* ************************************************************************** */
-
 void
 	draw_sky_floor(t_render* rnd, t_raysult* ray);
 static void
@@ -15,8 +14,9 @@ static void
 	draw_sky_pixel(t_render* rnd, t_raysult* ray, t_pos* pixel, t_pos* p_tex, double light);
 
 /* ************************************************************************** */
-
-// 天井と床を画面に描画する
+// 壁より下の各行について、床と天井を1ピクセルずつ描く。weight = sf_dist[i]/distance は
+// その行が床平面のどこに当たるかの内挿係数で、壁基準点 floor_wall とカメラ位置の線形補間で
+// 実際の床ワールド座標 c_floor を求める。床は行 i、天井は上下対称の行 size.y - i に描画する
 void
 	draw_sky_floor(t_render* rnd, t_raysult* ray)
 {
@@ -44,8 +44,8 @@ void
 }
 
 /* ************************************************************************** */
-
-// 天井と床の描画のための初期座標を設定する
+// 床/天井内挿の基準点 floor_wall を求める。これは壁の足元に当たるワールド座標で、衝突面
+// (side)と光線の向き(符号)の4通りに応じて、当たったマスのどの辺＋wall_x の位置かを決める
 static void
 	init_draw_sky_floor(t_raysult* ray)
 {
@@ -61,7 +61,10 @@ static void
 }
 
 /* ************************************************************************** */
-// 床の1ピクセルを描画する（装飾スプライトのスポットライトで輝度を持ち上げる）
+// 床の1ピクセルを描く。テクスチャがあれば床ワールド座標をテクセルへ写してサンプリングし、
+// 無ければ床色を使う。いずれも距離暗化＋フラッシュライト補正をかけ、最後に装飾スプライトの
+// スポットライトで輝度を底上げする。& (width-1) はテクスチャ寸法が2の冪である前提で、
+// 剰余(%)による折り返しをビット論理積で高速化したもの
 static void
 	draw_floor_pixel(t_render* rnd, t_raysult* ray, t_pos* pixel, t_pos* p_tex, double light)
 {
@@ -74,7 +77,6 @@ static void
 	if (!tex->tex) {
 		color = distance_shade(rnd->options, rnd->config->colors[TEX_FLOOR], rnd->sf_dist[ray->row], light);
 	} else {
-		/* 修正箇所: 重いモジュロ演算(%)を高速なビット論理積(&)に置き換え */
 		set_pos(p_tex,
 			((int)(ray->c_floor.x * tex->width)) & (tex->width - 1),
 			((int)(ray->c_floor.y * tex->height)) & (tex->height - 1));
@@ -84,8 +86,8 @@ static void
 }
 
 /* ************************************************************************** */
-
-// 天井の1ピクセルを描画する
+// 天井(空)の1ピクセルを描く。床と同様にテクスチャ有無で分岐し、ある場合は同じ c_floor 座標を
+// 2の冪前提の & (width-1) でテクセルへ折り返してサンプリングする（天井はスポットライト対象外）
 static void
 	draw_sky_pixel(t_render* rnd, t_raysult* ray, t_pos* pixel, t_pos* p_tex, double light)
 {
@@ -95,7 +97,6 @@ static void
 	if (!tex->tex) {
 		draw_pixel(rnd->w, pixel, distance_shade(rnd->options, rnd->config->colors[TEX_SKY], rnd->sf_dist[ray->row], light));
 	} else {
-		/* 修正箇所: 重いモジュロ演算(%)を高速なビット論理積(&)に置き換え */
 		set_pos(p_tex,
 			((int)(ray->c_floor.x * tex->width)) & (tex->width - 1),
 			((int)(ray->c_floor.y * tex->height)) & (tex->height - 1));

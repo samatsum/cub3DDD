@@ -1,8 +1,8 @@
-#include <math.h>
-#include "core/core.h"            /* ゲーム設定の取得に必要 */
+#include <math.h>                  /* fabs, sqrt 用 */
+#include "core/core.h"             /* t_game 周辺の型のため */
 #include "engine/render/render.h"   /* スプライト描画関数の宣言 */
-#include "engine/texture/texture.h" /* get_tex_color, distance_shade 等に必要 */
-#include "engine/render/light.h"
+#include "engine/texture/texture.h" /* get_tex_color, shade_color, flashlight_divide 等に必要 */
+#include "engine/render/light.h"    /* spotlight_factor, spotlight_shade, apply_spotlight のため */
 
 /* ************************************************************************** */
 void
@@ -13,8 +13,9 @@ static void
 	draw_sprite(t_render* rnd, t_sprite* sprite, t_sprite_draw* spr, t_tex* tex);
 
 /* ************************************************************************** */
-
-// 全てのスプライトを距離順にソートして描画する
+// 全スプライトを奥から手前へ描く。カメラ行列の逆行列式 inv_det を一度だけ求めて各スプライトの
+// 座標変換に使い回し、sort_sprites で距離降順に並べてから描画する。距離が極端に近い(<=0.1)
+// ものは座標変換が発散するため描かずにスキップする
 void
 	draw_sprites(t_render* rnd, t_sprite* sprites)
 {
@@ -34,8 +35,9 @@ void
 }
 
 /* ************************************************************************** */
-
-// スプライト描画用の座標計算と初期化を行う
+// スプライト描画の前計算。プレイヤー相対座標 pos をカメラ空間 transform へ変換する
+// (transform.y が奥行き、transform.x が横ずれ)。そこから画面中心X sprite_screen、画面上の
+// 表示サイズ spr_s、描画矩形 draw_x/draw_y を求め、画面外へはみ出す分は 0 でクランプする
 static void
 	init_draw_sprite(t_render* rnd, t_sprite* sprite, double inv_det, t_sprite_draw* spr)
 {
@@ -56,7 +58,10 @@ static void
 }
 
 /* ************************************************************************** */
-// スプライト全体を描画する（距離を線形化し、列ごとのライトコーンで暗化を打ち消す）
+// スプライトを列×行で走査して描く。列ごとに depth[] と奥行きを比べ、壁より手前(transform.y <
+// depth)のときだけ描画して壁との前後関係を守る。距離は sqrt で線形化し、フラッシュライトと
+// スポットライトで暗化を打ち消す。テクスチャの start/end でトリミングし、完全透明な
+// テクセル(下位24bitが0)は書き込まないので背景が抜ける
 static void
 	draw_sprite(t_render* rnd, t_sprite* sprite, t_sprite_draw* spr, t_tex* tex)
 {

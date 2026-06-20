@@ -1,9 +1,9 @@
-#include <stdlib.h>
+#include <stdlib.h>            /* malloc, free 用 */
 
-#include "config/config.h"
-#include "types.h"
+#include "config/config.h"     /* IS_PASSABLE / IS_SPAWN 等のマクロ展開のため */
+#include "types.h"             /* t_light / t_world 定義のため */
 #include "engine/render/light.h"
-#include "tuning.h"
+#include "tuning.h"            /* SPOT_RADIUS, SPOT_GAIN 用 */
 
 /* ************************************************************************** */
 int
@@ -18,15 +18,14 @@ static int
 	count_passable(struct s_config* config);
 static void
 	fill_lights(t_light* lights, struct s_config* config);
-static void
-	fill_lights(t_light* lights, struct s_config* config);
 static int
 	clamp_255(int v);
 double
 	spotlight_shade(double divide, double factor);
 
 /* ************************************************************************** */
-// 装飾スプライト(通行可)のマス中心を光源とする配列を確保する（0個なら何もしない）
+// 装飾スプライト(通行可オブジェクト)とスポーンマーカーのマス中心を光源とする配列を確保し、
+// 中身を fill_lights で書き込む。光源が0個なら確保せず成功(1)を返す。malloc 失敗時のみ 0
 int
 	build_lights(struct s_world* world, struct s_config* config)
 {
@@ -48,7 +47,7 @@ int
 }
 
 /* ************************************************************************** */
-// 光源配列を解放し、二重解放を防ぐためNULLと0で初期化し直す
+// 光源配列を解放する。二重解放を防ぐためポインタを NULL、個数を 0 に戻しておく
 void
 	clear_lights(struct s_world* world)
 {
@@ -60,7 +59,9 @@ void
 }
 
 /* ************************************************************************** */
-// 指定ワールド座標に最も強く届く光源の照度係数[0,1]を返す（sqrt不要の二乗減衰）
+// ワールド座標(wx,wy)に最も強く届く光源の照度係数[0,1]を返す。各光源との二乗距離 d2 が
+// 半径二乗 r2 未満なら届くとみなし、(1 - d2/r2)^2 の二乗減衰で強度を出す。距離は二乗のまま
+// 比較するので sqrt は不要。複数光源では最大値を採用する
 double
 	spotlight_factor(struct s_world* world, double wx, double wy)
 {
@@ -89,7 +90,9 @@ double
 }
 
 /* ************************************************************************** */
-// 係数に応じて色を乗算で底上げする（0で素通り。比率保持で色相・彩度を保つ）
+// 照度係数 factor に応じて色を乗算で明るくする。factor<=0 なら素通り。R/G/B を同じゲイン
+// (1 + factor*SPOT_GAIN)で一律に持ち上げるため、色相・彩度を保ったまま輝度だけ上がる。
+// 各成分は clamp_255 で飽和させる
 int
 	apply_spotlight(int color, double factor)
 {
@@ -109,7 +112,8 @@ int
 }
 
 /* ************************************************************************** */
-// マップ全体を走査し、通行可オブジェクトとスポーンマーカーのマス数を数える
+// マップ全体を走査し、通行可オブジェクトとスポーンマーカーのマス数(＝光源数)を数える。
+// build_lights が確保する配列サイズを決めるための事前カウント
 static int
 	count_passable(struct s_config* config)
 {
@@ -134,7 +138,8 @@ static int
 }
 
 /* ************************************************************************** */
-// 通行可オブジェクトとスポーンマーカーのマス中心(+0.5)を各光源の座標に書き込む
+// count_passable と同じ条件でマップを走査し、該当マスの中心(+0.5)を各光源の座標へ書き込む。
+// 走査順が count_passable と一致するので、確保済み配列を添字 k で順に埋めれば過不足なく収まる
 static void
 	fill_lights(t_light* lights, struct s_config* config)
 {
@@ -159,7 +164,7 @@ static void
 }
 
 /* ************************************************************************** */
-// 1成分を0〜255に収める（乗算で255を超えた分だけ自然に白へ寄せる）
+// 色成分を 0〜255 に収める。乗算で 255 を超えた分を頭打ちにし、自然に白へ寄せる
 static int
 	clamp_255(int v)
 {
@@ -170,7 +175,8 @@ static int
 }
 
 /* ************************************************************************** */
-// 光だまり内では距離暗化の除算係数を1.0(=フル輝度)へ引き戻し、潰れを防ぐ
+// 距離暗化の除算係数 divide を、光だまりの強さ factor に応じて 1.0(=フル輝度)側へ引き戻す。
+// factor<=0 や元から明るい(divide<=1)場合はそのまま。暗い床/天井が光源近傍で黒潰れするのを防ぐ
 double
 	spotlight_shade(double divide, double factor)
 {

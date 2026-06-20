@@ -1,6 +1,6 @@
-#include <pthread.h>
-#include <unistd.h>
-#include <math.h>
+#include <pthread.h>           /* pthread_create / pthread_join 用 */
+#include <unistd.h>            /* sysconf(_SC_NPROCESSORS_ONLN) 用 */
+#include <math.h>              /* fabs 用 */
 #include "engine/render/render.h"
 #include "engine/raycast/raycast.h"
 
@@ -20,7 +20,10 @@ static void
 	cast_range(t_render* rnd, double* camera_x, int start, int end);
 
 /* ************************************************************************** */
-// 画面の列をスレッド数で分割し、各ワーカーに割り当てて並列に描画する（司令塔）
+// 画面の全列を worker_count 個のワーカーへ均等分割し、並列にレイキャスト描画する司令塔。
+// 各ジョブに担当列範囲[start,end)を詰めてスレッドを起こし、生成できた分だけ created[] に印を
+// 付ける。n==1 や pthread_create 失敗時はその場で cast_range を呼んで逐次フォールバックする。
+// 列ごとに書き込み先が重ならないので、描画自体はミューテックスなしで安全。最後に join で待つ
 void
 	cast_columns(t_render* rnd, double* camera_x)
 {
@@ -57,7 +60,8 @@ void
 }
 
 /* ************************************************************************** */
-// オンラインCPUコア数を基に起動するワーカー数を決める（1コアなら1＝逐次実行）
+// 起動するワーカー数を決める。オンラインCPUコア数を基準に、スレッド上限と列数で頭打ちし、
+// 必ず1以上に丸める（1コア＝逐次実行、列数より多くスレッドを作っても無駄なので列数で制限）
 static int
 	worker_count(int columns)
 {
@@ -82,7 +86,8 @@ static int
 }
 
 /* ************************************************************************** */
-// pthread から呼ばれる入口。担当する列範囲を取り出して描画本体へ委譲する
+// pthread から呼ばれる入口。void* 引数を t_render_job* へ戻し、担当列範囲を取り出して
+// 描画本体 cast_range へ委譲する。pthread の規約に合わせ戻り値は NULL
 static void*
 	cast_worker(void* arg)
 {
@@ -94,7 +99,9 @@ static void*
 }
 
 /* ************************************************************************** */
-// 指定された列範囲[start,end)だけをレイキャストし、壁・床・天井を描画する
+// 列範囲[start,end)だけを描画する実体。列ごとに ray_cast で壁までの距離を求めて depth[] に
+// 記録し(後段のスプライト前後判定に使う)、距離から壁の画面上の高さを算出して壁を描く。
+// 壁が画面を埋め尽くさない(height < 画面高)ときだけ、残る上下に天井と床を描く
 static void
 	cast_range(t_render* rnd, double* camera_x, int start, int end)
 {

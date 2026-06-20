@@ -1,14 +1,13 @@
-#include <math.h>
-#include "core/core.h"            /* ゲーム設定の取得に必要 */
+#include <math.h>                 /* hypot, atan, fabs 用 */
+#include "core/core.h"            /* t_game 定義のため */
 #include "core/respawn.h"         /* is_player_dead に必要 */
 #include "engine/raycast/raycast.h"
 #include "engine/render/render.h" /* 描画関数群の呼び出しに必要 */
-#include "ui/ui.h"                /* update_ui, display_crosshair に必要 */
+#include "ui/ui.h"                /* update_ui, display_crosshair, write_ui_text に必要 */
 #include "tuning.h"               /* LIGHT_CONE_DEG に必要 */
-#include "../minilibx-linux/mlx.h"
+#include "../minilibx-linux/mlx.h" /* mlx_put_image_to_window 用 */
 
 /* ************************************************************************** */
-
 void
 	render_frame(t_game* game);
 void
@@ -21,8 +20,8 @@ static void
 	draw_death_screen(t_game* game);
 
 /* ************************************************************************** */
-
-// 1フレーム全体を描画する。死亡中はUIを含む全レイヤーを伏せ、死亡画像だけを表示する
+// 1フレーム全体を描画する。死亡中(is_player_dead)はワールドもUIも伏せ、死亡画像だけを描いて
+// 即ウィンドウへ転送する。通常時は update_screen で世界を組み立て、update_window で反映する
 void
 	render_frame(t_game* game)
 {
@@ -36,8 +35,9 @@ void
 }
 
 /* ************************************************************************** */
-
-// 画面をクリアし、列群を並列レイキャストしてからスプライト・武器・UIを重ねる
+// 画面を黒で消去し、描画に必要な状態を t_render スナップショットへ集約してから、列群を並列
+// レイキャストする(cast_columns)。その上にスプライト→武器→照準→UIの順で重ねる。
+// 懐中電灯を装備中ならフラッシュライトのフラグを立て、各描画の暗化補正に反映させる
 void
 	update_screen(t_game* game)
 {
@@ -75,8 +75,8 @@ void
 }
 
 /* ************************************************************************** */
-
-// 描画したイメージをウィンドウに反映し、必要に応じてUIテキストを表示する
+// 完成したバッファ画像をウィンドウへ転送する。UIが有効なら、転送前に収集状況のテキストを
+// 画面へ書き込んでおく
 void
 	update_window(t_window* w, int options, int collected, int to_collect)
 {
@@ -87,8 +87,9 @@ void
 }
 
 /* ************************************************************************** */
-
-// 列のレイ角が正面±LIGHT_CONE_DEG度以内なら1.0、端へ向かうほど0に落ちる重み
+// 懐中電灯のコーン内での列の重みを返す。列のレイ角が正面±LIGHT_CONE_DEG度以内なら、中心で
+// 1.0・端で 0 へ線形に落ちる値。コーン外や懐中電灯OFFなら 0。角度は plane/dir のベクトル長から
+// atan で求め、LIGHT_CONE_DEG をラジアンへ換算した limit と比較する
 double
 	flashlight_weight(t_render* rnd, int column)
 {
@@ -113,8 +114,8 @@ double
 }
 
 /* ************************************************************************** */
-
-// バッファを黒で塗ってから死亡画像を画面全体へ引き伸ばす（未ロード時は黒画面）
+// 死亡演出。バッファを黒で塗ってから死亡画像を画面全体へ最近傍補間で引き伸ばす。各画面ピクセル
+// (pixel)に対応するテクセル(texel)を比率で求めてサンプリングする。画像未ロード時は黒画面のまま
 static void
 	draw_death_screen(t_game* game)
 {
