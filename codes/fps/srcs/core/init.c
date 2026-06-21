@@ -1,4 +1,4 @@
-#include <time.h>
+#include <sys/time.h>          /* gettimeofday, struct timeval 用 */
 #include "engine/raycast/raycast.h"
 #include "core/core.h"
 #include "enemy/enemy.h"
@@ -99,7 +99,8 @@ int
 void
 	init_game(t_game* game)
 {
-	int	i;
+	struct timeval	tv;
+	int				i;
 
 	set_pos(&game->input.move, 0, 0);
 	set_pos(&game->input.x_move, 0, 0);
@@ -114,7 +115,8 @@ void
 	game->death_timer = 0.0;
 	game->assets.death_tex.tex = NULL;
 	game->assets.death_tex.path = NULL;
-	game->rsp_seed = (unsigned int)time(NULL);
+	gettimeofday(&tv, NULL);
+	game->rsp_seed = (unsigned int)(tv.tv_sec ^ tv.tv_usec);
 	i = 0;
 	while (i < TEXTURES) {
 		game->assets.tex[i++].tex = NULL;
