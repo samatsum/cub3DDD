@@ -1,5 +1,5 @@
 #include "core/core.h"                 /* t_game 定義のため */
-#include "engine/raycast/raycast.h"
+#include "engine/render/render.h"      /* make_tables プロトタイプ・t_render_cache のため */
 
 /* ************************************************************************** */
 void

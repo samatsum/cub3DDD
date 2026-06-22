@@ -27,12 +27,12 @@ COMMON_SRCS     = config/config.c config/parse_map.c config/check_map.c \
                   utils/ft_write.c utils/ft_endswith.c \
                   gnl/get_next_line.c gnl/get_next_line_utils.c \
                   engine/raycast/camera.c engine/raycast/raycast.c \
-                  engine/raycast/tables.c engine/raycast/spawn.c \
-                  engine/raycast/spawn_marker.c \
+                  engine/raycast/spawn.c engine/raycast/spawn_marker.c \
                   engine/render/draw.c engine/render/draw_wall.c \
                   engine/render/draw_sky_floor.c engine/render/screen.c \
                   engine/render/sprite.c engine/render/sprite_utils.c \
                   engine/render/cast_columns.c engine/render/light.c \
+                  engine/render/tables.c \
                   engine/texture/color.c engine/texture/texture.c \
                   engine/input/input.c \
                   core/collision.c core/bmp.c \

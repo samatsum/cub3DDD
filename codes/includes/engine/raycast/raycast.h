@@ -33,7 +33,6 @@ typedef struct s_ray
 	t_pos		c_floor;
 }				t_ray;
 
-struct s_game;
 struct s_config;
 struct s_world;
 
@@ -58,8 +57,6 @@ void
 	ray_cast(t_camera* camera, struct s_config* config, t_ray* ray, double cam_x);
 double
 	ray_distance(t_camera* camera, t_ray* ray);
-void
-	make_tables(struct s_game* game);
 int
 	spawn_marker_slot(char c);
 	
