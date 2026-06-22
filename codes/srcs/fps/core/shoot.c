@@ -36,7 +36,6 @@ void
 static void
 	check_hit(t_game* game, t_sprite* cur, t_sprite** tgt, double* min)
 {
-	t_pos	sp;
 	t_pos	tf;
 	double	inv;
 	int		scr_x;
@@ -44,10 +43,7 @@ static void
 	int		mid_x;
 
 	inv = 1.0 / (game->camera.plane.x * game->camera.dir.y - game->camera.plane.y * game->camera.dir.x);
-	sp.x = cur->pos.x - game->camera.pos.x;
-	sp.y = cur->pos.y - game->camera.pos.y;
-	tf.x = inv * (game->camera.dir.y * sp.x - game->camera.dir.x * sp.y);
-	tf.y = inv * (-game->camera.plane.y * sp.x + game->camera.plane.x * sp.y);
+	sprite_transform(&game->camera, inv, cur->pos, &tf);
 	if (tf.y <= 0.0) {
 		return ;
 	}

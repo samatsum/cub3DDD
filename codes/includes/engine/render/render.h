@@ -135,6 +135,8 @@ void
 	draw_sprites(t_render* rnd, t_sprite* sprites);
 void
 	clear_sprites(t_sprite** sprites);
+void
+	sprite_transform(t_camera* camera, double inv_det, t_pos world, t_pos* out);
 double
 	flashlight_weight(t_render* rnd, int column);
 

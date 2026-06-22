@@ -11,6 +11,8 @@ void
 	delete_sprite(t_sprite** sprites, t_pos* pos);
 void
 	clear_sprites(t_sprite** sprites);
+void
+	sprite_transform(t_camera* camera, double inv_det, t_pos world, t_pos* out);
 
 /* ************************************************************************** */
 // 全スプライトをカメラからの距離順に並べた新リスト(sorted リンクで連結)を返す。各スプライトの
@@ -129,4 +131,19 @@ void
 		*sprites = tmp;
 	}
 	*sprites = NULL;
+}
+
+/* ************************************************************************** */
+// ワールド点 world をカメラ空間 out へ射影する(スプライト/ビルボードの位置決め)。inv_det は
+// カメラ行列の逆行列式で、呼び出し側が1度求めて使い回す。out.y が奥行き(>0で前方)、out.x が
+// 横ずれ。描画(init_draw_sprite)と射撃の当たり判定(check_hit)が同一の変換を共有するための関数
+void
+	sprite_transform(t_camera* camera, double inv_det, t_pos world, t_pos* out)
+{
+	t_pos	rel;
+
+	rel.x = world.x - camera->pos.x;
+	rel.y = world.y - camera->pos.y;
+	out->x = inv_det * (camera->dir.y * rel.x - camera->dir.x * rel.y);
+	out->y = inv_det * (-camera->plane.y * rel.x + camera->plane.x * rel.y);
 }
