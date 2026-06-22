@@ -41,10 +41,7 @@ void
 static void
 	init_draw_sprite(t_render* rnd, t_sprite* sprite, double inv_det, t_sprite_draw* spr)
 {
-	set_pos(&spr->pos, sprite->pos.x - rnd->camera->pos.x, sprite->pos.y - rnd->camera->pos.y);
-	set_pos(&spr->transform,
-		inv_det * (rnd->camera->dir.y * spr->pos.x - rnd->camera->dir.x * spr->pos.y),
-		inv_det * (-rnd->camera->plane.y * spr->pos.x + rnd->camera->plane.x * spr->pos.y));
+	sprite_transform(rnd->camera, inv_det, sprite->pos, &spr->transform);
 	spr->sprite_screen = (int)((rnd->w->size.x / 2.) * (1. + spr->transform.x / spr->transform.y));
 	spr->spr_s.x = fabs(rnd->w->size.y / spr->transform.y);
 	spr->spr_s.y = fabs(rnd->w->size.y / spr->transform.y);
