@@ -215,7 +215,7 @@ double
 	plane_len = hypot(rnd->camera->plane.x, rnd->camera->plane.y);
 	dir_len = hypot(rnd->camera->dir.x, rnd->camera->dir.y);
 	angle = atan(fabs(camera_x) * plane_len / dir_len);
-	limit = LIGHT_CONE_DEG * 0.01745329251994;
+	limit = LIGHT_CONE_DEG * (M_PI / 180.0);
 	if (angle >= limit) {
 		return (0.0);
 	}

@@ -5,16 +5,18 @@
 /* ************************************************************************** */
 void
 	load_player_assets(t_game* game);
+static void
+	load_one_tex(void* mlx_ptr, t_tex* tex, char const* path_src);
 
 /* ************************************************************************** */
-// プレイヤー視点のアセット（武器/手・死亡画面・扉）のテクスチャをまとめて読み込む。各テクスチャは
-// パスを strdup してから mlx_xpm_file_to_image で読み、成功時(tex!=NULL)だけ data アドレスを取得する。
-// 読み込み失敗は致命とせず、その武器/演出/扉が描画されないだけに留める（finish_init から切り出し）
+// プレイヤー視点のアセット（武器/手・死亡画面・扉）のテクスチャをまとめて読み込む。1枚ぶんの
+// 読込は load_one_tex に委譲し、ここでは対象のパス一覧を並べて順に渡すだけ（finish_init から
+// 切り出し）。読み込み失敗は致命とせず、その武器/演出/扉が描画されないだけに留める
 void
 	load_player_assets(t_game* game)
 {
-	int			i;
 	const char*	paths[WEAPON_TEX_COUNT];
+	int			i;
 
 	paths[WTEX_PISTOL_IDLE] = "textures/arm/Arm_pistol_static.xpm";
 	paths[WTEX_PISTOL_SHOOT] = "textures/arm/Arm_pistol_shoot.xpm";
@@ -24,21 +26,26 @@ void
 	paths[WTEX_HAND_RIGHT] = "textures/arm/Arm_righthand.xpm";
 	i = 0;
 	while (i < WEAPON_TEX_COUNT) {
-		game->assets.weapon_tex[i].path = ft_strdup(paths[i]);
-		game->assets.weapon_tex[i].tex = mlx_xpm_file_to_image(game->window.ptr,game->assets.weapon_tex[i].path, &game->assets.weapon_tex[i].width, &game->assets.weapon_tex[i].height);
-		if (game->assets.weapon_tex[i].tex) {
-			game->assets.weapon_tex[i].ptr = mlx_get_data_addr(game->assets.weapon_tex[i].tex, &game->assets.weapon_tex[i].bpp, &game->assets.weapon_tex[i].size_line, &game->assets.weapon_tex[i].endian);
-		}
+		load_one_tex(game->window.ptr, &game->assets.weapon_tex[i], paths[i]);
 		i++;
 	}
-	game->assets.death_tex.path = ft_strdup(DEATH_TEX_PATH);
-	game->assets.death_tex.tex = mlx_xpm_file_to_image(game->window.ptr, game->assets.death_tex.path, &game->assets.death_tex.width, &game->assets.death_tex.height);
-	if (game->assets.death_tex.tex) {
-		game->assets.death_tex.ptr = mlx_get_data_addr(game->assets.death_tex.tex, &game->assets.death_tex.bpp, &game->assets.death_tex.size_line, &game->assets.death_tex.endian);
+	load_one_tex(game->window.ptr, &game->assets.death_tex, DEATH_TEX_PATH);
+	load_one_tex(game->window.ptr, &game->assets.door_tex, DOOR_TEX_PATH);
+}
+
+/* ************************************************************************** */
+// テクスチャ1枚を読み込む。パスを strdup し、失敗時は何もせず return（tex は呼び出し前の
+// NULL のまま＝非致命）。これにより NULL パスを mlx_xpm_file_to_image へ渡す事故を防ぐ。
+// 画像化に成功したときだけ data アドレスを取得する。3系統(武器/死亡/扉)で共通化した門番
+static void
+	load_one_tex(void* mlx_ptr, t_tex* tex, char const* path_src)
+{
+	tex->path = ft_strdup(path_src);
+	if (!tex->path) {
+		return ;
 	}
-	game->assets.door_tex.path = ft_strdup(DOOR_TEX_PATH);
-	game->assets.door_tex.tex = mlx_xpm_file_to_image(game->window.ptr, game->assets.door_tex.path, &game->assets.door_tex.width, &game->assets.door_tex.height);
-	if (game->assets.door_tex.tex) {
-		game->assets.door_tex.ptr = mlx_get_data_addr(game->assets.door_tex.tex,&game->assets.door_tex.bpp, &game->assets.door_tex.size_line, &game->assets.door_tex.endian);
+	tex->tex = mlx_xpm_file_to_image(mlx_ptr, tex->path, &tex->width, &tex->height);
+	if (tex->tex) {
+		tex->ptr = mlx_get_data_addr(tex->tex, &tex->bpp, &tex->size_line, &tex->endian);
 	}
 }
