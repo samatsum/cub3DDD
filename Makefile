@@ -6,17 +6,15 @@ RM              = rm -rf
 # ディレクトリ設定（srcs を common / fps / rsp の3系統に分割）
 # ==============================================================================
 INC_DIR         = codes/includes
-RSP_INC         = codes/rsp/includes
 OBJ_DIR         = codes/obj
-COMMON_DIR      = codes/common/srcs
-FPS_DIR         = codes/fps/srcs
-RSP_DIR         = codes/rsp/srcs
+COMMON_DIR      = codes/srcs/common
+FPS_DIR         = codes/srcs/fps
+RSP_DIR         = codes/srcs/rsp
 
 # ------------------------------------------------------------------------------
-# コンパイルフラグ（ヘッダは当面 codes/includes 共有。一方通行の-I強制はプランBで）
-# rsp/includes は t_rsp_state を common の enemy_types.h が参照するため全体に渡す
+# コンパイルフラグ（ヘッダは codes/includes に集約。rsp 系も codes/includes/rsp 配下）
 # ------------------------------------------------------------------------------
-CFLAGS          = -O3 -Wall -Wextra -Werror -pthread -I $(INC_DIR) -I $(RSP_INC)
+CFLAGS          = -O3 -Wall -Wextra -Werror -pthread -I $(INC_DIR)
 
 # ==============================================================================
 # ソース定義
