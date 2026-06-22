@@ -5,20 +5,20 @@
 
 /* ************************************************************************** */
 void
-	draw_sky_floor(t_render* rnd, t_raysult* ray);
+	draw_sky_floor(t_render* rnd, t_ray* ray);
 static void
-	init_draw_sky_floor(t_raysult* ray);
+	init_draw_sky_floor(t_ray* ray);
 static void
-	draw_floor_pixel(t_render* rnd, t_raysult* ray, t_pos* pixel, t_pos* p_tex, double light);
+	draw_floor_pixel(t_render* rnd, t_ray* ray, t_pos* pixel, t_pos* p_tex, double light);
 static void
-	draw_sky_pixel(t_render* rnd, t_raysult* ray, t_pos* pixel, t_pos* p_tex, double light);
+	draw_sky_pixel(t_render* rnd, t_ray* ray, t_pos* pixel, t_pos* p_tex, double light);
 
 /* ************************************************************************** */
 // 壁より下の各行について、床と天井を1ピクセルずつ描く。weight = sf_dist[i]/distance は
 // その行が床平面のどこに当たるかの内挿係数で、壁基準点 floor_wall とカメラ位置の線形補間で
 // 実際の床ワールド座標 c_floor を求める。床は行 i、天井は上下対称の行 size.y - i に描画する
 void
-	draw_sky_floor(t_render* rnd, t_raysult* ray)
+	draw_sky_floor(t_render* rnd, t_ray* ray)
 {
 	t_pos	pixel;
 	t_pos	p_tex;
@@ -47,7 +47,7 @@ void
 // 床/天井内挿の基準点 floor_wall を求める。これは壁の足元に当たるワールド座標で、衝突面
 // (side)と光線の向き(符号)の4通りに応じて、当たったマスのどの辺＋wall_x の位置かを決める
 static void
-	init_draw_sky_floor(t_raysult* ray)
+	init_draw_sky_floor(t_ray* ray)
 {
 	if (ray->side == 0 && ray->ray_dir.x > 0) {
 		set_pos(&ray->floor_wall, ray->map_pos.x, ray->map_pos.y + ray->wall_x);
@@ -66,7 +66,7 @@ static void
 // スポットライトで輝度を底上げする。& (width-1) はテクスチャ寸法が2の冪である前提で、
 // 剰余(%)による折り返しをビット論理積で高速化したもの
 static void
-	draw_floor_pixel(t_render* rnd, t_raysult* ray, t_pos* pixel, t_pos* p_tex, double light)
+	draw_floor_pixel(t_render* rnd, t_ray* ray, t_pos* pixel, t_pos* p_tex, double light)
 {
 	t_tex*	tex;
 	int		color;
@@ -89,7 +89,7 @@ static void
 // 天井(空)の1ピクセルを描く。床と同様にテクスチャ有無で分岐し、ある場合は同じ c_floor 座標を
 // 2の冪前提の & (width-1) でテクセルへ折り返してサンプリングする（天井はスポットライト対象外）
 static void
-	draw_sky_pixel(t_render* rnd, t_raysult* ray, t_pos* pixel, t_pos* p_tex, double light)
+	draw_sky_pixel(t_render* rnd, t_ray* ray, t_pos* pixel, t_pos* p_tex, double light)
 {
 	t_tex*	tex;
 

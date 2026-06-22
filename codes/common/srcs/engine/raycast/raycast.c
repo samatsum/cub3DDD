@@ -5,13 +5,13 @@
 
 /* ************************************************************************** */
 void
-	ray_cast(t_camera* camera, t_config* config, t_raysult* ray, double cam_x);
+	ray_cast(t_camera* camera, t_config* config, t_ray* ray, double cam_x);
 int
-	wall_direction(t_raysult* ray);
+	wall_direction(t_ray* ray);
 double
-	ray_distance(t_camera* camera, t_raysult* ray);
+	ray_distance(t_camera* camera, t_ray* ray);
 static void
-	init_ray(t_raysult* r, t_camera* c, double camera_x);
+	init_ray(t_ray* ray, t_camera* camera, double camera_x);
 
 /* ************************************************************************** */
 // 画面1列ぶんの光線をカメラから飛ばし、最初にぶつかった壁/扉までの情報を ray に求める。
@@ -21,7 +21,7 @@ static void
 // 判定に使う。マップ外へ出た場合は踏み出した1マスぶん戻して境界の壁セルを指すよう補正し、
 // 壁('1')・扉のいずれかに当たった時点でループを抜けて距離と面方向を確定する
 void
-	ray_cast(t_camera* camera, t_config* config, t_raysult* ray, double cam_x)
+	ray_cast(t_camera* camera, t_config* config, t_ray* ray, double cam_x)
 {
 	int	hit;
 	int	next_side;
@@ -56,7 +56,7 @@ void
 // 衝突した壁の面に対応するテクスチャ方向を返す。side=1(横線=南北面)なら光線の y 成分の
 // 符号で北/南を、side=0(縦線=東西面)なら x 成分の符号で西/東を選ぶ
 int
-	wall_direction(t_raysult* ray)
+	wall_direction(t_ray* ray)
 {
 	if (ray->side) {
 		return ((ray->ray_dir.y < 0) ? (TEX_NORTH) : (TEX_SOUTH));
@@ -69,7 +69,7 @@ int
 // 画面端ほど引き伸ばされる魚眼歪みが出るため、踏み越えた境界軸に沿った成分のみで距離を
 // 求めて補正する。(1 - step)/2 は踏み込んだマスのどちら側の面に当たったかの位置合わせ
 double
-	ray_distance(t_camera* camera, t_raysult* ray)
+	ray_distance(t_camera* camera, t_ray* ray)
 {
 	double	pos;
 
@@ -88,21 +88,21 @@ double
 // side_dist は現在地から最初のマス境界までの距離。ray_dir の符号で、左/上向きなら
 // 「現在地 - マス境界」、右/下向きなら「次のマス境界 - 現在地」と起点が変わる
 static void
-	init_ray(t_raysult* r, t_camera* c, double camera_x)
+	init_ray(t_ray* ray, t_camera* camera, double camera_x)
 {
-	set_pos(&r->map_pos, (int)c->pos.x, (int)c->pos.y);
-	set_pos(&r->ray_dir, c->dir.x + c->plane.x * camera_x, c->dir.y + c->plane.y * camera_x);
-	set_pos(&r->delta_dist, fabs(1. / r->ray_dir.x), fabs(1. / r->ray_dir.y));
-	if (r->ray_dir.x < 0.) {
-		set_pos(&r->step, -1., (r->ray_dir.y < 0.) ? -1. : 1.);
-		r->side_dist.x = (r->ray_pos.x - r->map_pos.x) * r->delta_dist.x;
+	set_pos(&ray->map_pos, (int)camera->pos.x, (int)camera->pos.y);
+	set_pos(&ray->ray_dir, camera->dir.x + camera->plane.x * camera_x, camera->dir.y + camera->plane.y * camera_x);
+	set_pos(&ray->delta_dist, fabs(1. / ray->ray_dir.x), fabs(1. / ray->ray_dir.y));
+	if (ray->ray_dir.x < 0.) {
+		set_pos(&ray->step, -1., (ray->ray_dir.y < 0.) ? -1. : 1.);
+		ray->side_dist.x = (ray->ray_pos.x - ray->map_pos.x) * ray->delta_dist.x;
 	} else {
-		set_pos(&r->step, 1., (r->ray_dir.y < 0.) ? -1. : 1.);
-		r->side_dist.x = (r->map_pos.x + 1. - r->ray_pos.x) * r->delta_dist.x;
+		set_pos(&ray->step, 1., (ray->ray_dir.y < 0.) ? -1. : 1.);
+		ray->side_dist.x = (ray->map_pos.x + 1. - ray->ray_pos.x) * ray->delta_dist.x;
 	}
-	if (r->ray_dir.y < 0.) {
-		r->side_dist.y = (r->ray_pos.y - r->map_pos.y) * r->delta_dist.y;
+	if (ray->ray_dir.y < 0.) {
+		ray->side_dist.y = (ray->ray_pos.y - ray->map_pos.y) * ray->delta_dist.y;
 	} else {
-		r->side_dist.y = (r->map_pos.y + 1. - r->ray_pos.y) * r->delta_dist.y;
+		ray->side_dist.y = (ray->map_pos.y + 1. - ray->ray_pos.y) * ray->delta_dist.y;
 	}
 }

@@ -45,7 +45,7 @@ cub3d/
 │   │   ├── core/core.h                # ライフサイクル系の公開プロトタイプ（types.h を取り込む）
 │   │   ├── engine/
 │   │   │   ├── input/input.h, keymap.h
-│   │   │   ├── raycast/raycast.h      # t_camera, t_raysult
+│   │   │   ├── raycast/raycast.h      # t_camera, t_ray
 │   │   │   ├── render/render.h        # t_window, t_render, t_image, t_sprite
 │   │   │   └── texture/texture.h
 │   │   ├── enemy/
@@ -183,7 +183,7 @@ else                   { patrol_enemy(); }
 | `t_render` | 描画関数群に渡す軽量コンテキスト（`t_game` への依存を遮断する目的） | `render.h` |
 | `t_sprite` | 距離ソート用の双リンク（`next` と `sorted`） | `render.h` |
 | `t_enemy` | HP・状態・**巡回状態（`patrol_*`）・追跡経路キャッシュ（`path[]` ほか）・`dir_angle`・`track_timer`** | `enemy.h` |
-| `t_raysult` | 1 本のレイの計算中間結果 | `raycast.h` |
+| `t_ray` | 1 本のレイの計算中間結果 | `raycast.h` |
 
 ### `t_enemy` の主なフィールド（`enemy.h`）
 

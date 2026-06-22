@@ -80,6 +80,6 @@ int
 int
 	ft_write_str(char* buf, char* str, int start);
 int
-	ft_endwith(char const* str, char const* end);
+	ft_endswith(char const* str, char const* end);
 
 #endif

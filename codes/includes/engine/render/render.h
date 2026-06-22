@@ -118,9 +118,9 @@ int
 int
 	draw_rectangle(t_window* window, t_pos* p1, t_pos* p2, int color);
 void
-	draw_wall(t_render* rnd, t_raysult* ray);
+	draw_wall(t_render* rnd, t_ray* ray);
 void
-	draw_sky_floor(t_render* rnd, t_raysult* ray);
+	draw_sky_floor(t_render* rnd, t_ray* ray);
 t_sprite*
 	add_front_sprite(t_sprite** sprites, double distance, t_pos* pos, t_tex* tex);
 t_sprite*
