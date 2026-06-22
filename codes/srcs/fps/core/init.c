@@ -64,10 +64,7 @@ int
 	game->assets.door_tex.path = ft_strdup(DOOR_TEX_PATH);
 	game->assets.door_tex.tex = mlx_xpm_file_to_image(game->window.ptr, game->assets.door_tex.path, &game->assets.door_tex.width, &game->assets.door_tex.height);
 	if (game->assets.door_tex.tex) {
-		printf("Success to load door texture: %s\n", game->assets.door_tex.path);
 		game->assets.door_tex.ptr = mlx_get_data_addr(game->assets.door_tex.tex,&game->assets.door_tex.bpp, &game->assets.door_tex.size_line, &game->assets.door_tex.endian);
-	} else {
-		printf("Failed to load door texture: %s\n", game->assets.door_tex.path);
 	}
 	if (!init_enemy_textures(game)) {
 		return (exit_error(game, "Error:\nfailed to load enemy textures.\n"));
@@ -77,9 +74,6 @@ int
 	}
 	collect_spawns(&game->config);
 	save_spawn(game);
-	if (!load_textures(&game->window, game->assets.tex, &game->config)) {
-		return (exit_error(game, "Error:\nfailed to load texture(s).\n"));
-	}
 	if (!load_textures(&game->window, game->assets.tex, &game->config)) {
 		return (exit_error(game, "Error:\nfailed to load texture(s).\n"));
 	}
