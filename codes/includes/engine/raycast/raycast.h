@@ -13,7 +13,7 @@ typedef struct s_camera
 	t_pos		plane;
 }				t_camera;
 
-typedef struct s_raysult
+typedef struct s_ray
 {
 	int			column;
 	int			row;
@@ -31,7 +31,7 @@ typedef struct s_raysult
 	double		wall_x;
 	t_pos		floor_wall;
 	t_pos		c_floor;
-}				t_raysult;
+}				t_ray;
 
 struct s_game;
 struct s_config;
@@ -53,11 +53,11 @@ int
 int
 	rotate_camera(t_camera* c, struct s_config* config, int dir, double time_mult);
 int
-	wall_direction(t_raysult* ray);
+	wall_direction(t_ray* ray);
 void
-	ray_cast(t_camera* camera, struct s_config* config, t_raysult* ray, double cam_x);
+	ray_cast(t_camera* camera, struct s_config* config, t_ray* ray, double cam_x);
 double
-	ray_distance(t_camera* camera, t_raysult* ray);
+	ray_distance(t_camera* camera, t_ray* ray);
 void
 	make_tables(struct s_game* game);
 int

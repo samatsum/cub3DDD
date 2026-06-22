@@ -148,7 +148,7 @@ int
 	char*	line;
 	t_str*	map_buffer;
 
-	if (!ft_endwith(conf_path, ".cub")) {
+	if (!ft_endswith(conf_path, ".cub")) {
 		return (0);
 	}
 	c_fd = open(conf_path, O_RDONLY);

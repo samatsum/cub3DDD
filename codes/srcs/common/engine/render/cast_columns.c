@@ -105,7 +105,7 @@ static void*
 static void
 	cast_range(t_render* rnd, double* camera_x, int start, int end)
 {
-	t_raysult	ray;
+	t_ray	ray;
 	int			i;
 
 	i = start;

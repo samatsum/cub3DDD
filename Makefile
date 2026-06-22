@@ -6,17 +6,15 @@ RM              = rm -rf
 # ディレクトリ設定（srcs を common / fps / rsp の3系統に分割）
 # ==============================================================================
 INC_DIR         = codes/includes
-RSP_INC         = codes/rsp/includes
 OBJ_DIR         = codes/obj
-COMMON_DIR      = codes/common/srcs
-FPS_DIR         = codes/fps/srcs
-RSP_DIR         = codes/rsp/srcs
+COMMON_DIR      = codes/srcs/common
+FPS_DIR         = codes/srcs/fps
+RSP_DIR         = codes/srcs/rsp
 
 # ------------------------------------------------------------------------------
-# コンパイルフラグ（ヘッダは当面 codes/includes 共有。一方通行の-I強制はプランBで）
-# rsp/includes は t_rsp_state を common の enemy_types.h が参照するため全体に渡す
+# コンパイルフラグ（ヘッダは codes/includes に集約。rsp 系も codes/includes/rsp 配下）
 # ------------------------------------------------------------------------------
-CFLAGS          = -O3 -Wall -Wextra -Werror -pthread -I $(INC_DIR) -I $(RSP_INC)
+CFLAGS          = -O3 -Wall -Wextra -Werror -pthread -I $(INC_DIR)
 
 # ==============================================================================
 # ソース定義
@@ -26,7 +24,7 @@ COMMON_SRCS     = config/config.c config/parse_map.c config/check_map.c \
                   utils/ft_strlen.c utils/ft_substr.c utils/ft_in_set.c \
                   utils/str.c utils/ft_strdup.c utils/ft_split.c utils/ft_atoi.c \
                   utils/pos.c utils/ft_strcmp.c utils/ft_rand.c \
-                  utils/ft_write.c utils/ft_endwith.c \
+                  utils/ft_write.c utils/ft_endswith.c \
                   gnl/get_next_line.c gnl/get_next_line_utils.c \
                   engine/raycast/camera.c engine/raycast/raycast.c \
                   engine/raycast/tables.c engine/raycast/spawn.c \
