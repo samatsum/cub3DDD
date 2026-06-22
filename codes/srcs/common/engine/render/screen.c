@@ -1,4 +1,3 @@
-#include <math.h>                 /* hypot, atan, fabs 用 */
 #include "core/core.h"            /* t_game 定義のため */
 #include "core/respawn.h"         /* is_player_dead に必要 */
 #include "engine/raycast/raycast.h"
@@ -14,8 +13,6 @@ void
 	update_screen(t_game* game);
 void
 	update_window(t_window* w, int options, int collected, int to_collect);
-double
-	flashlight_weight(t_render* rnd, int column);
 static void
 	draw_death_screen(t_game* game);
 
@@ -84,33 +81,6 @@ void
 		write_ui_text(w, collected, to_collect);
 	}
 	mlx_put_image_to_window(w->ptr, w->win, w->screen.img, 0, 0);
-}
-
-/* ************************************************************************** */
-// 懐中電灯のコーン内での列の重みを返す。列のレイ角が正面±LIGHT_CONE_DEG度以内なら、中心で
-// 1.0・端で 0 へ線形に落ちる値。コーン外や懐中電灯OFFなら 0。角度は plane/dir のベクトル長から
-// atan で求め、LIGHT_CONE_DEG をラジアンへ換算した limit と比較する
-double
-	flashlight_weight(t_render* rnd, int column)
-{
-	double	camera_x;
-	double	plane_len;
-	double	dir_len;
-	double	angle;
-	double	limit;
-
-	if (!(rnd->options & FLAG_FLASHLIGHT)) {
-		return (0.0);
-	}
-	camera_x = 2.0 * column / rnd->w->size.x - 1.0;
-	plane_len = hypot(rnd->camera->plane.x, rnd->camera->plane.y);
-	dir_len = hypot(rnd->camera->dir.x, rnd->camera->dir.y);
-	angle = atan(fabs(camera_x) * plane_len / dir_len);
-	limit = LIGHT_CONE_DEG * 0.01745329251994;
-	if (angle >= limit) {
-		return (0.0);
-	}
-	return (1.0 - angle / limit);
 }
 
 /* ************************************************************************** */

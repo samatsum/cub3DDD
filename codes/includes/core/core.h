@@ -13,6 +13,8 @@ void
 	init_game(t_game* game);
 int
 	finish_init(t_game* game);
+void
+	load_player_assets(t_game* game);
 int
 	exit_game(t_game* game, int code);
 int

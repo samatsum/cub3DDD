@@ -108,6 +108,8 @@ void
 void
 	cast_columns(t_render* rnd, double* camera_x);
 void
+	make_tables(struct s_game* game);
+void
 	draw_weapon(struct s_game* game);
 int
 	init_image(t_window* window, t_image* img);

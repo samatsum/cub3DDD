@@ -27,12 +27,12 @@ COMMON_SRCS     = config/config.c config/parse_map.c config/check_map.c \
                   utils/ft_write.c utils/ft_endswith.c \
                   gnl/get_next_line.c gnl/get_next_line_utils.c \
                   engine/raycast/camera.c engine/raycast/raycast.c \
-                  engine/raycast/tables.c engine/raycast/spawn.c \
-                  engine/raycast/spawn_marker.c \
+                  engine/raycast/spawn.c engine/raycast/spawn_marker.c \
                   engine/render/draw.c engine/render/draw_wall.c \
                   engine/render/draw_sky_floor.c engine/render/screen.c \
                   engine/render/sprite.c engine/render/sprite_utils.c \
                   engine/render/cast_columns.c engine/render/light.c \
+                  engine/render/tables.c \
                   engine/texture/color.c engine/texture/texture.c \
                   engine/input/input.c \
                   core/collision.c core/bmp.c \
@@ -41,6 +41,7 @@ COMMON_SRCS     = config/config.c config/parse_map.c config/check_map.c \
 FPS_SRCS        = main.c \
                   core/init.c core/exit.c core/loop.c core/shoot.c \
                   core/item.c core/respawn.c core/rsp_combat.c \
+                  core/assets.c core/rsp_setup.c \
                   enemy/enemy.c enemy/enemy_ai.c enemy/enemy_assets.c \
                   enemy/enemy_sense.c enemy/enemy_path.c enemy/enemy_move.c \
                   enemy/enemy_patrol.c enemy/rsp_ai.c \
