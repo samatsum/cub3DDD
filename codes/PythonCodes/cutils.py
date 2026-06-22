@@ -24,7 +24,7 @@ DEFAULT_DIRS: tuple[str, ...] = ("srcs", "includes")
 DEFAULT_EXTS: tuple[str, ...] = (".c", ".h")
 
 #: 論理カテゴリ → 実ディレクトリ（プロジェクトルートからの相対）。
-#: ソースは単一の srcs/ 配下（srcs/common, srcs/fps, srcs/rsp）に集約する。
+#: ソースは単一の srcs/ 配下 (srcs/common, srcs/fps, srcs/rsp) に集約する。
 CATEGORY_DIRS: dict[str, tuple[str, ...]] = {
     "srcs": ("srcs",),
     "includes": ("includes",),
