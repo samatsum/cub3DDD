@@ -22,6 +22,8 @@ static int
 	npc_dot_color(int mode, t_enemy* e);
 static int
 	scale_ui_px(int base, int win_height);
+static void
+	minimap_origin(t_render* rnd, int tile, int margin, t_pos* origin);
 
 /* ************************************************************************** */
 // UIの背景とミニマップを描画する（欄・タイルは解像度に比例して拡大）
@@ -95,17 +97,12 @@ static void
 	int			color;
 	int			tile;
 	int			margin;
-	int			base_x;
-	int			base_y;
+	t_pos		origin;
 	t_enemy*	e;
 
 	tile = scale_ui_px(MAP_TILE_SIZE, rnd->w->size.y);
 	margin = scale_ui_px(SCALE, rnd->w->size.y);
-	
-	// ミニマップ全体を描画する基準点（左上座標）。画面右端・下端から margin 分の余白を空ける
-	base_x = rnd->w->size.x - margin - (rnd->config->map.columns * tile);
-	base_y = rnd->w->size.y - margin - (rnd->config->map.rows * tile);
-
+	minimap_origin(rnd, tile, margin, &origin);
 	// 1. 背景のマス（壁・床など）をタイル単位で描画
 	i = 0;
 	while (i < rnd->config->map.rows) {
@@ -114,7 +111,7 @@ static void
 			color = case_color(rnd->config, rnd->mode, j, i);
 			// マップ外の空白(-1)でない場合のみ描画する
 			if (color >= 0) {
-				set_pos(start, base_x + (j * tile), base_y + (i * tile));
+				set_pos(start, origin.x + (j * tile), origin.y + (i * tile));
 				set_pos(end, start->x + tile, start->y + tile); // 幅と高さを厳密に tile に設定
 				draw_rectangle(rnd->w, start, end, color);
 			}
@@ -122,14 +119,12 @@ static void
 		}
 		i++;
 	}
-
 	// 2. 敵(NPC)を実座標に基づいて描画。RSPはチーム色、FPSは従来どおり赤
 	e = rnd->world->enemies;
 	while (e) {
 		draw_entity_dot(rnd, &e->sprite->pos, npc_dot_color(rnd->mode, e), tile, margin);
 		e = e->next;
 	}
-
 	// 3. プレイヤーを実座標に基づいて描画（一番手前に表示するため最後に描画）
 	draw_entity_dot(rnd, &rnd->camera->pos, COLOR_MINIMAP_BG, tile, margin);
 }
@@ -141,20 +136,15 @@ static void
 {
 	t_pos	start;
 	t_pos	end;
+	t_pos	origin;
 	double	cx;
 	double	cy;
 	double	dot_size;
-	double	base_x;
-	double	base_y;
 
-	// ミニマップの基準点（左上）を計算
-	base_x = rnd->w->size.x - margin - (rnd->config->map.columns * tile);
-	base_y = rnd->w->size.y - margin - (rnd->config->map.rows * tile);
-
+	minimap_origin(rnd, tile, margin, &origin);
 	// 実座標(pos->x, pos->y)を画面上のピクセル座標に変換
-	cx = base_x + (pos->x * tile);
-	cy = base_y + (pos->y * tile);
-	
+	cx = origin.x + (pos->x * tile);
+	cy = origin.y + (pos->y * tile);
 	// ドットのサイズをマスの60%とする
 	dot_size = tile * 0.6;
 	if (dot_size < 2.0) {
@@ -173,12 +163,10 @@ static int
 	char	c;
 
 	c = MAP_XY(x, y, *config);
-
 	// マップ外の空白領域（スペース等）は描画せず透明にする
 	if (c == ' ' || c == '\0') {
 		return (-1);
 	}
-
 	if (IS_BLOCKING(c)) {
 		return (COLOR_MINIMAP_WALL);
 	}
@@ -224,4 +212,14 @@ static int
 		scaled = base;
 	}
 	return (scaled);
+}
+
+/* ************************************************************************** */
+// ミニマップ左上(基準点)のスクリーン座標を求める。画面右端・下端から margin 分内側に、
+// マップ全体(columns×tile, rows×tile)が収まる位置。背景マス描画とエンティティ描画で共有する
+static void
+	minimap_origin(t_render* rnd, int tile, int margin, t_pos* origin)
+{
+	origin->x = rnd->w->size.x - margin - (rnd->config->map.columns * tile);
+	origin->y = rnd->w->size.y - margin - (rnd->config->map.rows * tile);
 }
