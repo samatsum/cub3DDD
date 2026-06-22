@@ -254,7 +254,7 @@ static int
 	if (n < RSP_COMBATANTS) {
 		return (0);
 	}
-	player = (int)((unsigned int)rand_r(&game->rsp_seed) % RSP_COMBATANTS);
+	player = (int)((unsigned int)ft_rand(&game->rsp_seed) % RSP_COMBATANTS);
 	return (place_combatants(game, pts, player));
 }
 
@@ -275,7 +275,7 @@ static int
 		if (i >= RSP_TEAM_SPAWNS) {
 			team = TEAM_BLUE;
 		}
-		hand = (int)((unsigned int)rand_r(&game->rsp_seed) % HAND_COUNT);
+		hand = (int)((unsigned int)ft_rand(&game->rsp_seed) % HAND_COUNT);
 		if (i == player) {
 			set_player_rsp(game, &game->config.spawns[pts[i]], team, hand);
 		} else if (!spawn_rsp_npc(game, &game->config.spawns[pts[i]], team, hand)) {

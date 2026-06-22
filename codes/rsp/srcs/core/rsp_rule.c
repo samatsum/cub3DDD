@@ -30,13 +30,13 @@ t_rsp_result
 /* ************************************************************************** */
 
 // 現在の手以外の2つのうち1つをランダムに返す（必ず手が変わる）。リスポーン時の
-// 手変更で使用。seed は呼び出し側が保持する乱数状態で、rand_r によりグローバルな
+// 手変更で使用。seed は呼び出し側が保持する乱数状態で、自作 ft_rand によりグローバルな
 // 乱数状態に依存せず、テスト時の再現性も確保できる
 t_hand
 	rsp_rehand(t_hand current, unsigned int* seed)
 {
 	int	offset;
 
-	offset = 1 + (int)((unsigned int)rand_r(seed) % (HAND_COUNT - 1));
+	offset = 1 + (int)((unsigned int)ft_rand(seed) % (HAND_COUNT - 1));
 	return ((t_hand)(((int)current + offset) % HAND_COUNT));
 }

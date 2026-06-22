@@ -57,6 +57,8 @@ char*
 	ft_strdup(char const* s1);
 int
 	ft_atoi(char const* str);
+unsigned int
+	ft_rand(unsigned int* seed);
 t_str*
 	ft_split(char const* org, char sep);
 int
