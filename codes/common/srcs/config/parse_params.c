@@ -1,6 +1,4 @@
-#include <stddef.h>
-#include <stdio.h>
-#include <stdlib.h>
+#include <stddef.h>            /* offsetof 用 */
 #include "config/config.h"
 #include "tuning.h"
 
@@ -37,6 +35,8 @@ static int
 	str_to_color(t_str* str);
 static const t_scalar_def*
 	find_scalar(int key);
+static double
+	parse_double(char const* s, int* ok);
 
 /* ************************************************************************** */
 // 解像度設定 "R 幅 高さ" を解析する。まず 'R' の次以降が空白か数字だけで構成されるかを
@@ -134,15 +134,15 @@ int
 /* ************************************************************************** */
 // .cub のスカラー設定(MS/RS/FOV/ET/ES/EH)を解析し、対応フィールドを上書きする。レジストリ
 // g_scalars からキーの定義（許容範囲とフィールドのオフセット）を引き、行頭の英字キーを飛ばして
-// 残りが空白・小数点・数字のみかを検査。strtod で数値化し、変換不可(endptr 不進)や範囲外
-// (min_exclusive 以下／max_inclusive 超)なら失敗。書き込みは config 先頭から field_off バイト
-// ずらした位置へ double として代入する（フィールドごとの分岐を不要にするレジストリ方式）
+// 残りが空白・小数点・数字のみかを検査。自作の parse_double で数値化し、数字を1つも消費しなければ
+// (ok==0)失敗、範囲外(min_exclusive 以下／max_inclusive 超)も失敗。書き込みは config 先頭から
+// field_off バイトずらした位置へ double として代入する（フィールドごとの分岐を不要にする方式）
 int
 	parse_scalar(t_config* config, int key, char const* line)
 {
 	const t_scalar_def*	def;
 	double				value;
-	char*				endptr;
+	int					ok;
 	int					start;
 	int					i;
 
@@ -162,9 +162,8 @@ int
 		}
 		i++;
 	}
-	value = strtod(line + start, &endptr);
-	if (endptr == line + start || value <= def->min_exclusive
-		|| value > def->max_inclusive) {
+	value = parse_double(line + start, &ok);
+	if (!ok || value <= def->min_exclusive || value > def->max_inclusive) {
 		return (0);
 	}
 	*(double*)((char*)config + def->field_off) = value;
@@ -212,4 +211,38 @@ static const t_scalar_def*
 		i++;
 	}
 	return (NULL);
+}
+
+/* ************************************************************************** */
+// strtod の代替（許可関数のみで構成するための自作版）。先頭の空白を読み飛ばし、整数部と
+// 小数部の数字を10進で積む。符号・指数は扱わない（呼び出し前に " .0123456789" のみへ制限
+// 済みのため不要）。数字を1つも消費しなければ *ok=0（＝変換失敗、strtod の endptr 不進に相当）、
+// 1つでも消費すれば *ok=1 とし、解析した数値を返す
+static double
+	parse_double(char const* s, int* ok)
+{
+	double	result;
+	double	scale;
+
+	*ok = 0;
+	while (*s == ' ') {
+		s++;
+	}
+	result = 0.0;
+	while (*s >= '0' && *s <= '9') {
+		result = result * 10.0 + (*s - '0');
+		*ok = 1;
+		s++;
+	}
+	if (*s == '.') {
+		s++;
+		scale = 0.1;
+		while (*s >= '0' && *s <= '9') {
+			result += (*s - '0') * scale;
+			scale *= 0.1;
+			*ok = 1;
+			s++;
+		}
+	}
+	return (result);
 }

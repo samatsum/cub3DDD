@@ -64,7 +64,7 @@ void
 
 /* ************************************************************************** */
 // spawns[] のうち allowed に含まれる向き文字の地点を候補に集め、その中から1つを乱数
-// (rand_r で seed を更新する再入可能な擬似乱数)で選んで添字を返す。allowed=DIRECTIONS なら
+// (自作 ft_rand で seed を更新する再入可能な擬似乱数)で選んで添字を返す。allowed=DIRECTIONS なら
 // 全スポーンが対象(FPSの初期配置)。候補が無ければ -1 を返し、呼び出し側で配置失敗を扱う
 int
 	pick_spawn_index(t_config* config, char const* allowed, unsigned int* seed)
@@ -84,7 +84,7 @@ int
 	if (count == 0) {
 		return (-1);
 	}
-	return (candidates[(int)((unsigned int)rand_r(seed) % (unsigned int)count)]);
+	return (candidates[(int)((unsigned int)ft_rand(seed) % (unsigned int)count)]);
 }
 
 /* ************************************************************************** */
@@ -110,7 +110,7 @@ int
 	}
 	picked = 0;
 	while (picked < want && count > 0) {
-		r = (int)((unsigned int)rand_r(seed) % (unsigned int)count);
+		r = (int)((unsigned int)ft_rand(seed) % (unsigned int)count);
 		out[picked++] = cand[r];
 		count--;
 		cand[r] = cand[count];

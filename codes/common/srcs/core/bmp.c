@@ -1,9 +1,9 @@
-#include <time.h>   /* time, localtime用 */
-#include <stdlib.h> /* getenv用 */
-#include <stdio.h>  /* snprintf用 */
-#include <fcntl.h>  /* open用 */
-#include <unistd.h> /* write, close用 */
+#include <sys/time.h> /* gettimeofday, struct timeval 用 */
+#include <stdlib.h>   /* EXIT_SUCCESS 用 */
+#include <fcntl.h>    /* open, O_CREAT 等 用 */
+#include <unistd.h>   /* write, close 用 */
 #include "core/core.h"
+#include "utils/utils.h" /* ft_write_str, ft_write_int 用 */
 #include "tuning.h"
 
 /* ************************************************************************** */
@@ -12,7 +12,7 @@ int
 int
 	save_bmp(t_game* game, int fd);
 static void
-	get_screenshot_path(char* buffer, size_t size);
+	get_screenshot_path(char* buffer);
 static int
 	write_bmp_header(int fd, int filesize, t_game* game);
 static void
@@ -33,7 +33,7 @@ int
 	int		fd;
 	char	filepath[256];
 
-	get_screenshot_path(filepath, sizeof(filepath));
+	get_screenshot_path(filepath);
 	fd = open(filepath, O_CREAT | O_WRONLY | O_TRUNC, 0644);
 	if (fd < 0) {
 		return (exit_error(game, "Error:\nFailed to create screenshot file in ~/bmp/.\n"));
@@ -72,25 +72,22 @@ int
 }
 
 /* ************************************************************************** */
-// 現在時刻から "<home>/bmp/screenshot_YYYY_MMDD_HHMM.bmp" 形式のパスを buffer に生成する。
-// home は暫定で "."（カレントディレクトリ）固定。snprintf で size を超えないよう切り詰める
+// 撮影時刻から "./bmp/screenshot_<秒>_<マイクロ秒>.bmp" 形式の一意なパスを buffer に生成する。
+// 許可関数のみで構成するため time/localtime/snprintf をやめ、gettimeofday の経過秒・マイクロ秒を
+// 自作の ft_write_str / ft_write_int で連結する。秒とマイクロ秒の組で実用上ファイル名は一意になる。
+// 生成長は固定的に短く（"./bmp/screenshot_"17 + 数字 + ".bmp"4 ≈ 40字）、呼び出し側の 256B に収まる
 static void
-	get_screenshot_path(char* buffer, size_t size)
+	get_screenshot_path(char* buffer)
 {
-	time_t		t;
-	struct tm*	tm_info;
-	char*		home;
+	struct timeval	tv;
+	int				i;
 
-	t = time(NULL);
-	tm_info = localtime(&t);
-	home = ".";
-	snprintf(buffer, size, "%s/bmp/screenshot_%04d_%02d%02d_%02d%02d.bmp",
-		home,
-		tm_info->tm_year + 1900,
-		tm_info->tm_mon + 1,
-		tm_info->tm_mday,
-		tm_info->tm_hour,
-		tm_info->tm_min);
+	gettimeofday(&tv, NULL);
+	i = ft_write_str(buffer, "./bmp/screenshot_", 0);
+	i = ft_write_int(buffer, (int)tv.tv_sec, i);
+	i = ft_write_str(buffer, "_", i);
+	i = ft_write_int(buffer, (int)tv.tv_usec, i);
+	ft_write_str(buffer, ".bmp", i);
 }
 
 /* ************************************************************************** */

@@ -1,6 +1,5 @@
 #include <stddef.h>
 #include <sys/time.h>
-#include <unistd.h>
 #include "core/core.h"
 #include "core/respawn.h"
 #include "enemy/enemy.h"
@@ -31,8 +30,7 @@ int
 
 	delta_time = frame_delta(game, &time_mult);
 	if (delta_time < 0.0) {
-		usleep(1500);// 描画スキップ時の短いアイドル待機（CPU専有を避ける）
-		return (0);
+		return (0);// FPS上限未達：許可関数に sleep が無いため待機せず即戻る（ビジーウェイト）
 	}
 	PROFILE_START(IroIro);
 	if (is_player_dead(game)) {

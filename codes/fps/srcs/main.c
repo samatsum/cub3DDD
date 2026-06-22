@@ -1,6 +1,5 @@
 #include <stdbool.h>
 #include <stdlib.h>
-#include <string.h>
 #include "core/core.h"
 #include "engine/input/input.h"
 #include "engine/input/keymap.h"
@@ -48,7 +47,7 @@ static bool
 		exit_error(game, "Error:\n invalid map.\n");
 		return (false);
 	}
-	if (argc >= 3 && strcmp(argv[2], "RSP") == 0) {
+	if (argc >= 3 && ft_strcmp(argv[2], "RSP") == 0) {
 		game->mode = MODE_RSP;
 	}
 	return (true);
