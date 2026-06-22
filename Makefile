@@ -41,6 +41,7 @@ COMMON_SRCS     = config/config.c config/parse_map.c config/check_map.c \
 FPS_SRCS        = main.c \
                   core/init.c core/exit.c core/loop.c core/shoot.c \
                   core/item.c core/respawn.c core/rsp_combat.c \
+                  core/assets.c core/rsp_setup.c \
                   enemy/enemy.c enemy/enemy_ai.c enemy/enemy_assets.c \
                   enemy/enemy_sense.c enemy/enemy_path.c enemy/enemy_move.c \
                   enemy/enemy_patrol.c enemy/rsp_ai.c \
