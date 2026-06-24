@@ -37,13 +37,10 @@ typedef struct s_window
 typedef struct s_sprite_draw
 {
 	int		sprite_screen;
-	t_pos	pos;
 	t_pos	transform;
 	t_pos	spr_s;
 	t_pos	draw_x;
 	t_pos	draw_y;
-	t_pos	tex_pos;
-	int		fact;
 	int		draw_y_org;
 }	t_sprite_draw;
 
