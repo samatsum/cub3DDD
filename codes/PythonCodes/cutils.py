@@ -118,7 +118,7 @@ def iter_sources(
 ) -> Iterator[Path]:
     """root 配下の対象ディレクトリから .c / .h を昇順で列挙する。
 
-    dirs には論理カテゴリ名（"srcs"/"includes"）を渡す。CATEGORY_DIRS で
+    dirs には論理カテゴリ名 ("srcs"/"includes") を渡す。CATEGORY_DIRS で
     実ディレクトリ (srcs/ 配下) へ展開してから走査する。存在しない
     ツリーは黙ってスキップする。
     """
@@ -162,7 +162,7 @@ class SourceFile:
 
     @property
     def top_dir(self) -> str:
-        """論理カテゴリ名（'srcs' / 'includes'）を返す。
+        """論理カテゴリ名 ('srcs' / 'includes') を返す。
 
         common/fps/rsp 分割後も Context.select(("srcs",), ...) が一致するよう、
         物理パス (srcs/common/... 等) を論理カテゴリへ正規化する。
