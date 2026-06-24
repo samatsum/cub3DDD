@@ -29,13 +29,7 @@ static void
 void
 	save_spawn(t_game* game)
 {
-	int	idx;
-
-	idx = pick_spawn_index(&game->config, DIRECTIONS, &game->rsp_seed);
-	if (idx < 0) {
-		return ;
-	}
-	apply_spawn(&game->config, &game->camera, &game->config.spawns[idx]);
+	respawn_at(game, DIRECTIONS);
 }
 
 /* ************************************************************************** */

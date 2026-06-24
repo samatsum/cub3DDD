@@ -12,6 +12,8 @@ int
 int
 	exit_game(t_game* game, int code);
 static void
+	free_tex(t_window* window, t_tex* tex);
+static void
 	clear_assets(t_game* game);
 static int
 	clear_window(t_window* window);
@@ -56,7 +58,22 @@ int
 }
 
 /* ************************************************************************** */
-// 武器(6種)・敵(8方向)・死亡画面のテクスチャ画像とパス文字列をすべて解放する
+// 1枚のテクスチャの mlx 画像とパス文字列を解放し、二重解放を防ぐため NULL に戻す
+static void
+	free_tex(t_window* window, t_tex* tex)
+{
+	if (tex->tex && window->ptr) {
+		mlx_destroy_image(window->ptr, tex->tex);
+		tex->tex = NULL;
+	}
+	if (tex->path) {
+		free(tex->path);
+		tex->path = NULL;
+	}
+}
+
+/* ************************************************************************** */
+// 武器(6種)・敵(8方向)・手(6種)・死亡画面・扉のテクスチャ画像とパス文字列をすべて解放する
 static void
 	clear_assets(t_game* game)
 {
@@ -64,36 +81,21 @@ static void
 
 	i = 0;
 	while (i < WEAPON_TEX_COUNT) {
-		if (game->assets.weapon_tex[i].tex && game->window.ptr) {
-			mlx_destroy_image(game->window.ptr, game->assets.weapon_tex[i].tex);
-			game->assets.weapon_tex[i].tex = NULL;
-		}
-		if (game->assets.weapon_tex[i].path) {
-			free(game->assets.weapon_tex[i].path);
-			game->assets.weapon_tex[i].path = NULL;
-		}
+		free_tex(&game->window, &game->assets.weapon_tex[i]);
 		i++;
 	}
 	i = 0;
 	while (i < ENEMY_TEX_COUNT) {
-		if (game->assets.enemy_tex[i].tex && game->window.ptr) {
-			mlx_destroy_image(game->window.ptr, game->assets.enemy_tex[i].tex);
-			game->assets.enemy_tex[i].tex = NULL;
-		}
-		if (game->assets.enemy_tex[i].path) {
-			free(game->assets.enemy_tex[i].path);
-			game->assets.enemy_tex[i].path = NULL;
-		}
+		free_tex(&game->window, &game->assets.enemy_tex[i]);
 		i++;
 	}
-	if (game->assets.death_tex.tex && game->window.ptr) {
-		mlx_destroy_image(game->window.ptr, game->assets.death_tex.tex);
-		game->assets.death_tex.tex = NULL;
+	i = 0;
+	while (i < TEAM_COUNT * HAND_COUNT) {
+		free_tex(&game->window, &game->assets.hand_tex[i]);
+		i++;
 	}
-	if (game->assets.death_tex.path) {
-		free(game->assets.death_tex.path);
-		game->assets.death_tex.path = NULL;
-	}
+	free_tex(&game->window, &game->assets.death_tex);
+	free_tex(&game->window, &game->assets.door_tex);
 }
 
 /* ************************************************************************** */
