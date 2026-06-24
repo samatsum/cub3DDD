@@ -106,7 +106,7 @@ def find_project_root(start: Optional[Path] = None) -> Path:
         ):
             return d
     raise FileNotFoundError(
-        "includes/ とソースツリー（srcs/ または common|fps|rsp/srcs）を含む"
+        "includes/ とソースツリー (srcs/) を含む"
         "プロジェクトルートが見つかりませんでした。--root で明示してください。"
     )
 
@@ -119,7 +119,7 @@ def iter_sources(
     """root 配下の対象ディレクトリから .c / .h を昇順で列挙する。
 
     dirs には論理カテゴリ名（"srcs"/"includes"）を渡す。CATEGORY_DIRS で
-    実ディレクトリ（common/srcs 等）へ展開してから走査する。存在しない
+    実ディレクトリ (srcs/ 配下) へ展開してから走査する。存在しない
     ツリーは黙ってスキップする。
     """
     real_dirs: list[str] = []
@@ -157,7 +157,7 @@ class SourceFile:
 
     @property
     def rel(self) -> str:
-        """ルートからの相対表示パス（例: common/srcs/config/config.c）。"""
+        """ルートからの相対表示パス (例: srcs/common/config/config.c)。"""
         return self.path.relative_to(self.root).as_posix()
 
     @property
@@ -165,7 +165,7 @@ class SourceFile:
         """論理カテゴリ名（'srcs' / 'includes'）を返す。
 
         common/fps/rsp 分割後も Context.select(("srcs",), ...) が一致するよう、
-        物理パス（common/srcs/... 等）を論理カテゴリへ正規化する。
+        物理パス (srcs/common/... 等) を論理カテゴリへ正規化する。
         """
         rel = self.path.relative_to(self.root).as_posix()
         for category, trees in CATEGORY_DIRS.items():
