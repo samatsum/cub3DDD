@@ -1,5 +1,4 @@
 #include <math.h>
-#include <sys/time.h>
 #include "core/core.h"
 #include "engine/render/render.h"
 #include "engine/texture/texture.h"
@@ -34,15 +33,13 @@ static void
 void
 	draw_weapon(t_game* game)
 {
-	struct timeval	tv;
-	long long		current_time;
+	long long	current_time;
 
 	if (game->mode == MODE_RSP) {
 		render_rsp_hand(game);
 		return ;
 	}
-	gettimeofday(&tv, NULL);
-	current_time = (tv.tv_sec * 1000LL) + (tv.tv_usec / 1000);
+	current_time = get_current_time_ms();
 	update_weapon_timer(game, current_time);
 	if (game->input.current_weapon == WEP_HANDS) {
 		render_hands(game, current_time);

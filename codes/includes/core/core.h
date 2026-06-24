@@ -9,6 +9,8 @@ int
 	main_loop(t_game* game);
 double
 	calc_time_mult(double delta_time);
+long long
+	get_current_time_ms(void);
 void
 	init_game(t_game* game);
 int

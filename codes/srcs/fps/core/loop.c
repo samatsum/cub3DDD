@@ -16,7 +16,7 @@ static double
 	frame_delta(t_game* game, double* time_mult);
 static int
 	apply_input(t_game* game, double time_mult);
-static long long
+long long
 	get_current_time_ms(void);
 
 /* ************************************************************************** */
@@ -121,7 +121,7 @@ static int
 
 /* ************************************************************************** */
 // 現在のシステム時刻をミリ秒単位で取得する
-static long long
+long long
 	get_current_time_ms(void)
 {
 	struct timeval	tv;
