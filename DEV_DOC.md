@@ -10,7 +10,7 @@ cub3D は MiniLibX（X11）上で動作する一人称 3D レンダラに、ゲ�
 
 レンダリングはレイキャスティング（DDA）と、画面を縦 1 列ずつ走査して壁・床・天井・スプライトを描く古典的な手法を用います。
 
-ライフサイクルは以下のとおりです（`codes/srcs/fps/main.c`）。
+ライフサイクルは以下のとおりです（`codes/srcs/common/main.c`）。
 
 ```
 main()
@@ -24,7 +24,7 @@ main()
   └── mlx_loop()       : 以後 main_loop() が毎フレーム呼ばれる
 ```
 
-毎フレーム（`main_loop`, `codes/srcs/fps/core/loop.c`）では以下が走ります。
+毎フレーム（`main_loop`, `codes/srcs/common/core/loop.c`）では以下が走ります。
 
 1. 経過時間から `time_mult` を算出（60 FPS 基準のスケール係数、上限 3.0 / `tuning.h` の `TARGET_FPS`・`MAX_TIME_MULT`）。FPS 上限未達のフレームは即 return（許可関数に sleep が無いためビジーウェイト）
 2. 死亡中はタイマーのみ進める。生存中は入力に応じた移動・回転（`camera.c`）とアイテム取得判定 `check_quest`
@@ -58,38 +58,44 @@ samatsum-cub3D/
 │   │   └── utils/utils.h
 │   │
 │   ├── srcs/
-│   │   ├── common/                   # 両モード共通（エンジン・設定・ユーティリティ）
+│   │   ├── common/                   # エンジン ＋ 司令塔/ディスパッチャ（両モード共通）
+│   │   │   ├── main.c                # エントリポイント（argv[2]=="RSP" で mode を決定）
 │   │   │   ├── config/               # .cub のパースと検証
 │   │   │   │   ├── config.c          # init/clear、キー対応表 g_keys[]、parse 全体の制御
 │   │   │   │   ├── parse_map.c       # マップ本体 → int 配列、P セルの CELL_PATROL 付与
 │   │   │   │   ├── check_map.c       # 境界・列数・文字種（VALID_MAP_CHARACTERS）チェック
 │   │   │   │   ├── parse_params.c    # R / F / C とスカラー(MS/RS/FOV/ET/ES/EH)。g_scalars[]
 │   │   │   │   └── parse_texture.c   # NO/SO/WE/EA/ST/FT と OI1..5 / OP1..5 / OC1..5
-│   │   │   ├── core/{collision.c, bmp.c}
+│   │   │   ├── core/                 # ループ/初期化/終了の司令塔（中の mode 分岐は呼ぶだけ）
+│   │   │   │   ├── loop.c            # main_loop（毎フレームの司令塔・mode 振り分け）
+│   │   │   │   ├── init.c            # finish_init（RSP 時はハンド読込・戦闘員配置も）
+│   │   │   │   ├── exit.c            # 全リソース解放
+│   │   │   │   └── collision.c, bmp.c
 │   │   │   ├── engine/
 │   │   │   │   ├── input/input.c     # X11 キーフック（WASD + 矢印 + 1/2/3 + Space + I/L/O/Esc）
 │   │   │   │   ├── raycast/{raycast.c, camera.c, spawn.c, spawn_marker.c}
-│   │   │   │   ├── render/{screen.c, draw.c, draw_wall.c, draw_sky_floor.c,
-│   │   │   │   │           sprite.c, sprite_utils.c, cast_columns.c, light.c, tables.c}
+│   │   │   │   ├── render/{screen.c, draw.c, draw_wall.c, draw_sky_floor.c, sprite.c,
+│   │   │   │   │           sprite_utils.c, cast_columns.c, light.c, tables.c,
+│   │   │   │   │           draw_weapon.c}  # draw_weapon=武器描画の振り分け＋共通 draw_overlay
 │   │   │   │   └── texture/{texture.c, color.c}
+│   │   │   ├── enemy/enemy.c         # 敵リスト管理(add/delete/clear/damage)＋ update_enemies 振り分け
 │   │   │   ├── gnl/{get_next_line.c, get_next_line_utils.c}
-│   │   │   ├── ui/font.c             # ビットマップ文字描画
+│   │   │   ├── ui/{font.c, ui.c, crosshair.c}  # 文字描画・ミニマップ・照準（両モード）
 │   │   │   └── utils/                # libft 相当の自作ユーティリティ（pos.c に set/copy/dist_pos）
 │   │   │
-│   │   ├── fps/                      # FPS モード固有
-│   │   │   ├── main.c                # エントリポイント（argv[2]=="RSP" で RSP 有効化）
-│   │   │   ├── core/{init.c, exit.c, loop.c, shoot.c, item.c, respawn.c, assets.c}
-│   │   │   ├── enemy/{enemy.c, enemy_ai.c, enemy_assets.c, enemy_sense.c,
-│   │   │   │         enemy_path.c, enemy_move.c, enemy_patrol.c}
-│   │   │   ├── render/draw_weapon.c  # 武器・手のオーバーレイ
-│   │   │   └── ui/{ui.c, crosshair.c}
+│   │   ├── fps/                      # FPS モード固有の実装
+│   │   │   ├── core/{shoot.c, item.c, respawn.c, assets.c}
+│   │   │   ├── enemy/{enemy_ai.c, enemy_assets.c, enemy_sense.c,
+│   │   │   │         enemy_path.c, enemy_move.c, enemy_patrol.c}  # 巡回/索敵/追跡 AI
+│   │   │   └── render/weapon_fps.c   # 素手/武器(ピストル・ライト)のオーバーレイ描画
 │   │   │
-│   │   └── rsp/core/                 # RSP モード固有（§4）
+│   │   └── rsp/                      # RSP モード固有の実装（フラット。§4）
 │   │       ├── rsp_rule.c            # 純粋ルール（勝敗 rsp_outcome / 手変更 rsp_rehand）
 │   │       ├── rsp_assets.c          # ハンドテクスチャ読込 init_hand_textures
 │   │       ├── rsp_setup.c           # 戦闘員（プレイヤー＋NPC）配置 setup_rsp_combatants
 │   │       ├── rsp_combat.c          # 毎フレームの接触勝敗解決 resolve_rsp_combat
-│   │       └── rsp_ai.c              # NPC AI update_rsp_enemy
+│   │       ├── rsp_ai.c              # NPC AI update_rsp_enemy
+│   │       └── weapon_rsp.c          # じゃんけんの手のオーバーレイ描画 render_rsp_hand
 │   │
 │   ├── minilibx-linux/               # ベンダー: MiniLibX
 │   └── PythonCodes/                  # clint（独自 C コーディングルール linter）と移行スクリプト
@@ -101,7 +107,7 @@ samatsum-cub3D/
 
 ## 3. 敵 AI（巡回・索敵・追跡）— FPS モード
 
-敵 AI は **「毎フレーム索敵 → 状態に応じて巡回 or 追跡 → 移動 → テクスチャ更新」** という一本の流れで動きます。統括は `enemy_ai.c::update_enemies`（FPS 時は各敵に `update_fps_enemy`）。
+敵 AI は **「毎フレーム索敵 → 状態に応じて巡回 or 追跡 → 移動 → テクスチャ更新」** という一本の流れで動きます。統括（mode 振り分け）は両モード共通の `enemy.c::update_enemies` で、FPS 時は各敵に `enemy_ai.c::update_fps_enemy`、RSP 時は `rsp_ai.c::update_rsp_enemy` を適用します。
 
 ### 3.1 状態と振り分け
 
@@ -155,7 +161,7 @@ else                   { patrol_enemy(); }
 
 `argv[2]=="RSP"`（`fps/main.c::validate_check`）で `game->mode = MODE_RSP` となり、**同じレンダラ・入力・物理の上で** 動きます。FPS との差分はゲームロジックのみです。
 
-- **初期化**：`finish_init`（`fps/core/init.c`）が RSP 時に `init_hand_textures`（ハンド画像 6 枚）と `setup_rsp_combatants`（戦闘員配置）を呼びます。
+- **初期化**：`finish_init`（`common/core/init.c`）が RSP 時に `init_hand_textures`（ハンド画像 6 枚）と `setup_rsp_combatants`（戦闘員配置）を呼びます。
 - **毎フレーム**：`update_enemies` が各敵に `update_rsp_enemy` を適用し、接触判定を `check_enemy_contact`（FPS）ではなく `resolve_rsp_combat`（RSP）で行います。射撃は `handle_action` が `mode != MODE_RSP` で無効化します。
 
 ### 4.1 型と純粋ルール（`includes/rsp/`）
@@ -170,7 +176,7 @@ else                   { patrol_enemy(); }
   - `init_hand_textures` / `setup_rsp_combatants` / `resolve_rsp_combat`
   - 定数 `RSP_TEAM_SPAWNS=2`, `RSP_COMBATANTS=4`(=`TEAM_COUNT*RSP_TEAM_SPAWNS`), `RSP_RED_DIRS="NW"`, `RSP_BLUE_DIRS="SE"`
 
-### 4.2 実装（`srcs/rsp/core/`）
+### 4.2 実装（`srcs/rsp/`）
 
 | ファイル | 役割 |
 |---|---|
@@ -179,6 +185,7 @@ else                   { patrol_enemy(); }
 | `rsp_setup.c` | `setup_rsp_combatants`：N/W から 2 地点・S/E から 2 地点を重複なく選び、4 人のうち 1 人をプレイヤー・残りを NPC として配置 |
 | `rsp_combat.c` | `resolve_rsp_combat`：毎フレーム全異チームペアの接触を勝敗解決。負けた側を即リスポーン。自陣スポーンへの踏み込みで手を変える `rsp_home_rehand` も担当 |
 | `rsp_ai.c` | `update_rsp_enemy`：最寄りの異チーム戦闘員を見て、勝てる手なら追跡・負ける手なら逃走・あいこや相手不在は徘徊。見た目は team×手のハンドテクスチャを毎フレーム反映 |
+| `weapon_rsp.c` | `render_rsp_hand`：自分のチーム×手のハンドテクスチャを画面下部中央へ描画（共通の `draw_weapon` から RSP 時に振り分けられる） |
 
 各 NPC のチーム・手・初期リスポーン地点・生存は `t_enemy.rsp`（`t_rsp_state`）に埋め込み、プレイヤーは `t_game.player_rsp` が保持します。乱数状態は `t_game.rsp_seed`、自陣踏み込み検出は `t_game.rsp_on_home` を使います。
 
@@ -339,7 +346,7 @@ include 順序・ポインタ表記・制御構文の空白・`else` 形・終�
 
 ### (e) RSP の配置に関する設計メモ
 
-`t_enemy.rsp`（`t_rsp_state`）は common の共有モデルに直接埋め込んでいます（`enemy_types.h` のコメント参照。将来 common を rsp 型に依存させない方針へ移すなら、この 1 メンバを外部テーブルへ剥がす）。RSP 固有コードは `srcs/rsp/core/` に集約済みで、`rsp.h`（純粋ルール・型、common 依存可）と `rsp_game.h`（`t_game` 作用、fps/rsp 側のみ）に責務分割しています。
+`t_enemy.rsp`（`t_rsp_state`）は common の共有モデルに直接埋め込んでいます（`enemy_types.h` のコメント参照。将来 common を rsp 型に依存させない方針へ移すなら、この 1 メンバを外部テーブルへ剥がす）。RSP 固有コードは `srcs/rsp/`（フラット）に集約済みで、`rsp.h`（純粋ルール・型、common 依存可）と `rsp_game.h`（`t_game` 作用、fps/rsp 側のみ）に責務分割しています。なお mode 振り分け（ディスパッチ）は `common`（`main_loop` / `update_enemies` / `draw_weapon` / `finish_init`）側にあり、`fps`/`rsp` は各モードの実装のみを持ちます。
 
 ### (f) `mlx_*` 関数の戻り値 / ベンダーのバックアップ
 

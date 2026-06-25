@@ -19,7 +19,8 @@ CFLAGS          = -O3 -Wall -Wextra -Werror -pthread -I $(INC_DIR)
 # ==============================================================================
 # ソース定義
 # ==============================================================================
-COMMON_SRCS     = config/config.c config/parse_map.c config/check_map.c \
+COMMON_SRCS     = main.c \
+                  config/config.c config/parse_map.c config/check_map.c \
                   config/parse_params.c config/parse_texture.c \
                   utils/ft_strlen.c utils/ft_substr.c utils/ft_in_set.c \
                   utils/str.c utils/ft_strdup.c utils/ft_split.c utils/ft_atoi.c \
@@ -32,23 +33,22 @@ COMMON_SRCS     = config/config.c config/parse_map.c config/check_map.c \
                   engine/render/draw_sky_floor.c engine/render/screen.c \
                   engine/render/sprite.c engine/render/sprite_utils.c \
                   engine/render/cast_columns.c engine/render/light.c \
-                  engine/render/tables.c \
+                  engine/render/tables.c engine/render/draw_weapon.c \
                   engine/texture/color.c engine/texture/texture.c \
                   engine/input/input.c \
                   core/collision.c core/bmp.c \
-                  ui/font.c
+                  core/loop.c core/init.c core/exit.c \
+                  enemy/enemy.c \
+                  ui/font.c ui/ui.c ui/crosshair.c
 
-FPS_SRCS        = main.c \
-                  core/init.c core/exit.c core/loop.c core/shoot.c \
-                  core/item.c core/respawn.c core/assets.c \
-                  enemy/enemy.c enemy/enemy_ai.c enemy/enemy_assets.c \
+FPS_SRCS        = core/shoot.c core/item.c core/respawn.c core/assets.c \
+                  enemy/enemy_ai.c enemy/enemy_assets.c \
                   enemy/enemy_sense.c enemy/enemy_path.c enemy/enemy_move.c \
                   enemy/enemy_patrol.c \
-                  render/draw_weapon.c \
-                  ui/ui.c ui/crosshair.c
+                  render/weapon_fps.c
 
-RSP_SRCS        = core/rsp_rule.c core/rsp_assets.c \
-                  core/rsp_combat.c core/rsp_setup.c core/rsp_ai.c
+RSP_SRCS        = rsp_rule.c rsp_assets.c rsp_combat.c rsp_setup.c rsp_ai.c \
+                  weapon_rsp.c
 
 OBJS            = $(addprefix $(OBJ_DIR)/common/, $(COMMON_SRCS:.c=.o)) \
                   $(addprefix $(OBJ_DIR)/fps/, $(FPS_SRCS:.c=.o)) \

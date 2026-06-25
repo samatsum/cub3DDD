@@ -8,8 +8,6 @@
 
 /* ************************************************************************** */
 void
-	update_enemies(t_game* game, double delta_time);
-static void
 	update_fps_enemy(t_enemy* cur, t_game* game, double delta_time);
 static void
 	move_enemy(t_enemy* cur, t_game* game, double delta_time);
@@ -21,28 +19,9 @@ static void
 	advance_path_index(t_enemy* cur, t_pos start);
 
 /* ************************************************************************** */
-// 毎フレーム全敵を更新する。モードで分岐し、RSPはじゃんけんAI、FPSは従来の
-// プレイヤー追跡AIを各敵に適用する
-void
-	update_enemies(t_game* game, double delta_time)
-{
-	t_enemy*	cur;
-
-	cur = game->world.enemies;
-	while (cur) {
-		if (game->mode == MODE_RSP) {
-			update_rsp_enemy(cur, game, delta_time);
-		} else {
-			update_fps_enemy(cur, game, delta_time);
-		}
-		cur = cur->next;
-	}
-}
-
-/* ************************************************************************** */
 // FPSの敵1体ぶんの更新。検知判定で追跡タイマーを更新し、移動とテクスチャを反映する。
 // プレイヤー死亡中は検知を止め、追跡時間を 0 に落として即座に徘徊モードへ戻す
-static void
+void
 	update_fps_enemy(t_enemy* cur, t_game* game, double delta_time)
 {
 	double	dx;
