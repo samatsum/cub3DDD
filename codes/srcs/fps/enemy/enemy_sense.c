@@ -28,13 +28,9 @@ static int
 int
 	enemy_sees_player(t_enemy* cur, t_game* game, double target_angle)
 {
-	double	dx;
-	double	dy;
 	double	diff;
 
-	dx = game->camera.pos.x - cur->sprite->pos.x;
-	dy = game->camera.pos.y - cur->sprite->pos.y;
-	if (hypot(dx, dy) > ENEMY_SIGHT_RANGE) {
+	if (dist_pos(&game->camera.pos, &cur->sprite->pos) > ENEMY_SIGHT_RANGE) {
 		return (0);
 	}
 	// 追跡中（track_timer > 0）でない場合のみ、厳密な視野角チェックを行う
@@ -58,7 +54,7 @@ static int
 	double	steps;
 	int		i;
 
-	dist = hypot(to->x - from->x, to->y - from->y);
+	dist = dist_pos(to, from);
 	steps = dist / ENEMY_LOS_STEP;
 	if (steps < 1.0) {
 		return (1);

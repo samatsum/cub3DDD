@@ -1,5 +1,3 @@
-#include <math.h>
-
 #include "core/core.h"
 #include "core/respawn.h"
 #include "rsp/rsp_game.h"
@@ -137,5 +135,5 @@ static void
 static int
 	in_contact(t_pos* a, t_pos* b)
 {
-	return (hypot(a->x - b->x, a->y - b->y) <= RESPAWN_CONTACT_DIST);
+	return (dist_pos(a, b) <= RESPAWN_CONTACT_DIST);
 }

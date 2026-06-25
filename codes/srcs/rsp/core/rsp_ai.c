@@ -57,14 +57,14 @@ static int
 	found = 0;
 	best = 0.0;
 	if (game->player_rsp.team != cur->rsp.team) {
-		best = hypot(game->camera.pos.x - cur->sprite->pos.x, game->camera.pos.y - cur->sprite->pos.y);
+		best = dist_pos(&game->camera.pos, &cur->sprite->pos);
 		copy_pos(out_pos, &game->camera.pos);
 		*out_hand = game->player_rsp.hand;
 		found = 1;
 	}
 	e = game->world.enemies;
 	while (e) {
-		d = hypot(e->sprite->pos.x - cur->sprite->pos.x, e->sprite->pos.y - cur->sprite->pos.y);
+		d = dist_pos(&e->sprite->pos, &cur->sprite->pos);
 		if (e != cur && e->rsp.team != cur->rsp.team && (!found || d < best)) {
 			best = d;
 			copy_pos(out_pos, &e->sprite->pos);

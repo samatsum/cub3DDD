@@ -1,5 +1,3 @@
-#include <math.h>
-
 #include "core/core.h"
 #include "core/respawn.h"
 #include "tuning.h"
@@ -98,15 +96,11 @@ int
 	check_enemy_contact(t_game* game)
 {
 	t_enemy*	cur;
-	double		dx;
-	double		dy;
 
 	cur = game->world.enemies;
 	while (cur) {
 		if (cur->state != ENEMY_STATE_DEAD) {
-			dx = game->camera.pos.x - cur->sprite->pos.x;
-			dy = game->camera.pos.y - cur->sprite->pos.y;
-			if (hypot(dx, dy) <= RESPAWN_CONTACT_DIST) {
+			if (dist_pos(&game->camera.pos, &cur->sprite->pos) <= RESPAWN_CONTACT_DIST) {
 				kill_player(game);
 				return (1);
 			}

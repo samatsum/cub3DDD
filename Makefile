@@ -40,15 +40,15 @@ COMMON_SRCS     = config/config.c config/parse_map.c config/check_map.c \
 
 FPS_SRCS        = main.c \
                   core/init.c core/exit.c core/loop.c core/shoot.c \
-                  core/item.c core/respawn.c core/rsp_combat.c \
-                  core/assets.c core/rsp_setup.c \
+                  core/item.c core/respawn.c core/assets.c \
                   enemy/enemy.c enemy/enemy_ai.c enemy/enemy_assets.c \
                   enemy/enemy_sense.c enemy/enemy_path.c enemy/enemy_move.c \
-                  enemy/enemy_patrol.c enemy/rsp_ai.c \
+                  enemy/enemy_patrol.c \
                   render/draw_weapon.c \
                   ui/ui.c ui/crosshair.c
 
-RSP_SRCS        = core/rsp_rule.c core/rsp_assets.c
+RSP_SRCS        = core/rsp_rule.c core/rsp_assets.c \
+                  core/rsp_combat.c core/rsp_setup.c core/rsp_ai.c
 
 OBJS            = $(addprefix $(OBJ_DIR)/common/, $(COMMON_SRCS:.c=.o)) \
                   $(addprefix $(OBJ_DIR)/fps/, $(FPS_SRCS:.c=.o)) \

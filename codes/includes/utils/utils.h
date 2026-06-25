@@ -1,15 +1,3 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   utils.h                                            :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: samatsum <samatsum@student.42.fr>          +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/11/29 13:25:07 by samatsum          #+#    #+#             */
-/*   Updated: 2026/06/14 10:50:56 by samatsum         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #ifndef UTILS_H
 # define UTILS_H
 
@@ -31,7 +19,7 @@
 
 /* ************************************************************************** */
 # define PTR_CAST(a)	(void*)((uintptr_t)(a))
-# define MAX(a, b)		((a > b) ? a : b)
+# define MAX(a, b)		((a) > (b) ? (a) : (b))
 
 /* ************************************************************************** */
 typedef struct s_pos
@@ -73,6 +61,8 @@ void
 	set_pos(t_pos* pos, double x, double y);
 void
 	copy_pos(t_pos* pos, t_pos* org);
+double
+	dist_pos(t_pos* a, t_pos* b);
 int
 	ft_strcmp(const char* s1, const char* s2);
 int
