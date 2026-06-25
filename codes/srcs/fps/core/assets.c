@@ -28,8 +28,8 @@ void
 		load_one_tex(&game->window, &game->assets.weapon_tex[i], paths[i]);
 		i++;
 	}
-	load_one_tex(game->window.ptr, &game->assets.death_tex, DEATH_TEX_PATH);
-	load_one_tex(game->window.ptr, &game->assets.door_tex, DOOR_TEX_PATH);
+	load_one_tex(&game->window, &game->assets.death_tex, DEATH_TEX_PATH);
+	load_one_tex(&game->window, &game->assets.door_tex, DOOR_TEX_PATH);
 }
 
 /* ************************************************************************** */
