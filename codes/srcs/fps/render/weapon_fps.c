@@ -9,36 +9,26 @@
 #define BOB_PERIOD			2000.0
 #define BOB_POWER			3.0
 #define WEAPON_SCALE		0.6
-// 銃/ライト(FPS)とRSPの手の表示サイズ。3キーの走行用の手(WEAPON_SCALE)より
-// 小さく、その約2/3に縮小する。走行用の手はこの縮小の対象外
+// 銃/ライトの表示サイズ。3キーの走行用の手(WEAPON_SCALE)より小さく、その約2/3に縮小する
 #define WEAPON_SCALE_SMALL	0.4
 #define HAND_MOVE_RATIO		0.8
 
 void
-	draw_weapon(t_game* game);
-static void
-	render_rsp_hand(t_game* game);
+	render_fps_weapon(t_game* game);
 static void
 	update_weapon_timer(t_game* game, long long current_time);
 static void
 	render_hands(t_game* game, long long current_time);
 static void
 	render_item(t_game* game);
-static void
-	draw_overlay(t_game* game, t_tex* tex, double start_x, double start_y, double scale);
 
 /* ************************************************************************** */
-// 状態に合わせて武器や手のテクスチャを描画する（司令塔）。RSPでは銃を出さず、
-// 自分のじゃんけんの手を画面下部に常時表示する
+// FPSの武器/手描画の司令塔。射撃タイマーを進め、素手なら両手・それ以外は武器を描く
 void
-	draw_weapon(t_game* game)
+	render_fps_weapon(t_game* game)
 {
 	long long	current_time;
 
-	if (game->mode == MODE_RSP) {
-		render_rsp_hand(game);
-		return ;
-	}
 	current_time = get_current_time_ms();
 	update_weapon_timer(game, current_time);
 	if (game->input.current_weapon == WEP_HANDS) {
@@ -46,27 +36,6 @@ void
 	} else {
 		render_item(game);
 	}
-}
-
-/* ************************************************************************** */
-
-// RSPのプレイヤーUI。自分のチーム×手のハンドテクスチャを画面下部中央へ描画する
-static void
-	render_rsp_hand(t_game* game)
-{
-	t_tex*	tex;
-	double	scale;
-	double	start_x;
-	double	start_y;
-
-	tex = &game->assets.hand_tex[HAND_SLOT(game->player_rsp.team, game->player_rsp.hand)];
-	if (!tex->tex) {
-		return ;
-	}
-	scale = (game->window.size.y * WEAPON_SCALE_SMALL) / tex->height;
-	start_x = (game->window.size.x - (tex->width * scale)) / 2.0;
-	start_y = game->window.size.y - (tex->height * scale);
-	draw_overlay(game, tex, start_x, start_y, scale);
 }
 
 /* ************************************************************************** */
@@ -104,7 +73,6 @@ static void
 	angle = (double)(current_time % (long long)BOB_PERIOD) / BOB_PERIOD * 2.0 * M_PI;
 	bob_left = pow(fabs(sin(angle)), BOB_POWER);
 	bob_right = pow(fabs(cos(angle)), BOB_POWER);
-	
 	active_tex = &game->assets.weapon_tex[WTEX_HAND_LEFT];
 	if (active_tex->tex) {
 		scale = (game->window.size.y * WEAPON_SCALE) / active_tex->height;
@@ -153,39 +121,4 @@ static void
 	start_x = (game->window.size.x / 2.0) - ((active_tex->width * scale) / 2.0);
 	start_y = game->window.size.y - (active_tex->height * scale);
 	draw_overlay(game, active_tex, start_x, start_y, scale);
-}
-
-/* ************************************************************************** */
-// テクスチャを画面上の指定位置・スケールで描画する（ループの無駄を排除した最適化版）
-static void
-	draw_overlay(t_game* game, t_tex* tex, double start_x, double start_y, double scale)
-{
-	t_pos	pixel;
-	t_pos	p_tex;
-	int		color;
-	double	inv_scale;
-
-	if (!tex->tex || scale == 0.0) {
-		return ;
-	}
-	inv_scale = 1.0 / scale;
-	
-	pixel.y = start_y < 0 ? 0 : start_y;
-	while (pixel.y < game->window.size.y && pixel.y < start_y + (tex->height * scale)) {
-		p_tex.y = (int)((pixel.y - start_y) * inv_scale);
-		if (p_tex.y >= 0 && p_tex.y < tex->height) {
-			pixel.x = start_x < 0 ? 0 : start_x;
-			while (pixel.x < game->window.size.x && pixel.x < start_x + (tex->width * scale)) {
-				p_tex.x = (int)((pixel.x - start_x) * inv_scale);
-				if (p_tex.x >= 0 && p_tex.x < tex->width) {
-					color = get_tex_color(tex, &p_tex);
-					if ((color & 0x00FFFFFF) != 0x000000) {
-						draw_pixel(&game->window, &pixel, color);
-					}
-				}
-				pixel.x++;
-			}
-		}
-		pixel.y++;
-	}
 }

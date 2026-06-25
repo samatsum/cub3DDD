@@ -108,6 +108,12 @@ void
 	make_tables(struct s_game* game);
 void
 	draw_weapon(struct s_game* game);
+void
+	draw_overlay(struct s_game* game, t_tex* tex, double start_x, double start_y, double scale);
+void
+	render_fps_weapon(struct s_game* game);
+void
+	render_rsp_hand(struct s_game* game);
 int
 	init_image(t_window* window, t_image* img);
 int

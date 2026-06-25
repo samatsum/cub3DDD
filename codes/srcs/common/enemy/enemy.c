@@ -2,6 +2,7 @@
 
 #include "core/core.h"
 #include "enemy/enemy.h"
+#include "enemy/enemy_utils.h"
 
 /* ************************************************************************** */
 t_enemy*
@@ -12,6 +13,8 @@ void
 	clear_enemies(t_enemy** enemies);
 void
 	damage_enemy(t_game* game, t_sprite* hit_sprite);
+void
+	update_enemies(t_game* game, double delta_time);
 
 /* ************************************************************************** */
 // 新しい敵を生成し、指定HPで初期化してリストの先頭に追加する
@@ -126,5 +129,24 @@ void
 			return ;
 		}
 		current = current->next;
+	}
+}
+
+/* ************************************************************************** */
+// 毎フレーム全敵を更新する。mode で振り分け、RSPはじゃんけんAI(update_rsp_enemy)、
+// FPSは追跡AI(update_fps_enemy)を各敵に適用する。両モード共通のディスパッチャ
+void
+	update_enemies(t_game* game, double delta_time)
+{
+	t_enemy*	cur;
+
+	cur = game->world.enemies;
+	while (cur) {
+		if (game->mode == MODE_RSP) {
+			update_rsp_enemy(cur, game, delta_time);
+		} else {
+			update_fps_enemy(cur, game, delta_time);
+		}
+		cur = cur->next;
 	}
 }
