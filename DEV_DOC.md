@@ -1,132 +1,118 @@
 # DEV_DOC — 開発者向けアーキテクチャ仕様書
 
-このドキュメントは、cub3D エンジンを保守・拡張する開発者向けの技術資料です。記述内容は **実際のソースコードと一致するもののみ** を扱っています（推測や将来構想は §8 / §9 にまとめています）。
+このドキュメントは、cub3D エンジンを保守・拡張する開発者向けの技術資料です。記述内容は **実際のソースコードと一致するもののみ** を扱っています（推測や将来構想は §9 / §10 にまとめています）。
 
 ---
 
 ## 1. 全体像
 
-cub3D は MiniLibX（X11）上で動作する一人称 3D レンダラに、簡単なゲームロジック（収集アイテム・**巡回／追跡する敵 AI**・武器切替）を載せたものです。
+cub3D は MiniLibX（X11）上で動作する一人称 3D レンダラに、ゲームロジック（収集アイテム・扉・**巡回／追跡する敵 AI**・武器切替）を載せたものです。同じエンジン上で、第 2 引数 `RSP` により **じゃんけん鬼ごっこ（RSP モード）** が動きます。
 
 レンダリングはレイキャスティング（DDA）と、画面を縦 1 列ずつ走査して壁・床・天井・スプライトを描く古典的な手法を用います。
 
-ライフサイクルは以下のとおりです（`srcs/main.c`）。
+ライフサイクルは以下のとおりです（`codes/srcs/fps/main.c`）。
 
 ```
 main()
   └── validate_check() : 引数チェック + init_config + .cub のパース (parse_config)
+  │                      argv[2] == "RSP" のとき game->mode = MODE_RSP
   └── setup_inits()    : init_game + finish_init
   │                      （ウィンドウ生成、テクスチャ読込、スプライト/敵リスト構築、
-  │                        収集数カウント、セル属性フラグ層の構築、事前計算テーブル生成）
+  │                        収集数カウント、セル属性フラグ層の構築、事前計算テーブル生成。
+  │                        RSP 時はハンドテクスチャ読込と戦闘員配置も実施）
   └── setup_hooks()    : X11 イベントとループフックの登録 (mlx_hook / mlx_loop_hook)
   └── mlx_loop()       : 以後 main_loop() が毎フレーム呼ばれる
 ```
 
-毎フレーム（`main_loop`, `srcs/core/loop.c`）では以下が走ります。
+毎フレーム（`main_loop`, `codes/srcs/fps/core/loop.c`）では以下が走ります。
 
-1. 経過時間から `time_mult` を算出（60 FPS 基準のスケール係数、上限 3.0 / `tuning.h` の `TARGET_FPS`・`MAX_TIME_MULT`）
-2. キー入力状態に応じた移動・回転（`camera.c`）
-3. アイテム取得判定 `check_quest`
-4. 敵 AI 更新 `update_enemies`（**索敵 → 巡回／追跡 → テクスチャ更新**。詳細は §3）
+1. 経過時間から `time_mult` を算出（60 FPS 基準のスケール係数、上限 3.0 / `tuning.h` の `TARGET_FPS`・`MAX_TIME_MULT`）。FPS 上限未達のフレームは即 return（許可関数に sleep が無いためビジーウェイト）
+2. 死亡中はタイマーのみ進める。生存中は入力に応じた移動・回転（`camera.c`）とアイテム取得判定 `check_quest`
+3. 敵 AI 更新 `update_enemies`（モードで分岐。FPS は索敵→巡回/追跡、RSP はじゃんけん AI。詳細は §3 / §4）
+4. 接触判定：FPS は `check_enemy_contact`（敵に触れると死亡演出）、RSP は `resolve_rsp_combat`（じゃんけん勝敗）
 5. `render_frame` → `update_screen` → `mlx_put_image_to_window`
 
 ## 2. ディレクトリ構成（実態）
 
+ソースは **`common`（両モード共通）/ `fps`（FPS 固有）/ `rsp`（RSP 固有）** の 3 系統に分かれ、公開ヘッダは `codes/includes/` に集約されています（`-I codes/includes`）。
+
 ```
-cub3d/
-├── Makefile
+samatsum-cub3D/
+├── Makefile                          # COMMON_SRCS / FPS_SRCS / RSP_SRCS の 3 系統をビルド
+├── README.md / USER_DOC.md / DEV_DOC.md
 ├── codes/
-│   ├── includes/                      # 公開ヘッダ
-│   │   ├── types.h                    # t_game ファサード、各種フラグ、入力/世界/資産/キャッシュ型
-│   │   ├── tuning.h                   # コンパイル時固定の調整値・仕様定数（移動/巡回/ライト/タイル）
-│   │   ├── config/
-│   │   │   ├── config.h               # 設定型・マップ文字マクロ・セル属性フラグ層・解像度/色マクロ
-│   │   │   └── defaults.h             # 速度/FOV/敵追跡秒/敵速度/敵HP の既定値（.cub で上書き可）
-│   │   ├── core/core.h                # ライフサイクル系の公開プロトタイプ（types.h を取り込む）
+│   ├── includes/                     # 公開ヘッダ
+│   │   ├── types.h                   # t_game ファサード、描画フラグ、入力/世界/資産/キャッシュ型
+│   │   ├── tuning.h                  # コンパイル時固定の調整値・仕様定数
+│   │   ├── config/{config.h, defaults.h}
+│   │   ├── core/{core.h, respawn.h, collision.h}
 │   │   ├── engine/
-│   │   │   ├── input/input.h, keymap.h
-│   │   │   ├── raycast/raycast.h      # t_camera, t_ray
-│   │   │   ├── render/render.h        # t_window, t_render, t_image, t_sprite
+│   │   │   ├── input/{input.h, keymap.h}
+│   │   │   ├── raycast/raycast.h     # t_camera, t_ray
+│   │   │   ├── render/{render.h, light.h}
 │   │   │   └── texture/texture.h
-│   │   ├── enemy/
-│   │   │   ├── enemy.h                # t_enemy, t_enemy_state, 公開API（リスト操作・更新）
-│   │   │   └── enemy_utils.h          # 索敵/巡回/経路/移動/テクスチャの内部API・M_PI
+│   │   ├── enemy/{enemy.h, enemy_types.h, enemy_utils.h}
+│   │   ├── rsp/{rsp.h, rsp_game.h}   # RSP の型・純粋ルール / t_game に作用する API
 │   │   ├── gnl/get_next_line.h
-│   │   ├── ui/ui.h
+│   │   ├── ui/{ui.h, font.h}
 │   │   └── utils/utils.h
 │   │
-│   └── srcs/
-│       ├── main.c                     # エントリポイント
-│       ├── config/                    # .cub のパースと検証
-│       │   ├── config.c               # init/clear、キー対応表 g_keys[]、parse 全体の制御
-│       │   ├── parse_map.c            # マップ本体 → int 配列
-│       │   ├── check_map.c            # 境界・列数・文字種チェック
-│       │   ├── parse_params.c         # R / F / C とスカラー(MS/RS/FOV/ET/ES/EH)の解析
-│       │   └── parse_texture.c        # NO/SO/WE/EA/ST/FT と OI1..OI5/OP1..OP5/OC1..OC5
-│       ├── core/
-│       │   ├── init.c                 # finish_init / init_game / init_window / find_sprites
-│       │   ├── collision.c            # エンティティ当たり判定（PLAYER_RADIUS / ENEMY_RADIUS）
-│       │   ├── loop.c                 # main_loop, frame_delta, calc_time_mult, 入力適用
-│       │   ├── exit.c                 # 全リソース解放
-│       │   ├── bmp.c                  # BMP 書き出し（フローからは未呼び出し、§8 参照）
-│       │   ├── item.c                 # 収集アイテム判定 (check_quest / count_items)
-│       │   └── shoot.c                # 射撃判定 (shoot_target → damage_enemy)
-│       ├── enemy/                     # 敵 AI（§3 で詳述。責務ごとにファイル分割）
-│       │   ├── enemy.c                # 敵リスト操作：add/delete/clear/damage
-│       │   ├── enemy_ai.c             # 統括：update_enemies / 索敵→巡回・追跡の振り分け / 経路追従
-│       │   ├── enemy_patrol.c         # 巡回方策：右手法則・回頭(face_angle)・巡回初期化
-│       │   ├── enemy_sense.c          # 知覚：距離・視野角(FOV)・視線(LOS)の3条件判定
-│       │   ├── enemy_path.c           # 経路探索：BFS（最短経路 / 最近接Pセル）
-│       │   └── enemy_move.c           # 移動：dir_angle 方向へ衝突回避しつつ1フレーム前進
-│       ├── engine/
-│       │   ├── input/input.c          # X11 キーフック（WASD + 矢印 + 1/2/3 + Space + I/L/O/Esc）
-│       │   ├── raycast/
-│       │   │   ├── raycast.c          # DDA 本体
-│       │   │   ├── camera.c           # 移動・回転（time_mult 対応）
-│       │   │   └── tables.c           # camera_x / sf_dist の事前計算
-│       │   ├── render/
-│       │   │   ├── screen.c           # フレーム合成 (update_screen)
-│       │   │   ├── draw.c             # 低レベル描画 (pixel/line/rect)
-│       │   │   ├── draw_wall.c
-│       │   │   ├── draw_sky_floor.c
-│       │   │   ├── draw_weapon.c      # 武器・手のオーバーレイ
-│       │   │   ├── sprite.c           # スプライト描画
-│       │   │   └── sprite_utils.c     # ソートとリスト操作
-│       │   └── texture/
-│       │       ├── texture.c          # .xpm 読み込み、透明領域判定
-│       │       └── color.c            # シェーディング・ライト演算
-│       ├── gnl/
-│       │   ├── get_next_line.c
-│       │   └── get_next_line_utils.c
-│       ├── ui/
-│       │   ├── ui.c                   # ミニマップ + 収集進捗テキスト
-│       │   ├── font.c                 # ビットマップ文字描画
-│       │   └── crosshair.c            # クロスヘア描画
-│       └── utils/                     # libft 相当の自作ユーティリティ群
-│
-├── codes/includes/                    # 上記ヘッダ群
-├── codes/minilibx-linux/              # ベンダー: MiniLibX
-├── PythonCodes/                       # clint（独自 C コーディングルール linter）と移行スクリプト
-├── maps/                              # テスト用マップ（valid/ に enemy_line.cub など）
-└── textures/                          # XPM アセット
+│   ├── srcs/
+│   │   ├── common/                   # 両モード共通（エンジン・設定・ユーティリティ）
+│   │   │   ├── config/               # .cub のパースと検証
+│   │   │   │   ├── config.c          # init/clear、キー対応表 g_keys[]、parse 全体の制御
+│   │   │   │   ├── parse_map.c       # マップ本体 → int 配列、P セルの CELL_PATROL 付与
+│   │   │   │   ├── check_map.c       # 境界・列数・文字種（VALID_MAP_CHARACTERS）チェック
+│   │   │   │   ├── parse_params.c    # R / F / C とスカラー(MS/RS/FOV/ET/ES/EH)。g_scalars[]
+│   │   │   │   └── parse_texture.c   # NO/SO/WE/EA/ST/FT と OI1..5 / OP1..5 / OC1..5
+│   │   │   ├── core/{collision.c, bmp.c}
+│   │   │   ├── engine/
+│   │   │   │   ├── input/input.c     # X11 キーフック（WASD + 矢印 + 1/2/3 + Space + I/L/O/Esc）
+│   │   │   │   ├── raycast/{raycast.c, camera.c, spawn.c, spawn_marker.c}
+│   │   │   │   ├── render/{screen.c, draw.c, draw_wall.c, draw_sky_floor.c,
+│   │   │   │   │           sprite.c, sprite_utils.c, cast_columns.c, light.c, tables.c}
+│   │   │   │   └── texture/{texture.c, color.c}
+│   │   │   ├── gnl/{get_next_line.c, get_next_line_utils.c}
+│   │   │   ├── ui/font.c             # ビットマップ文字描画
+│   │   │   └── utils/                # libft 相当の自作ユーティリティ（pos.c に set/copy/dist_pos）
+│   │   │
+│   │   ├── fps/                      # FPS モード固有
+│   │   │   ├── main.c                # エントリポイント（argv[2]=="RSP" で RSP 有効化）
+│   │   │   ├── core/{init.c, exit.c, loop.c, shoot.c, item.c, respawn.c, assets.c}
+│   │   │   ├── enemy/{enemy.c, enemy_ai.c, enemy_assets.c, enemy_sense.c,
+│   │   │   │         enemy_path.c, enemy_move.c, enemy_patrol.c}
+│   │   │   ├── render/draw_weapon.c  # 武器・手のオーバーレイ
+│   │   │   └── ui/{ui.c, crosshair.c}
+│   │   │
+│   │   └── rsp/core/                 # RSP モード固有（§4）
+│   │       ├── rsp_rule.c            # 純粋ルール（勝敗 rsp_outcome / 手変更 rsp_rehand）
+│   │       ├── rsp_assets.c          # ハンドテクスチャ読込 init_hand_textures
+│   │       ├── rsp_setup.c           # 戦闘員（プレイヤー＋NPC）配置 setup_rsp_combatants
+│   │       ├── rsp_combat.c          # 毎フレームの接触勝敗解決 resolve_rsp_combat
+│   │       └── rsp_ai.c              # NPC AI update_rsp_enemy
+│   │
+│   ├── minilibx-linux/               # ベンダー: MiniLibX
+│   └── PythonCodes/                  # clint（独自 C コーディングルール linter）と移行スクリプト
+├── maps/                             # テスト用マップ（valid/ に 1.cub, rsp.cub, door_test.cub 等）
+└── textures/                         # XPM アセット（wall/object/enemy/hand/arm/interact/full…）
 ```
 
-> **注:** 旧版にあった `ui/shortcuts.c` は廃止され、文字描画は `ui/font.c` に統合されました。`t_game` の定義は `core/core.h` から `includes/types.h` へ移設済みです。旧版の「`enemy/enemy.c` 単体で追跡 AI」という記述は古く、現在は上記のとおり責務ごとに分割されています。
+> **注:** `t_game` の定義は `includes/types.h` にあり、各サブモジュールのヘッダ（`config.h` / `raycast.h` / `render.h` / `enemy_types.h` / `rsp.h`）を取り込みます。敵 AI は単一ファイルではなく、責務ごとに `fps/enemy/` 配下へ分割されています。
 
-## 3. 敵 AI（巡回・索敵・追跡）
+## 3. 敵 AI（巡回・索敵・追跡）— FPS モード
 
-敵 AI は **「毎フレーム索敵 → 状態に応じて巡回 or 追跡 → 移動 → テクスチャ更新」** という一本の流れで動きます。統括は `enemy_ai.c::update_enemies`。
+敵 AI は **「毎フレーム索敵 → 状態に応じて巡回 or 追跡 → 移動 → テクスチャ更新」** という一本の流れで動きます。統括は `enemy_ai.c::update_enemies`（FPS 時は各敵に `update_fps_enemy`）。
 
 ### 3.1 状態と振り分け
 
-状態は `t_enemy.state`（`enemy.h` の `t_enemy_state`）と、追跡残時間 `t_enemy.track_timer` で表現します。
+状態は `t_enemy.state`（`enemy_types.h` の `t_enemy_state`）と、追跡残時間 `t_enemy.track_timer` で表現します。
 
 | 状態 | 意味 |
 |---|---|
 | `ENEMY_STATE_IDLE` | 待機（巡回路へ復帰できないとき等） |
+| `ENEMY_STATE_WALK` | 追跡（プレイヤーを検知済みで `track_timer > 0`）／RSP の移動 |
+| `ENEMY_STATE_DEAD` | 撃破（実際の除去は `damage_enemy`） |
 | `ENEMY_STATE_PATROL` | 巡回（`P` セル上を周回、または最近接 `P` へ復帰中） |
-| `ENEMY_STATE_WALK` | 追跡（プレイヤーを検知済みで `track_timer > 0`） |
-| `ENEMY_STATE_DEAD` | （撃破。実際の除去は `damage_enemy` が担当） |
 
 振り分けは `move_enemy` がワンライナーで行います。
 
@@ -141,90 +127,109 @@ else                   { patrol_enemy(); }
 
 距離・視野角・視線の **3 条件 AND** で判定します。
 
-1. **距離**：`hypot(dx, dy) > ENEMY_SIGHT_RANGE(=100.0)` なら不可視（デバッグ用上限）。
-2. **視野角（FOV）**：`track_timer <= 0.0`（＝未追跡）のときのみ厳密チェック。プレイヤー方向 `target_angle` と敵の向き `dir_angle` の差を `(-π, π]` に正規化し、`|diff| > ENEMY_FOV_HALF(=π/8=±22.5°)` なら不可視。**追跡中は視野角ゲートを外す**（背後に回り込まれても一定時間は追える）。
+1. **距離**：`dist_pos(&camera.pos, &sprite->pos) > ENEMY_SIGHT_RANGE(=100.0)` なら不可視（デバッグ用上限）。
+2. **視野角（FOV）**：`track_timer <= 0.0`（＝未追跡）のときのみ厳密チェック。プレイヤー方向 `target_angle` と敵の向き `dir_angle` の差を `wrap_pi` で `(-π, π]` に正規化し、`|diff| > ENEMY_FOV_HALF(=π/8=±22.5°)` なら不可視。**追跡中は視野角ゲートを外す**（背後に回り込まれても一定時間は追える）。
 3. **視線（LOS）**：`has_line_of_sight` が始点→終点を `ENEMY_LOS_STEP(=0.05 マス)` 刻みでサンプリングし、`IS_BLOCKING` セルが間にあれば遮蔽として不可視。
 
-> **索敵タイミング（重要）：曲がり角の回頭中も索敵は実行されます。** `update_enemies` はループ先頭で **状態に関係なく無条件に** `enemy_sees_player` を呼び、その後で `move_enemy → patrol_enemy → face_angle`（回頭）に進みます。FOV 判定の基準である `dir_angle` は `face_angle` が毎フレーム旋回させるため、検知コーン（±22.5°）は回頭に追従してスイープします。
->
-> なお索敵は「前フレーム終了時の `dir_angle`」を読み、その直後に `face_angle` が `dir_angle` を更新するため、検知コーンには **最大1フレーム分の位相遅れ**（標準時 1.5°／`MAX_TIME_MULT`=3 の最悪時 4.5°）があります。挙動上は無害ですが、厳密に揃えたい場合は索敵を `face_angle` 更新後に移動してください。
+> **索敵タイミング:** `update_fps_enemy` はループ先頭で **状態に関係なく** `enemy_sees_player` を呼び、その後 `move_enemy → patrol_enemy → face_angle`（回頭）に進みます。FOV 判定の基準 `dir_angle` は `face_angle` が毎フレーム旋回させるため、検知コーン（±22.5°）は回頭に追従してスイープします（最大 1 フレームの位相遅れ。§9(d)）。
 
 ### 3.3 巡回（`enemy_patrol.c::patrol_enemy`）
 
 `P` セル（`CELL_PATROL` フラグ）の上を、**右手法則**で周回します。
 
-- **現在地が `P` 上**：`seed_patrol` で初期方向を決定（`trace_cross` が靴ひも公式でループの符号を求め、反時計回りなら逆隣へ向けて**時計回りに固定**）。到達判定 `ENEMY_PATROL_ARRIVE(=0.2)` 以内に入ったら `rh_next` が次の `P` セルを選ぶ（来た方向を基準に「左→直進→右」の優先で探索、行き止まりは来た道へ反転）。
-- **現在地が `P` 外**：`bfs_to_nearest_patrol`（BFS）で最近接 `P` への次の1マスを求めて復帰。`P` が見つからなければ `ENEMY_STATE_IDLE`。
-- **回頭（`face_angle`）**：目標方向との角度差を旋回速度上限 `ENEMY_TURN_DEG_PER_SEC(=90°/秒)` で詰め、**向きが揃うまでは前進せずその場で旋回**。揃った（1 を返した）フレームだけ `step_enemy` で前進します。
+- **現在地が `P` 上**：`seed_patrol` で初期方向を決定し、到達判定 `ENEMY_PATROL_ARRIVE(=0.2)` 以内に入ったら次の `P` セルを選ぶ（来た方向を基準に探索、行き止まりは反転）。
+- **現在地が `P` 外**：`bfs_to_nearest_patrol`（BFS）で最近接 `P` への次の 1 マスを求めて復帰。`P` が見つからなければ `ENEMY_STATE_IDLE`。
+- **回頭（`face_angle`）**：目標方向との角度差を旋回速度上限 `ENEMY_TURN_DEG_PER_SEC(=90°/秒)` で詰め、**向きが揃うまでは前進せずその場で旋回**。揃ったフレームだけ `step_enemy` で前進します。
 
 ### 3.4 追跡（`enemy_ai.c::track_player` / 経路 `enemy_path.c`）
 
-- `ensure_path`：プレイヤーの**セルが変わったか経路を使い切ったときだけ** `bfs_fill_path` を再計算（キャッシュは `t_enemy.path[PATH_MAX]`）。これにより毎フレームの BFS を避けます。
+- `ensure_path`：プレイヤーの**セルが変わったか経路を使い切ったときだけ** `bfs_fill_path` を再計算（キャッシュは `t_enemy.path[PATH_MAX]`）。
 - `advance_path_index`：既に到達したセルを読み飛ばして次の添字へ。
-- `bfs_fill_path`：4 近傍 BFS で最短経路を `path[]` に前方順で格納。経路長が `PATH_MAX(=1024)` を超える場合は始点側の先頭 `PATH_MAX` マスのみ保持し、使い切った時点で現在地から再計算（挙動は不変、再計算頻度のみ増）。`malloc` 失敗時は安全に `free` して 0 を返します。
+- `bfs_fill_path`：4 近傍 BFS で最短経路を `path[]` に前方順で格納。経路長が `PATH_MAX(=1024)` を超える場合は始点側の先頭 `PATH_MAX` マスのみ保持（挙動は不変、再計算頻度のみ増）。`malloc` 失敗時は安全に `free` して 0 を返します。
 
 ### 3.5 移動（`enemy_move.c::step_enemy`）
 
-`dir_angle` 方向へ `enemy_speed × speed_mult × time_mult` だけ前進。**X 軸・Y 軸を分離**して試行し、各軸ごとに `IN_MAP` / `!IS_BLOCKING` / `!is_blocked_by_entities` を満たす場合のみ反映（壁ずりが可能）。基準速度は敵専用 `enemy_speed`（`.cub` の `ES`）で、プレイヤーの `move_speed` とは独立です。当たり半径は `ENEMY_RADIUS(=0.8)` を使用（プレイヤーは `PLAYER_RADIUS(=0.5)`）。
+`dir_angle` 方向へ `enemy_speed × speed_mult × time_mult` だけ前進。**X 軸・Y 軸を分離**して試行し、各軸ごとに `IN_MAP` / `!IS_BLOCKING` / `!is_blocked_by_entities` を満たす場合のみ反映（壁ずりが可能）。RSP モードでは `speed_mult` にさらに `RSP_ENEMY_SPEED_MULT(=0.3)` が掛かり、プレイヤーが追える／逃げられる速度になります。当たり半径は `ENEMY_RADIUS(=0.8)`（プレイヤーは `PLAYER_RADIUS(=0.5)`）。
 
-## 4. 主要な型とデータ構造
+## 4. RSP モード（じゃんけん鬼ごっこ）
+
+`argv[2]=="RSP"`（`fps/main.c::validate_check`）で `game->mode = MODE_RSP` となり、**同じレンダラ・入力・物理の上で** 動きます。FPS との差分はゲームロジックのみです。
+
+- **初期化**：`finish_init`（`fps/core/init.c`）が RSP 時に `init_hand_textures`（ハンド画像 6 枚）と `setup_rsp_combatants`（戦闘員配置）を呼びます。
+- **毎フレーム**：`update_enemies` が各敵に `update_rsp_enemy` を適用し、接触判定を `check_enemy_contact`（FPS）ではなく `resolve_rsp_combat`（RSP）で行います。射撃は `handle_action` が `mode != MODE_RSP` で無効化します。
+
+### 4.1 型と純粋ルール（`includes/rsp/`）
+
+- **`rsp.h`**（型・純粋ルール。`t_game` 非依存で common からも参照可）
+  - `t_team`（`TEAM_RED` / `TEAM_BLUE`）, `t_hand`（`HAND_ROCK` / `HAND_SCISSORS` / `HAND_PAPER`）, `t_rsp_result`（`RSP_DRAW` / `RSP_WIN` / `RSP_LOSE`）
+  - `t_rsp_state`{`team`, `hand`, `spawn`, `alive`}
+  - `HAND_SLOT(team, hand)` = `team * HAND_COUNT + hand`（ハンドテクスチャ配列の添字を 1 箇所で定義）
+  - `rsp_outcome(a, b)`：手の循環順（Rock=0,Scissors=1,Paper=2）を利用し、勝敗を `(a - b + 3) % 3` の剰余演算 1 本で判定
+  - `rsp_rehand(current, seed)`：今と必ず違う手を返す（自作 `ft_rand` で再現性確保）
+- **`rsp_game.h`**（`t_game` に作用する API の窓口。common が依存する `rsp.h` と分け、fps/rsp 側からのみ include）
+  - `init_hand_textures` / `setup_rsp_combatants` / `resolve_rsp_combat`
+  - 定数 `RSP_TEAM_SPAWNS=2`, `RSP_COMBATANTS=4`(=`TEAM_COUNT*RSP_TEAM_SPAWNS`), `RSP_RED_DIRS="NW"`, `RSP_BLUE_DIRS="SE"`
+
+### 4.2 実装（`srcs/rsp/core/`）
+
+| ファイル | 役割 |
+|---|---|
+| `rsp_rule.c` | 純粋ルール `rsp_outcome` / `rsp_rehand`（`t_game` 非依存） |
+| `rsp_assets.c` | `init_hand_textures`：`team * HAND_COUNT + hand` の並びでハンド画像 6 枚を読込 |
+| `rsp_setup.c` | `setup_rsp_combatants`：N/W から 2 地点・S/E から 2 地点を重複なく選び、4 人のうち 1 人をプレイヤー・残りを NPC として配置 |
+| `rsp_combat.c` | `resolve_rsp_combat`：毎フレーム全異チームペアの接触を勝敗解決。負けた側を即リスポーン。自陣スポーンへの踏み込みで手を変える `rsp_home_rehand` も担当 |
+| `rsp_ai.c` | `update_rsp_enemy`：最寄りの異チーム戦闘員を見て、勝てる手なら追跡・負ける手なら逃走・あいこや相手不在は徘徊。見た目は team×手のハンドテクスチャを毎フレーム反映 |
+
+各 NPC のチーム・手・初期リスポーン地点・生存は `t_enemy.rsp`（`t_rsp_state`）に埋め込み、プレイヤーは `t_game.player_rsp` が保持します。乱数状態は `t_game.rsp_seed`、自陣踏み込み検出は `t_game.rsp_on_home` を使います。
+
+## 5. 主要な型とデータ構造
 
 | 型 | 役割 | 定義場所 |
 |---|---|---|
-| `t_game` | すべてのサブシステムを束ねるファサード | `types.h` |
-| `t_config` | 解像度・色・テクスチャパス・マップ配列・**セル属性フラグ層**・速度/FOV/敵追跡秒/敵速度/敵HP | `config/config.h` |
+| `t_game` | すべてのサブシステムを束ねるファサード（`mode` / `player_rsp` / `rsp_seed` / `rsp_on_home` / `death_timer` / `options` を含む） | `types.h` |
+| `t_config` | 解像度・色・テクスチャパス・マップ配列・**セル属性フラグ層**・速度/FOV/敵追跡秒/敵速度/敵HP・スポーン地点配列 | `config/config.h` |
 | `t_window` | MiniLibX のポインタ、描画用バックバッファ | `render.h` |
 | `t_camera` | 位置・視線・カメラ平面・直交ベクトル | `raycast.h` |
 | `t_input` | 各軸の押下状態と装備中の武器・射撃状態 | `types.h` |
-| `t_world` | スプライトリストと敵リスト、収集進捗 | `types.h` |
-| `t_assets` | 壁/床/天井・武器・敵のテクスチャ群 | `types.h` |
+| `t_world` | スプライトリストと敵リスト、ライトリスト、収集進捗 | `types.h` |
+| `t_assets` | 壁/床/天井・武器・敵・**ハンド(RSP)**・扉・死亡画面のテクスチャ群 | `types.h` |
 | `t_render_cache` | `camera_x[MAX_WIDTH]` / `depth[MAX_WIDTH]` / `sf_dist[MAX_HEIGHT]` | `types.h` |
-| `t_timing` | フレーム制御用のタイミング情報 | `types.h` |
-| `t_render` | 描画関数群に渡す軽量コンテキスト（`t_game` への依存を遮断する目的） | `render.h` |
+| `t_enemy` | HP・状態・巡回状態・追跡経路キャッシュ・`dir_angle`・`track_timer`・**`rsp`（RSP 状態）** | `enemy_types.h` |
+| `t_rsp_state` | team / hand / spawn / alive（プレイヤーと各 NPC が 1 つずつ持つ） | `rsp.h` |
 | `t_sprite` | 距離ソート用の双リンク（`next` と `sorted`） | `render.h` |
-| `t_enemy` | HP・状態・**巡回状態（`patrol_*`）・追跡経路キャッシュ（`path[]` ほか）・`dir_angle`・`track_timer`** | `enemy.h` |
 | `t_ray` | 1 本のレイの計算中間結果 | `raycast.h` |
 
-### `t_enemy` の主なフィールド（`enemy.h`）
+### `t_assets` のテクスチャ枠（`types.h`）
 
-| フィールド | 用途 |
-|---|---|
-| `hp` | 残ヒット数（0 で除去） |
-| `state` | `t_enemy_state` |
-| `patrol_active` | 巡回方向の初期化済みフラグ |
-| `dir_angle` | 現在の向き（索敵 FOV と移動方向の基準） |
-| `track_timer` | 追跡残時間（秒）。`> 0` で追跡継続 |
-| `patrol_from` / `patrol_target` | 巡回の来た元／次の目標セル |
-| `path[PATH_MAX]` / `path_idx` / `path_len` / `path_goal` / `path_valid` | 追跡経路キャッシュ |
-| `sprite` | 描画用 `t_sprite*` |
-| `next` | 敵リストの連結 |
+`tex[TEXTURES]`（壁/床/天井/オブジェクト各種）・`weapon_tex[WEAPON_TEX_COUNT]`・`enemy_tex[ENEMY_TEX_COUNT]`（8 方向）・`hand_tex[TEAM_COUNT * HAND_COUNT]`（RSP の 6 枚）・`door_tex`・`death_tex`。
 
 ### セル属性フラグ層（`config/config.h`）
 
-訪問済みマーカー `'A'` による `map.data` の上書きから静的属性を守るため、`map.flags` という別レイヤを持ちます（起動時に一度だけ構築し以後不変）。
+訪問済みマーカー `'A'`（収集済みアイテムの跡）による `map.data` 上書きから静的属性を守るため、`map.flags` という別レイヤを持ちます（起動時に一度だけ構築し以後不変）。
 
 - `CELL_PATROL = (1 << 1)`：巡回路 `P` セル。`FLAG_XY(x, y, c)` で参照。
 - ビット 0 は将来の通行可フラグ用に予約。
 
 ### オブジェクト体系（重要）
 
-オブジェクトは **3 カテゴリ × 最大 5 種** に拡張されています（`config/config.h`）。
+オブジェクトは **3 カテゴリ × 最大 5 種** です（`config/config.h`）。
 
-- マップ文字ブロック: 通行不可 `a`〜`e`（`IMP_FIRST='a'`）、通行可 `f`〜`j`（`PAS_FIRST='f'`）、収集 `k`〜`o`（`COL_FIRST='k'`）。`OBJ_PER_CATEGORY = 5`。
-- 分類は `IS_IMPASSABLE` / `IS_PASSABLE` / `IS_COLLECTIBLE`、当たり判定は `IS_BLOCKING`（`'1'` または通行不可）で行います。
+- マップ文字ブロック：通行不可 `a`〜`e`（`IMP_FIRST='a'`）、通行可 `f`〜`j`（`PAS_FIRST='f'`）、収集 `k`〜`o`（`COL_FIRST='k'`）。`OBJ_PER_CATEGORY = 5`。
+- 分類は `IS_IMPASSABLE` / `IS_PASSABLE` / `IS_COLLECTIBLE`、当たり判定は `IS_BLOCKING`（`'1'`・閉じた扉 `'D'`・通行不可）で行います。
 - マップ文字 → テクスチャスロットは `OBJ_SLOT(c)` が連番の `t_texture_id`（`TEX_IMP_1..5` / `TEX_PAS_1..5` / `TEX_COL_1..5`）を算術で引きます。
-- `.cub` の設定キーは `config.c` の `g_keys[]` で定義され、`OI1..OI5` / `OP1..OP5` / `OC1..OC5` に対応します（裸の `OI`/`OP`/`OC` は廃止）。
-- 有効マップ文字集合は `VALID_MAP_CHARACTERS = " 01abcdefghijklmnoEWNSMP"`（`M`=敵、`P`=巡回路）。
+- 扉 `'D'`（`DOOR_CHAR`）は収集完了まで `IS_BLOCKING` で壁扱い。`item.c::open_doors` が完了時に `'D'`→`'0'` へ書き換えて開放します。
+- 有効マップ文字集合は `VALID_MAP_CHARACTERS = " 01abcdefghijklmnoEWNSMPD"`（`M`=敵、`P`=巡回路、`D`=扉。`2`/`3`/`4` は **含まれない**）。
 
-## 5. フレームのデータフロー
+## 6. フレームのデータフロー
 
 ```
 key_press / key_release ──► t_input
                                 │
                                 ▼
         main_loop ──► (入力適用) ──► t_camera 更新
-                  ──► check_quest  ──► t_world.collected
-                  ──► update_enemies ─► [索敵→巡回/追跡] ─► t_enemy.track_timer / dir_angle / t_sprite.pos
+                  ──► check_quest  ──► t_world.collected（完了で open_doors）
+                  ──► update_enemies ─► FPS: [索敵→巡回/追跡]  /  RSP: update_rsp_enemy
+                  ──► (接触) ─► FPS: check_enemy_contact  /  RSP: resolve_rsp_combat
                   ──► render_frame
                        └── update_screen
                             ├── 列ごとに ray_cast → cache.depth[i]
@@ -238,14 +243,15 @@ key_press / key_release ──► t_input
 
 描画オプションは `t_game.options` のフラグで制御します（`types.h`）。
 
-| フラグ | 既定 | 切替キー |
+| フラグ | 既定 / 制御 | 切替 |
 |---|---|---|
-| `FLAG_UI` | ON | `I` |
-| `FLAG_SHADOWS` | ON | `L` |
-| `FLAG_CROSSHAIR` | ON | `O` |
-| `FLAG_SAVE` | 未使用 | — |
+| `FLAG_UI` | ON | `I` キー |
+| `FLAG_SHADOWS` | ON | `L` キー |
+| `FLAG_CROSSHAIR` | ON | `O` キー |
+| `FLAG_FLASHLIGHT` | 描画時に武器状態から `rnd.options` へ設定（`screen.c`）。`light.c` / `color.c` が参照 | フラッシュライト装備（`2` キー）に連動 |
+| `FLAG_SAVE` | 未使用（§9(b)） | — |
 
-## 6. チューニング値・既定値の所在
+## 7. チューニング値・既定値の所在
 
 直書きを避け、用途で分けて集約しています。
 
@@ -254,14 +260,18 @@ key_press / key_release ──► t_input
 | 区分 | 定数 | 値 | 用途 |
 |---|---|---|---|
 | 時間 | `TARGET_FPS` / `MAX_TIME_MULT` | 60.0 / 3.0 | FPS 非依存スケール係数の基準と上限 |
-| プレイヤー | `BAREHAND_SPEED_MULT` / `PLAYER_RADIUS` | 1.3 / 0.5 | 素手時の移動倍率・当たり半径 |
-| 敵 | `ENEMY_RADIUS` | 0.8 | 敵の当たり半径 |
-| 敵速度 | `ENEMY_TRACK_SPEED_MULT` / `ENEMY_PATROL_SPEED_MULT` | 0.5 / 0.35 | 追跡・巡回時の速度倍率 |
+| プレイヤー速度 | `PLAYER_RUN_BOOST` / `PLAYER_WALK_SPEED_MULT` / `PLAYER_RUN_SPEED_MULT` | 1.5 / 1.0 / (WALK×BOOST) | 素手＝走行モードの倍率（走行は歩行の `RUN_BOOST` 倍） |
+| 当たり半径 | `PLAYER_RADIUS` / `ENEMY_RADIUS` | 0.5 / 0.8 | プレイヤー／敵の当たり半径 |
+| 壁マージン | `WALL_MARGIN` | 0.4 | 壁へ食い込まないための中心停止マージン |
+| 接触 | `RESPAWN_CONTACT_DIST` | 0.9 | 敵接触（FPS）／じゃんけん接触（RSP）とみなす中心間距離 |
+| 死亡 | `DEATH_DURATION` | 5.0 | 死亡演出（全画面死亡画像）の秒数 |
+| パス | `DEATH_TEX_PATH` / `DOOR_TEX_PATH` | Full_youdied / Interact_DOOR_3 | 死亡画像・扉テクスチャのパス |
+| 敵速度 | `ENEMY_TRACK_BOOST` / `ENEMY_PATROL_SPEED_MULT` / `ENEMY_TRACK_SPEED_MULT` | 1.5 / 1.0 / (PATROL×BOOST) | 追跡は巡回の `TRACK_BOOST` 倍 |
+| RSP | `RSP_ENEMY_SPEED_MULT` | 0.3 | RSP の NPC 共通速度係数（追跡・逃走・徘徊すべてに掛かる） |
 | 巡回 | `ENEMY_PATROL_ARRIVE` / `ENEMY_TURN_DEG_PER_SEC` | 0.2 / 90.0 | 到達判定しきい値・回頭速度[度/秒] |
 | 描画 | `BYTES_PER_PIXEL` | 4 | フォーマット上の不変条件 |
-| タイル | `TILE_OBSTACLE` / `TILE_DECOR` / `TILE_ITEM` | '2' / '3' / '4' | マップタイル文字 |
 | ライト | `LIGHT_CONE_DEG` / `LIGHT_RANGE` / `LIGHT_BOOST` | 20.0 / 50.0 / 1.5 | フラッシュライトの半角・距離・暗化打消量 |
-| スポット | `SPOT_RADIUS` / `SPOT_GAIN` | 4.0 / 1.0 | 装飾スプライトのスポットライト半径・明度ゲイン |
+| スポット | `SPOT_RADIUS` / `SPOT_GAIN` | 4.0 / 4.0 | 装飾スプライトのスポットライト半径・明度ゲイン |
 
 ### `config/defaults.h`（`.cub` で上書き可能な既定値）
 
@@ -271,92 +281,93 @@ key_press / key_release ──► t_input
 | `DEFAULT_ROTATE_SPEED` | 0.05 | `RS` |
 | `DEFAULT_FOV` | 0.66 | `FOV` |
 | `DEFAULT_ENEMY_TRACK_SECONDS` | 5.0 | `ET` |
-| `DEFAULT_ENEMY_SPEED` | 0.11 | `ES` |
-| `DEFAULT_ENEMY_HP` | 10.0 | `EH`（撃破に要するヒット数。整数として扱う） |
+| `DEFAULT_ENEMY_SPEED` | 0.1 | `ES` |
+| `DEFAULT_ENEMY_HP` | 5.0 | `EH`（撃破に要するヒット数。整数として扱う） |
 
 ### `enemy_sense.c` 内の知覚定数（同ファイル完結）
 
-`ENEMY_FOV_HALF(=π/8)` / `ENEMY_SIGHT_RANGE(=100.0)` / `ENEMY_LOS_STEP(=0.05)`。視野角は 8 方向スプライトの「正面」表示と同じ画角に揃えています。
+`ENEMY_FOV_HALF(=π/8)` / `ENEMY_SIGHT_RANGE(=100.0)` / `ENEMY_LOS_STEP(=0.05)`。視野角は 8 方向スプライトの「正面」表示と同じ画角に揃えています。`M_PI` は `enemy_utils.h` で定義し、知覚・テクスチャ算出で共有します。
 
-## 7. ビルド
+## 8. ビルド
 
 ```
 make           # 通常ビルド（-O3 -Wall -Wextra -Werror -I codes/includes）
-make clean     # オブジェクトの削除
+make debug     # AddressSanitizer + デバッグシンボル（-O0 -g3 -fsanitize=address）で再ビルド
+make check     # 付属の lint（codes/PythonCodes/lint.py）を実行
+make clean     # オブジェクト（codes/obj）の削除
 make fclean    # 実行ファイルも含めて削除
 make re        # fclean + all
 ```
 
-> **既知の制約:** 現 Makefile は `-O3` 固定で `-g` を含みません。デバッガ・サニタイザを使いたい場合は `CFLAGS` を上書きしてください（§9）。
+ビルドは 3 系統（`COMMON_SRCS` / `FPS_SRCS` / `RSP_SRCS`）をそれぞれ `codes/obj/{common,fps,rsp}/` へコンパイルしてリンクします。`$(MLX_TARGET)` ルールは `codes/minilibx-linux` をサブ make します。
 
 ### コーディング規約（要点）
 
 - 変数宣言は関数頭、`for` 不使用、ヘッダガード必須。1 行 1 変数で型・名前をタブで縦整列。
 - 命名: 関数・ファイルは `動詞_名詞`（`parse_map`, `draw_wall`）、構造体は `t_xxx` / `s_xxx`、列挙は `e_xxx`、マクロは `UPPER_SNAKE`。
 - ヘッダには **マクロ定数・型定義・プロトタイプのみ**。実装は `.c` に閉じる。
-- ポインタの `*` は型名側（`int* ptr;`）。`else` は `} else {`。関数定義はセパレータ + `//` の日本語コメントを伴う。
-- 層の依存（`config` ← `core` ← `engine`/`enemy` ← `ui`）は循環させないこと。
+- ポインタの `*` は型名側（`int* ptr;`）。`else` は `} else {`、`{}` は省略しない。関数定義はセパレータ + `//` の日本語コメントを伴う。
+- 許可関数の制約（42 cub3D ルール）に従う：`open/close/read/write/printf/malloc/free/perror/strerror/exit/gettimeofday`、math、MiniLibX、自作関数のみ。並列レンダラの `pthread` 系は意図的な例外。
 
-### 付属の lint ツール（`PythonCodes/`）
+### 付属の lint ツール（`codes/PythonCodes/`）
 
 ```
-python3 PythonCodes/lint.py            # 全検査を実行
-python3 PythonCodes/lint.py --list     # 利用可能な検査の一覧
-python3 PythonCodes/lint.py --fix      # 不足セパレータ/コメント雛形を挿入
+python3 codes/PythonCodes/lint.py            # 全検査を実行（make check と同じ）
+python3 codes/PythonCodes/lint.py --list     # 利用可能な検査の一覧
+python3 codes/PythonCodes/lint.py --fix      # 不足セパレータ/コメント雛形を挿入
 ```
 
 include 順序・ポインタ表記・制御構文の空白・`else` 形・終端改行・シグネチャ・セパレータ・重複定義・マジックナンバー・未使用関数・`static` 漏洩などを検査します。
 
-## 8. 既知の課題と TODO
+## 9. 既知の課題と TODO
 
-実装と乖離している点、リファクタしたい点を列挙します。新しく入ってきた人はまずここを見てください。
+### (a) パーサのデバッグ出力（解決済み）
 
-### (a) パーサに残るデバッグ出力（解決済み）
-
-以前 `config/config.c`・`config/parse_map.c`・`config/check_map.c` にあった `printf("DEBUG: ...")` は全て除去済みです。
+以前 `config/` 各所にあった `printf("DEBUG: ...")` は全て除去済みです（現在ソースに `DEBUG` 出力はありません）。
 
 ### (b) `screenshot()` がエントリから呼ばれていない
 
-`core/bmp.c` の `screenshot()` は実装済みですが、`main.c` / `input.c` のどこからも呼ばれていません（`FLAG_SAVE` フラグも定義のみで未使用）。BMP 機能を生かすなら、コマンドライン引数（例: `-save`）かキーバインドで呼び出す導線を引いてください。（※以前あった「日時付きパス `~/bmp/screenshot_YYYY_MMDD_HHMM.bmp` と固定名 `screenshot.bmp` の二重オープン／パス不一致」は解消済み: `screenshot()` が開いた `fd` を `save_bmp()` に渡し、書き込み先を日時付きパスへ統合しました。）
+`common/core/bmp.c` の `screenshot()` は実装済みですが、`main.c` / `input.c` のどこからも呼ばれていません（`FLAG_SAVE` も定義のみで未使用）。BMP 機能を生かすなら、コマンドライン引数（例: `-save`）かキーバインドで呼び出す導線を引いてください。書き込み先は日時付きパス `./bmp/screenshot_<秒>_<マイクロ秒>.bmp` に統合済みです（`./bmp/` ディレクトリは別途用意が必要）。
 
 ### (c) ヘッダの include グラフが太い
 
-`types.h` が `config.h` / `raycast.h` / `render.h` / `enemy.h` を引き、その下流もさらに引くため、`input.c` などをビルドするだけでほぼ全ヘッダをパースします。各サブモジュールのヘッダは **公開関数の前方宣言** に絞り、構造体本体はそれを必要とする `.c` でのみ展開する整理の余地があります。
+`types.h` が `config.h` / `raycast.h` / `render.h` / `enemy_types.h`（さらに `rsp.h`）を引くため、`input.c` などをビルドするだけでほぼ全ヘッダをパースします。各サブモジュールのヘッダを **公開関数の前方宣言** に絞り、構造体本体はそれを必要とする `.c` でのみ展開する整理の余地があります。
 
-### (d) 索敵 FOV の1フレーム位相遅れ（軽微）
+### (d) 索敵 FOV の 1 フレーム位相遅れ（軽微）
 
-§3.2 のとおり、`update_enemies` は `face_angle` による `dir_angle` 更新より前に索敵します。回頭中の検知コーンが実向きに対し最大1フレーム遅れますが挙動上は無害です。厳密に揃えたい場合は索敵を `face_angle` 後へ移すか、先に回頭を1回適用してから索敵してください。
+§3.2 のとおり、`update_fps_enemy` は `face_angle` による `dir_angle` 更新より前に索敵します。回頭中の検知コーンが実向きに対し最大 1 フレーム遅れますが挙動上は無害です。
 
-### (e) `mlx_*` 関数の戻り値 / ベンダーのバックアップ
+### (e) RSP の配置に関する設計メモ
 
-`codes/minilibx-linux/` 配下の一部関数は `int` 宣言なのに `return` を欠き、`-Werror=return-type` を有効化すると即ビルドが落ちます。また `*.ok` 等のバックアップが残っていないか確認し、あれば `.gitignore` 除外か削除を。
+`t_enemy.rsp`（`t_rsp_state`）は common の共有モデルに直接埋め込んでいます（`enemy_types.h` のコメント参照。将来 common を rsp 型に依存させない方針へ移すなら、この 1 メンバを外部テーブルへ剥がす）。RSP 固有コードは `srcs/rsp/core/` に集約済みで、`rsp.h`（純粋ルール・型、common 依存可）と `rsp_game.h`（`t_game` 作用、fps/rsp 側のみ）に責務分割しています。
 
-## 9. 拡張のしどころ（任意）
+### (f) `mlx_*` 関数の戻り値 / ベンダーのバックアップ
 
-- **巡回路（`P`）のマップ設計**: 右手法則で周回するため、閉じたループ状の `P` 配置が安定します。分岐や行き止まりも動作しますが、`seed_patrol` の周回方向固定（時計回り）を前提に設計すると意図どおりになります。
+`codes/minilibx-linux/` 配下の一部関数は `int` 宣言なのに `return` を欠きます（`-Werror=return-type` を有効化すると落ちる）。ビルド成果物（`*.o` / `*.ok` / `libmlx.a` / `cub3D` / `bmp/`）は `.gitignore` で除外済みです。
+
+## 10. 拡張のしどころ（任意）
+
+- **巡回路（`P`）のマップ設計**: 右手法則で周回するため、閉じたループ状の `P` 配置が安定します。
 - **敵テクスチャの外部指定**: 敵は内蔵の 8 方向テクスチャを用います。`.cub` 側から指定可能にすると複数種の敵を導入できます。
 - **オブジェクトのバリエーション活用**: 各カテゴリ 5 種までのテクスチャ枠を使い分けると表現が広がります。
+- **RSP の拡張**: チーム数・戦闘員数は `rsp_game.h` の定数で定義されています。手動でじゃんけんを出す導線や、チームスコア表示などを追加できます。
 - **HUD の充実**: HP・所持武器・残弾数の表示は未実装です。`ui.c` / `font.c` を拡張して追加できます。
 
-## 10. 開発の始め方
+## 11. 開発の始め方
 
 ```
 git clone <repo>
-cd cub3d
+cd samatsum-cub3D
 make
 
-# 通常起動
+# 通常起動（FPS / RSP）
 ./cub3D maps/valid/1.cub
-./cub3D maps/valid/enemy_line.cub
+./cub3D maps/valid/rsp.cub RSP
 
-# Address Sanitizer 付きで起動（推奨）
-make fclean
-make CFLAGS="-O0 -g3 -fsanitize=address -Wall -Wextra -Werror -I codes/includes"
+# AddressSanitizer 付きで起動（推奨）
+make debug
 ./cub3D maps/valid/1.cub
-
-# メモリリーク検査（MiniLibX 由来のリークは抑制対象）
-valgrind --leak-check=full --suppressions=mlx.supp ./cub3D maps/valid/1.cub
 
 # コーディングルール検査
-python3 PythonCodes/lint.py
+make check        # = python3 codes/PythonCodes/lint.py
 ```
