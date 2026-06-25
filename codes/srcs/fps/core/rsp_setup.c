@@ -83,7 +83,7 @@ static int
 	t_sprite*	sprite;
 	t_enemy*	enemy;
 
-	tex = &game->assets.hand_tex[team * HAND_COUNT + hand];
+	tex = &game->assets.hand_tex[HAND_SLOT(team, hand)];
 	sprite = add_front_sprite(&game->world.sprites, 0., &sp->pos, tex);
 	if (!sprite) {
 		return (0);

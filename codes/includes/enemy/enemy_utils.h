@@ -23,5 +23,7 @@ void
 	patrol_enemy(t_enemy* cur, t_game* game, double delta_time);
 void
 	update_rsp_enemy(t_enemy* cur, t_game* game, double delta_time);
+double
+	wrap_pi(double angle);
 
 #endif

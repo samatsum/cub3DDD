@@ -9,7 +9,7 @@
 /* ************************************************************************** */
 void
 	patrol_enemy(t_enemy* cur, t_game* game, double delta_time);
-static double
+double
 	wrap_pi(double angle);
 static int
 	face_angle(t_enemy* cur, double target_angle, double delta_time);
@@ -68,7 +68,7 @@ void
 
 /* ************************************************************************** */
 // 角度を (-π, π] へ正規化する。目標との差から最短の回転方向を求めるために使う
-static double
+double
 	wrap_pi(double angle)
 {
 	while (angle <= -M_PI) {
