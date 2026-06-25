@@ -10,6 +10,8 @@ int
 	load_textures(t_window* window, t_tex* tex, t_config* config);
 void
 	clear_textures(t_window* window, t_tex* tex);
+int
+	load_tex_image(t_window* window, t_tex* tex);
 static int
 	load_tex(t_window* window, t_tex* tex, char* path);
 static void
@@ -62,22 +64,34 @@ void
 }
 
 /* ************************************************************************** */
-// パスから XPM 画像を読み込み、画像ハンドルとピクセル先頭アドレス(ptr)を tex に格納する。
-// path が NULL（その種別が .cub 未指定）なら何もせず成功扱い(1)。パスはあるが読み込みに
-// 失敗した場合のみ 0 を返す
+// 既に tex->path が設定されている前提で XPM 画像を読み込み、画像ハンドルとピクセル先頭アドレス
+// (ptr)を tex に格納する。成功で 1、path が NULL か読み込み失敗で 0。テクスチャ読込の中核を
+// 一本化し、config/武器/敵/手の各ローダーが共有する（所有権・start/end・致命可否は呼び出し側）
+int
+	load_tex_image(t_window* window, t_tex* tex)
+{
+	if (!tex->path) {
+		return (0);
+	}
+	tex->tex = mlx_xpm_file_to_image(window->ptr, tex->path, &tex->width, &tex->height);
+	if (!tex->tex) {
+		return (0);
+	}
+	tex->ptr = mlx_get_data_addr(tex->tex, &tex->bpp, &tex->size_line, &tex->endian);
+	return (1);
+}
+
+/* ************************************************************************** */
+// config テクスチャ1枚を読み込む。path が NULL（その種別が .cub 未指定）なら何もせず成功扱い
+// (1)。それ以外は borrow した path（config 所有）を tex に控えて load_tex_image へ委譲する
 static int
 	load_tex(t_window* window, t_tex* tex, char* path)
 {
-	if (path) {
-		tex->path = path;
-		tex->tex = mlx_xpm_file_to_image(window->ptr, path, &tex->width, &tex->height);
-		if (tex->tex) {
-			tex->ptr = mlx_get_data_addr(tex->tex, &tex->bpp, &tex->size_line, &tex->endian);
-		} else {
-			return (0);
-		}
+	if (!path) {
+		return (1);
 	}
-	return (1);
+	tex->path = path;
+	return (load_tex_image(window, tex));
 }
 
 /* ************************************************************************** */

@@ -1,12 +1,11 @@
-#include "core/core.h"             /* t_game 定義・自身のプロトタイプのため */
-#include "../minilibx-linux/mlx.h" /* mlx_xpm_file_to_image, mlx_get_data_addr 用 */
+#include "core/core.h"             /* t_game 定義・自身のプロトタイプ・load_tex_image のため */
 #include "tuning.h"                /* DEATH_TEX_PATH, DOOR_TEX_PATH 用 */
 
 /* ************************************************************************** */
 void
 	load_player_assets(t_game* game);
 static void
-	load_one_tex(void* mlx_ptr, t_tex* tex, char const* path_src);
+	load_one_tex(t_window* window, t_tex* tex, char const* path_src);
 
 /* ************************************************************************** */
 // プレイヤー視点のアセット（武器/手・死亡画面・扉）のテクスチャをまとめて読み込む。1枚ぶんの
@@ -26,7 +25,7 @@ void
 	paths[WTEX_HAND_RIGHT] = "textures/arm/Arm_righthand.xpm";
 	i = 0;
 	while (i < WEAPON_TEX_COUNT) {
-		load_one_tex(game->window.ptr, &game->assets.weapon_tex[i], paths[i]);
+		load_one_tex(&game->window, &game->assets.weapon_tex[i], paths[i]);
 		i++;
 	}
 	load_one_tex(game->window.ptr, &game->assets.death_tex, DEATH_TEX_PATH);
@@ -34,18 +33,11 @@ void
 }
 
 /* ************************************************************************** */
-// テクスチャ1枚を読み込む。パスを strdup し、失敗時は何もせず return（tex は呼び出し前の
-// NULL のまま＝非致命）。これにより NULL パスを mlx_xpm_file_to_image へ渡す事故を防ぐ。
-// 画像化に成功したときだけ data アドレスを取得する。3系統(武器/死亡/扉)で共通化した門番
+// テクスチャ1枚を読み込む。パスを strdup して tex->path に控え、共通の load_tex_image へ委譲する
+// (load_tex_image が NULL パスを弾くので strdup 失敗時も安全＝非致命)。3系統(武器/死亡/扉)で共有
 static void
-	load_one_tex(void* mlx_ptr, t_tex* tex, char const* path_src)
+	load_one_tex(t_window* window, t_tex* tex, char const* path_src)
 {
 	tex->path = ft_strdup(path_src);
-	if (!tex->path) {
-		return ;
-	}
-	tex->tex = mlx_xpm_file_to_image(mlx_ptr, tex->path, &tex->width, &tex->height);
-	if (tex->tex) {
-		tex->ptr = mlx_get_data_addr(tex->tex, &tex->bpp, &tex->size_line, &tex->endian);
-	}
+	load_tex_image(window, tex);
 }

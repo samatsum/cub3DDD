@@ -2,7 +2,6 @@
 
 #include "core/core.h"
 #include "enemy/enemy.h"
-#include "../minilibx-linux/mlx.h"
 #include "enemy/enemy_utils.h"
 
 /* ************************************************************************** */
@@ -30,11 +29,9 @@ int
 	i = 0;
 	while (i < ENEMY_TEX_COUNT) {
 		game->assets.enemy_tex[i].path = ft_strdup(paths[i]);
-		game->assets.enemy_tex[i].tex = mlx_xpm_file_to_image(game->window.ptr, game->assets.enemy_tex[i].path, &game->assets.enemy_tex[i].width, &game->assets.enemy_tex[i].height);
-		if (!game->assets.enemy_tex[i].tex) {
+		if (!load_tex_image(&game->window, &game->assets.enemy_tex[i])) {
 			return (0);
 		}
-		game->assets.enemy_tex[i].ptr = mlx_get_data_addr(game->assets.enemy_tex[i].tex, &game->assets.enemy_tex[i].bpp, &game->assets.enemy_tex[i].size_line, &game->assets.enemy_tex[i].endian);
 		set_pos(&game->assets.enemy_tex[i].start, 0, 0);
 		set_pos(&game->assets.enemy_tex[i].end, game->assets.enemy_tex[i].width, game->assets.enemy_tex[i].height);
 		i++;
