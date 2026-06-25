@@ -110,8 +110,6 @@ void
 	draw_weapon(struct s_game* game);
 int
 	init_image(t_window* window, t_image* img);
-void
-	destroy_image(t_window* window, t_image* img);
 int
 	draw_vertical_line(t_window* window, t_pos* start, int length, int color);
 int
