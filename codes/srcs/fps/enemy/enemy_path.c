@@ -10,89 +10,50 @@ int
 int
 	bfs_to_nearest_patrol(t_config* config, int sx, int sy, t_pos* next);
 static int
+	bfs_explore(t_config* config, int start_idx, int goal_idx, int* came);
+static int
 	cell_walkable(t_config* config, int x, int y);
 
 /* ************************************************************************** */
-// BFSで最短経路を全探索し、始点から終点までのマス列を path[] に前方順で格納する。
-// 経路長が PATH_MAX を超える場合は始点側の先頭 PATH_MAX マスだけを保持する
+// BFSで最短経路を全探索し、始点から終点までのマス列を path[] に前方順で格納する。探索本体は
+// bfs_explore に委譲し、ここでは came[] から終点→始点を逆向きに辿って path を組む。経路長が
+// PATH_MAX を超える場合は始点側の先頭 PATH_MAX マスだけを保持する
 int
 	bfs_fill_path(t_config* config, int sx, int sy, int gx, int gy, t_pos* path)
 {
-	int					cols;
-	int					total;
-	int					head;
-	int					tail;
-	int					i;
-	int					cur_idx;
-	int					start_idx;
-	int					goal_idx;
-	int					nx;
-	int					ny;
-	int					len;
-	int					f;
-	int*				came;
-	int*				queue;
-	static const int	off_x[4] = {1, -1, 0, 0};
-	static const int	off_y[4] = {0, 0, 1, -1};
+	int		cols;
+	int		start_idx;
+	int		cur_idx;
+	int		len;
+	int		f;
+	int*	came;
 
 	cols = config->map.columns;
-	total = cols * config->map.rows;
-	came = (int*)malloc(sizeof(int) * total);
-	queue = (int*)malloc(sizeof(int) * total);
-	if (!came || !queue) {
-		free(came);
-		free(queue);
+	came = (int*)malloc(sizeof(int) * (cols * config->map.rows));
+	if (!came) {
 		return (0);
 	}
-	i = 0;
-	while (i < total) {
-		came[i++] = -1;
-	}
 	start_idx = (sy * cols) + sx;
-	goal_idx = (gy * cols) + gx;
-	came[start_idx] = start_idx;
-	head = 0;
-	tail = 0;
-	queue[tail++] = start_idx;
-	while (head < tail) {
-		cur_idx = queue[head++];
-		if (cur_idx == goal_idx) {
-			break ;
-		}
-		i = 0;
-		while (i < 4) {
-			nx = (cur_idx % cols) + off_x[i];
-			ny = (cur_idx / cols) + off_y[i];
-			if (cell_walkable(config, nx, ny) && came[(ny * cols) + nx] == -1) {
-				came[(ny * cols) + nx] = cur_idx;
-				queue[tail++] = (ny * cols) + nx;
-			}
-			i++;
-		}
-	}
-	if (came[goal_idx] == -1) {
+	cur_idx = bfs_explore(config, start_idx, (gy * cols) + gx, came);
+	if (cur_idx < 0) {
 		free(came);
-		free(queue);
 		return (0);
 	}
 	len = 1;
-	cur_idx = goal_idx;
 	while (cur_idx != start_idx) {
 		cur_idx = came[cur_idx];
 		len++;
 	}
-	cur_idx = goal_idx;
-	i = 0;
-	while (i < len) {
-		f = (len - 1) - i;
+	cur_idx = (gy * cols) + gx;
+	f = len - 1;
+	while (f >= 0) {
 		if (f < PATH_MAX) {
 			set_pos(&path[f], cur_idx % cols, cur_idx / cols);
 		}
 		cur_idx = came[cur_idx];
-		i++;
+		f--;
 	}
 	free(came);
-	free(queue);
 	if (len > PATH_MAX) {
 		return (PATH_MAX);
 	}
@@ -100,74 +61,86 @@ int
 }
 
 /* ************************************************************************** */
-// BFSで始点から最も近い Pロード セルを探し、始点の次に進むべき1マスを返す
+// BFSで始点から最も近い Pロード セルを探し(bfs_explore に委譲)、始点の次に進むべき1マスを返す。
+// came[] を発見セルから始点直前まで逆に辿り、その1つ手前のマスが「次の1歩」になる
 int
 	bfs_to_nearest_patrol(t_config* config, int sx, int sy, t_pos* next)
 {
-	int					cols;
-	int					total;
-	int					head;
-	int					tail;
-	int					i;
-	int					cur_idx;
-	int					start_idx;
-	int					goal_idx;
-	int					nx;
-	int					ny;
-	int*				came;
-	int*				queue;
-	static const int	off_x[4] = {1, -1, 0, 0};
-	static const int	off_y[4] = {0, 0, 1, -1};
+	int		cols;
+	int		start_idx;
+	int		cur_idx;
+	int*	came;
 
 	cols = config->map.columns;
-	total = cols * config->map.rows;
-	came = (int*)malloc(sizeof(int) * total);
-	queue = (int*)malloc(sizeof(int) * total);
-	if (!came || !queue) {
-		free(came);
-		free(queue);
+	came = (int*)malloc(sizeof(int) * (cols * config->map.rows));
+	if (!came) {
 		return (0);
-	}
-	i = 0;
-	while (i < total) {
-		came[i++] = -1;
 	}
 	start_idx = (sy * cols) + sx;
-	came[start_idx] = start_idx;
-	head = 0;
-	tail = 0;
-	queue[tail++] = start_idx;
-	goal_idx = -1;
-	while (head < tail) {
-		cur_idx = queue[head++];
-		if (config->map.flags[cur_idx] & CELL_PATROL) {
-			goal_idx = cur_idx;
-			break ;
-		}
-		i = 0;
-		while (i < 4) {
-			nx = (cur_idx % cols) + off_x[i];
-			ny = (cur_idx / cols) + off_y[i];
-			if (cell_walkable(config, nx, ny) && came[(ny * cols) + nx] == -1) {
-				came[(ny * cols) + nx] = cur_idx;
-				queue[tail++] = (ny * cols) + nx;
-			}
-			i++;
-		}
-	}
-	if (goal_idx == -1) {
+	cur_idx = bfs_explore(config, start_idx, -1, came);
+	if (cur_idx < 0) {
 		free(came);
-		free(queue);
 		return (0);
 	}
-	cur_idx = goal_idx;
 	while (came[cur_idx] != start_idx) {
 		cur_idx = came[cur_idx];
 	}
 	set_pos(next, cur_idx % cols, cur_idx / cols);
 	free(came);
-	free(queue);
 	return (1);
+}
+
+/* ************************************************************************** */
+// 幅優先探索の中核。start_idx から探索して came[](呼び出し側が確保)に親リンクを埋め、停止した
+// セルの添字を返す。goal_idx>=0 ならそのセル、goal_idx<0 なら最初の CELL_PATROL セルで停止する。
+// 未到達は -1、作業用 queue の malloc 失敗も -1。2系統の経路探索が探索ループと近傍展開を共有する
+static int
+	bfs_explore(t_config* config, int start_idx, int goal_idx, int* came)
+{
+	static const int	off_x[4] = {1, -1, 0, 0};
+	static const int	off_y[4] = {0, 0, 1, -1};
+	int					cols;
+	int					head;
+	int					tail;
+	int					i;
+	int					cur;
+	int					nx;
+	int					ny;
+	int*				queue;
+
+	cols = config->map.columns;
+	queue = (int*)malloc(sizeof(int) * (cols * config->map.rows));
+	if (!queue) {
+		return (-1);
+	}
+	i = 0;
+	while (i < cols * config->map.rows) {
+		came[i++] = -1;
+	}
+	came[start_idx] = start_idx;
+	head = 0;
+	tail = 0;
+	queue[tail++] = start_idx;
+	while (head < tail) {
+		cur = queue[head++];
+		if ((goal_idx >= 0 && cur == goal_idx)
+			|| (goal_idx < 0 && (config->map.flags[cur] & CELL_PATROL))) {
+			free(queue);
+			return (cur);
+		}
+		i = 0;
+		while (i < 4) {
+			nx = (cur % cols) + off_x[i];
+			ny = (cur / cols) + off_y[i];
+			if (cell_walkable(config, nx, ny) && came[(ny * cols) + nx] == -1) {
+				came[(ny * cols) + nx] = cur;
+				queue[tail++] = (ny * cols) + nx;
+			}
+			i++;
+		}
+	}
+	free(queue);
+	return (-1);
 }
 
 /* ************************************************************************** */

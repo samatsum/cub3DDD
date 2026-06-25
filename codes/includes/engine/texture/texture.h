@@ -40,6 +40,8 @@ int
 void
 	clear_textures(struct s_window* window, t_tex* tex);
 int
+	load_tex_image(struct s_window* window, t_tex* tex);
+int
 	shade_color(int color, double divide);
 int
 	distance_shade(int options, int color, double distance, double light);

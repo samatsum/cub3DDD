@@ -59,7 +59,7 @@ static void
 	double	start_x;
 	double	start_y;
 
-	tex = &game->assets.hand_tex[game->player_rsp.team * HAND_COUNT + game->player_rsp.hand];
+	tex = &game->assets.hand_tex[HAND_SLOT(game->player_rsp.team, game->player_rsp.hand)];
 	if (!tex->tex) {
 		return ;
 	}

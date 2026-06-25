@@ -1,6 +1,5 @@
 #include "core/core.h"
 #include "rsp/rsp_game.h"
-#include "../minilibx-linux/mlx.h"
 
 /* ************************************************************************** */
 
@@ -29,11 +28,9 @@ int
 	while (i < TEAM_COUNT * HAND_COUNT) {
 		tex = &game->assets.hand_tex[i];
 		tex->path = ft_strdup(paths[i]);
-		tex->tex = mlx_xpm_file_to_image(game->window.ptr, tex->path, &tex->width, &tex->height);
-		if (!tex->tex) {
+		if (!load_tex_image(&game->window, tex)) {
 			return (0);
 		}
-		tex->ptr = mlx_get_data_addr(tex->tex, &tex->bpp, &tex->size_line, &tex->endian);
 		set_pos(&tex->start, 0, 0);
 		set_pos(&tex->end, tex->width, tex->height);
 		i++;

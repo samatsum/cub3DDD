@@ -39,7 +39,7 @@ void
 	} else {
 		patrol_enemy(cur, game, delta_time);
 	}
-	cur->sprite->tex = &game->assets.hand_tex[cur->rsp.team * HAND_COUNT + cur->rsp.hand];
+	cur->sprite->tex = &game->assets.hand_tex[HAND_SLOT(cur->rsp.team, cur->rsp.hand)];
 }
 
 /* ************************************************************************** */
