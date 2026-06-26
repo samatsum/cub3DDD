@@ -6,9 +6,9 @@
 /* ************************************************************************** */
 void
 	ray_cast(t_camera* camera, t_config* config, t_ray* ray, double cam_x);
-int
+static int
 	wall_direction(t_ray* ray);
-double
+static double
 	ray_distance(t_camera* camera, t_ray* ray);
 static void
 	init_ray(t_ray* ray, t_camera* camera, double camera_x);
@@ -55,7 +55,7 @@ void
 /* ************************************************************************** */
 // 衝突した壁の面に対応するテクスチャ方向を返す。side=1(横線=南北面)なら光線の y 成分の
 // 符号で北/南を、side=0(縦線=東西面)なら x 成分の符号で西/東を選ぶ
-int
+static int
 	wall_direction(t_ray* ray)
 {
 	if (ray->side) {
@@ -68,7 +68,7 @@ int
 // プレイヤーから壁までの「カメラ平面に垂直な」距離を返す。視線方向そのままの距離だと
 // 画面端ほど引き伸ばされる魚眼歪みが出るため、踏み越えた境界軸に沿った成分のみで距離を
 // 求めて補正する。(1 - step)/2 は踏み込んだマスのどちら側の面に当たったかの位置合わせ
-double
+static double
 	ray_distance(t_camera* camera, t_ray* ray)
 {
 	double	pos;

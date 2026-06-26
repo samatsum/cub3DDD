@@ -51,12 +51,8 @@ int
 	move_perp_camera(t_camera* cam, struct s_config* config, struct s_world* world, int direction, double time_mult);
 int
 	rotate_camera(t_camera* cam, struct s_config* config, int dir, double time_mult);
-int
-	wall_direction(t_ray* ray);
 void
 	ray_cast(t_camera* camera, struct s_config* config, t_ray* ray, double cam_x);
-double
-	ray_distance(t_camera* camera, t_ray* ray);
 int
 	spawn_marker_slot(char c);
 	

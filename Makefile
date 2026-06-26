@@ -48,7 +48,7 @@ FPS_SRCS        = core/shoot.c core/item.c core/respawn.c core/assets.c \
                   render/weapon_fps.c
 
 RSP_SRCS        = rsp_rule.c rsp_assets.c rsp_combat.c rsp_setup.c rsp_ai.c \
-                  weapon_rsp.c
+                  rsp_weapon.c
 
 OBJS            = $(addprefix $(OBJ_DIR)/common/, $(COMMON_SRCS:.c=.o)) \
                   $(addprefix $(OBJ_DIR)/fps/, $(FPS_SRCS:.c=.o)) \

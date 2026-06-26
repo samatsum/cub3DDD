@@ -3,11 +3,11 @@
 /* ************************************************************************** */
 int
 	get_next_line(int fd, char** line);
-int
+static int
 	read_file_until_nl(t_str** str, int fd);
-int
+static int
 	malloc_next_line(t_str** str, char** line);
-int
+static int
 	write_next_line(t_str** str, char** line);
 static int
 	gnl_clear(t_fd** list, int fd, char** line);
@@ -59,7 +59,7 @@ int
 // 改行が現れるまで(または EOF/エラーまで)読み込みを繰り返し、チャンクをリスト str へ蓄える。
 // 成功:1 / 自身の scratch バッファ malloc 失敗:-1 / read 失敗:-2。直近に読んだバッファに改行が
 // 出た時点で打ち切るので、行をまたいで余分に読み込まない。scratch は必ず解放してから返す
-int
+static int
 	read_file_until_nl(t_str** str, int fd)
 {
 	char*	buffer;
@@ -85,7 +85,7 @@ int
 // 次の1行を格納するのに必要なメモリを確保する。バッファリストを走査して最初の '\n' までの
 // 文字数 j を数え(改行を含む長さ)、j+1 バイト確保して末尾を NUL 終端する。走査で進めた *str は
 // 先頭 first へ戻す。成功:1 / malloc 失敗:0
-int
+static int
 	malloc_next_line(t_str** str, char** line)
 {
 	t_str*	first;
@@ -120,7 +120,7 @@ int
 // 確保済みの line へ、バッファチャンクから1行ぶんを書き写す。改行に達したらそれを消費し(戻り値
 // 1)、改行より後ろの残りを同チャンク先頭へ詰め直して次回呼び出しに残す。改行前に使い切った
 // チャンクは順次解放する。改行が無いまま尽きたら 0(末尾改行なしの最終行や EOF を表す)
-int
+static int
 	write_next_line(t_str** str, char** line)
 {
 	int		idx0;

@@ -9,9 +9,9 @@
 /* ************************************************************************** */
 void
 	render_frame(t_game* game);
-void
+static void
 	update_screen(t_game* game);
-void
+static void
 	update_window(t_window* w, int options, int collected, int to_collect);
 static void
 	draw_death_screen(t_game* game);
@@ -35,7 +35,7 @@ void
 // 画面を黒で消去し、描画に必要な状態を t_render スナップショットへ集約してから、列群を並列
 // レイキャストする(cast_columns)。その上にスプライト→武器→照準→UIの順で重ねる。
 // 懐中電灯を装備中ならフラッシュライトのフラグを立て、各描画の暗化補正に反映させる
-void
+static void
 	update_screen(t_game* game)
 {
 	t_render	rnd;
@@ -74,7 +74,7 @@ void
 /* ************************************************************************** */
 // 完成したバッファ画像をウィンドウへ転送する。UIが有効なら、転送前に収集状況のテキストを
 // 画面へ書き込んでおく
-void
+static void
 	update_window(t_window* w, int options, int collected, int to_collect)
 {
 	if (options & FLAG_UI) {

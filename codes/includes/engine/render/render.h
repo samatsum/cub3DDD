@@ -94,14 +94,8 @@ static inline void
 }
 
 /* ************************************************************************** */
-int
-	init_window(t_window* window, struct s_config* config);
-void
-	update_window(t_window* w, int options, int collected, int to_collect);
 void
 	render_frame(struct s_game* game);
-void
-	update_screen(struct s_game* game);
 void
 	cast_columns(t_render* rnd, double* camera_x);
 void
@@ -115,8 +109,6 @@ void
 void
 	render_rsp_hand(struct s_game* game);
 int
-	init_image(t_window* window, t_image* img);
-int
 	draw_vertical_line(t_window* window, t_pos* start, int length, int color);
 int
 	draw_rectangle(t_window* window, t_pos* p1, t_pos* p2, int color);
@@ -126,8 +118,6 @@ void
 	draw_sky_floor(t_render* rnd, t_ray* ray);
 t_sprite*
 	add_front_sprite(t_sprite** sprites, double distance, t_pos* pos, t_tex* tex);
-t_sprite*
-	add_sorted_sprite(t_sprite** sprites, t_sprite* sprite);
 t_sprite*
 	sort_sprites(t_camera* camera, t_sprite* sprites);
 void

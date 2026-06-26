@@ -7,7 +7,7 @@
 /* ************************************************************************** */
 t_enemy*
 	add_enemy(t_enemy** enemies, t_sprite* sprite, int hp);
-void
+static void
 	delete_enemy(t_enemy** enemies, t_sprite** sprites, t_sprite* target);
 void
 	clear_enemies(t_enemy** enemies);
@@ -49,7 +49,7 @@ t_enemy*
 
 /* ************************************************************************** */
 // 対象のスプライトを持つ敵を検索し、敵リストとスプライトリストの両方から削除する
-void
+static void
 	delete_enemy(t_enemy** enemies, t_sprite** sprites, t_sprite* target)
 {
 	t_enemy*	current;

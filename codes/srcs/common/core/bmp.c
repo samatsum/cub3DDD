@@ -9,7 +9,7 @@
 /* ************************************************************************** */
 int
 	screenshot(t_game* game);
-int
+static int
 	save_bmp(t_game* game, int fd);
 static void
 	get_screenshot_path(char* buffer);
@@ -52,7 +52,7 @@ int
 // 1行を4バイト境界に揃えるパディング pad を計算し、ヘッダ54バイト＋(幅+pad)*高さ*3 を
 // ファイルサイズに。ヘッダ→データの順に書き、いずれか失敗で 0 を返す。fd の open/close は
 // 呼び出し側が一元管理するため、ここでは行わない（以前はここで別名を再オープンしていた）
-int
+static int
 	save_bmp(t_game* game, int fd)
 {
 	t_window*	w;

@@ -194,8 +194,6 @@ int
 int
 	parse_config(t_config* config, char const* conf_path);
 int
-	count_check_columns(char const* line);
-int
 	check_top_bottom_borders(t_str* map_buffer);
 int
 	check_left_right_borders(t_str* map_buffer);

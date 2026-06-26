@@ -3,7 +3,7 @@
 /* ************************************************************************** */
 t_sprite*
 	sort_sprites(t_camera* camera, t_sprite* sprites);
-t_sprite*
+static t_sprite*
 	add_sorted_sprite(t_sprite** sorted, t_sprite* sprite);
 t_sprite*
 	add_front_sprite(t_sprite** sprites, double distance, t_pos* pos, t_tex* tex);
@@ -39,7 +39,7 @@ t_sprite*
 // スプライトを距離の降順(遠い順)になるよう sorted リストへ挿入する。新スプライトより遠いノードを
 // 読み飛ばし、最初に「同じか近い」ノードの直前へ繋ぐ。これにより描画側が先頭から順に描けば
 // 遠→近の重ね順(ペインターズアルゴリズム)になる。previous が NULL なら先頭挿入
-t_sprite*
+static t_sprite*
 	add_sorted_sprite(t_sprite** sorted, t_sprite* sprite)
 {
 	t_sprite*	first;

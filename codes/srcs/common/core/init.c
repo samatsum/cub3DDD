@@ -13,9 +13,9 @@ int
 	finish_init(t_game* game);
 void
 	init_game(t_game* game);
-int
+static int
 	init_window(t_window* window, t_config* config);
-int
+static int
 	init_image(t_window* window, t_image* img);
 static int
 	find_sprites(t_game* game);
@@ -84,7 +84,7 @@ void
 
 /* ************************************************************************** */
 // ウィンドウを作成し、画面サイズやFOVの設定を行う
-int
+static int
 	init_window(t_window* window, t_config* config)
 {
 	set_pos(&window->size, config->requested_width, config->requested_height);
@@ -126,7 +126,7 @@ int
 
 /* ************************************************************************** */
 // メモリ上に描画用のイメージ領域を確保し、データアドレスを取得する
-int
+static int
 	init_image(t_window* window, t_image* img)
 {
 	img->img = mlx_new_image(window->ptr, window->size.x, window->size.y);

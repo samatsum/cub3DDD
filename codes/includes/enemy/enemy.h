@@ -12,8 +12,6 @@ struct s_game;
 t_enemy*
 	add_enemy(t_enemy** enemies, t_sprite* sprite, int hp);
 void
-	delete_enemy(t_enemy** enemies, t_sprite** sprites, t_sprite* target);
-void
 	clear_enemies(t_enemy** enemies);
 void
 	damage_enemy(struct s_game* game, t_sprite* hit_sprite);

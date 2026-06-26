@@ -6,9 +6,9 @@
 /* ************************************************************************** */
 void
 	save_spawn(t_game* game);
-void
+static void
 	respawn_at(t_game* game, char const* allowed);
-void
+static void
 	respawn_player(t_game* game);
 void
 	respawn_rsp_player(t_game* game);
@@ -33,7 +33,7 @@ void
 /* ************************************************************************** */
 // allowed の向き文字に該当するスポーンから1つランダムに選んで配置する。
 // FPS=DIRECTIONS（全方向）、RSP=赤 "NW" / 青 "SE"。毎回選び直す
-void
+static void
 	respawn_at(t_game* game, char const* allowed)
 {
 	int	idx;
@@ -47,7 +47,7 @@ void
 
 /* ************************************************************************** */
 // プレイヤーを初期スポーン地点へ戻す（FPS用。全方向プールから1つ選ぶ）
-void
+static void
 	respawn_player(t_game* game)
 {
 	respawn_at(game, DIRECTIONS);

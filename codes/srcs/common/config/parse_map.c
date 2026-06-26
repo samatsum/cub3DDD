@@ -3,7 +3,7 @@
 /* ************************************************************************** */
 int
 	parse_map(t_config* config, t_str* map_buffer);
-int
+static int
 	copy_map(t_config* config, t_str* map_buffer, int* map);
 static int
 	build_map_flags(t_config* config);
@@ -45,7 +45,7 @@ int
 // マップ行リストを1次元 int 配列 map にコピーし、見つかったカメラ（スポーン文字
 // N/S/E/W）の数を返す。各行で空白を読み飛ばしつつ1マスずつ格納し、line が列インデックス。
 // 戻り値のカメラ数を呼び出し側が 1 未満＝スポーン無しとして弾くために使う
-int
+static int
 	copy_map(t_config* config, t_str* map_buffer, int* map)
 {
 	int i;
