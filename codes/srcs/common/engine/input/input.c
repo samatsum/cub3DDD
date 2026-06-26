@@ -132,7 +132,7 @@ static void
 	} else if (keycode == KEY_NUM_3) {
 		game->input.current_weapon = WEP_HANDS;
 	} else if (keycode == KEY_SPACE && game->input.current_weapon == WEP_PISTOL
-		&& game->mode != MODE_RSP) {
+		&& game->mode_ops.can_shoot) {
 		if (game->input.is_shooting == 0) {
 			game->input.is_shooting = SHOOT_COOLDOWN;
 			shoot_target(game);

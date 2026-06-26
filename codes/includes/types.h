@@ -37,6 +37,18 @@ typedef enum e_game_mode
 	MODE_RSP
 }				t_game_mode;
 
+// モード別操作テーブル。各モードが自分の関数を登録し、common は間接呼び出しのみ行う
+typedef struct s_mode_ops
+{
+	int		(*init_assets)(struct s_game *game);
+	int		(*init_world)(struct s_game *game);
+	void	(*combat)(struct s_game *game);
+	void	(*respawn)(struct s_game *game);
+	void	(*update_enemy)(t_enemy *enemy, struct s_game *game, double dt);
+	void	(*draw_weapon)(struct s_game *game);
+	int		can_shoot;
+}				t_mode_ops;
+
 // 武器・手のテクスチャ配列のインデックス
 typedef enum e_weapon_tex_id
 {
@@ -121,6 +133,7 @@ typedef struct s_game
 	int				options;
 	int				last_options;
 	int				mode;
+	t_mode_ops		mode_ops;
 	int				rsp_on_home;
 }				t_game;
 

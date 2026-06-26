@@ -37,18 +37,18 @@ COMMON_SRCS     = main.c \
                   engine/texture/color.c engine/texture/texture.c \
                   engine/input/input.c \
                   core/collision.c core/bmp.c \
-                  core/loop.c core/init.c core/exit.c \
+                  core/loop.c core/init.c core/exit.c core/respawn.c \
                   enemy/enemy.c \
                   ui/font.c ui/ui.c ui/crosshair.c
 
-FPS_SRCS        = core/shoot.c core/item.c core/respawn.c core/assets.c \
+FPS_SRCS        = core/shoot.c core/item.c core/respawn.c core/mode_fps.c core/assets.c \
                   enemy/enemy_ai.c enemy/enemy_assets.c \
                   enemy/enemy_sense.c enemy/enemy_path.c enemy/enemy_move.c \
                   enemy/enemy_patrol.c \
                   render/weapon_fps.c
 
 RSP_SRCS        = rsp_rule.c rsp_assets.c rsp_combat.c rsp_setup.c rsp_ai.c \
-                  rsp_weapon.c
+                  rsp_weapon.c rsp_mode.c
 
 OBJS            = $(addprefix $(OBJ_DIR)/common/, $(COMMON_SRCS:.c=.o)) \
                   $(addprefix $(OBJ_DIR)/fps/, $(FPS_SRCS:.c=.o)) \

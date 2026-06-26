@@ -2,7 +2,6 @@
 
 #include "core/core.h"
 #include "enemy/enemy.h"
-#include "enemy/enemy_utils.h"
 
 /* ************************************************************************** */
 t_enemy*
@@ -142,11 +141,7 @@ void
 
 	cur = game->world.enemies;
 	while (cur) {
-		if (game->mode == MODE_RSP) {
-			update_rsp_enemy(cur, game, delta_time);
-		} else {
-			update_fps_enemy(cur, game, delta_time);
-		}
+		game->mode_ops.update_enemy(cur, game, delta_time);
 		cur = cur->next;
 	}
 }

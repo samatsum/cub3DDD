@@ -14,11 +14,7 @@ void
 void
 	draw_weapon(t_game* game)
 {
-	if (game->mode == MODE_RSP) {
-		render_rsp_hand(game);
-		return ;
-	}
-	render_fps_weapon(game);
+	game->mode_ops.draw_weapon(game);
 }
 
 /* ************************************************************************** */
