@@ -1,5 +1,4 @@
 #include "core/core.h"
-#include "core/respawn.h"
 #include "rsp/rsp_game.h"
 #include "tuning.h"
 
@@ -79,7 +78,7 @@ static void
 	if (res == RSP_WIN) {
 		respawn_npc(game, npc);
 	} else if (res == RSP_LOSE) {
-		respawn_rsp_player(game);
+		game->mode_ops.respawn(game);
 	}
 }
 

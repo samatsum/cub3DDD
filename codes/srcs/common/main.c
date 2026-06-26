@@ -1,6 +1,7 @@
 #include <stdbool.h>
 #include <stdlib.h>
 #include "core/core.h"
+#include "core/mode_ops.h"
 #include "engine/input/input.h"
 #include "engine/input/keymap.h"
 #include "../minilibx-linux/mlx.h"
@@ -49,6 +50,10 @@ static bool
 	}
 	if (argc >= 3 && ft_strcmp(argv[2], "RSP") == 0) {
 		game->mode = MODE_RSP;
+		game->mode_ops = rsp_mode_ops();
+	} else {
+		game->mode = MODE_FPS;
+		game->mode_ops = fps_mode_ops();
 	}
 	return (true);
 }

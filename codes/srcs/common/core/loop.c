@@ -3,7 +3,6 @@
 #include "core/core.h"
 #include "core/respawn.h"
 #include "enemy/enemy.h"
-#include "rsp/rsp_game.h"
 #include "tuning.h"
 #include "utils/utils.h"// PROFILE マクロのため
 
@@ -46,11 +45,7 @@ int
 			check_quest(game);
 		}
 		update_enemies(game, delta_time);
-		if (game->mode == MODE_RSP) {
-			resolve_rsp_combat(game);
-		} else {
-			check_enemy_contact(game);
-		}
+		game->mode_ops.combat(game);
 	}
 	PROFILE_END(IroIro);
 	PROFILE_START(render_frame);

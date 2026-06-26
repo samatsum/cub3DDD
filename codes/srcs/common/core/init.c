@@ -6,7 +6,6 @@
 #include "tuning.h"
 #include "engine/render/light.h"
 #include "core/respawn.h"
-#include "rsp/rsp_game.h"
 
 /* ************************************************************************** */
 int
@@ -34,8 +33,8 @@ int
 	if (!init_enemy_textures(game)) {
 		return (exit_error(game, "Error:\nfailed to load enemy textures.\n"));
 	}
-	if (game->mode == MODE_RSP && !init_hand_textures(game)) {
-		return (exit_error(game, "Error:\nfailed to load hand textures.\n"));
+	if (!game->mode_ops.init_assets(game)) {
+		return (exit_error(game, "Error:\nfailed to load mode assets.\n"));
 	}
 	collect_spawns(&game->config);
 	save_spawn(game);
@@ -190,7 +189,7 @@ static int
 		}
 		i++;
 	}
-	if (game->mode == MODE_RSP && !setup_rsp_combatants(game)) {
+	if (!game->mode_ops.init_world(game)) {
 		return (0);
 	}
 	return (1);
