@@ -78,24 +78,20 @@ samatsum-cub3D/
 │   │   │   │   │           sprite_utils.c, cast_columns.c, light.c, tables.c,
 │   │   │   │   │           draw_weapon.c}  # draw_weapon=武器描画の振り分け＋共通 draw_overlay
 │   │   │   │   └── texture/{texture.c, color.c}
-│   │   │   ├── enemy/enemy.c         # 敵リスト管理(add/delete/clear/damage)＋ update_enemies 振り分け
+│   │   │   ├── enemy/{enemy.c, enemy_path.c, enemy_move.c, enemy_patrol.c}  # 敵リスト管理＋探索/移動/巡回（両モード共通）
 │   │   │   ├── gnl/{get_next_line.c, get_next_line_utils.c}
 │   │   │   ├── ui/{font.c, ui.c, crosshair.c}  # 文字描画・ミニマップ・照準（両モード）
 │   │   │   └── utils/                # libft 相当の自作ユーティリティ（pos.c に set/copy/dist_pos）
 │   │   │
-│   │   ├── fps/                      # FPS モード固有の実装
-│   │   │   ├── core/{shoot.c, item.c, respawn.c, assets.c}
-│   │   │   ├── enemy/{enemy_ai.c, enemy_assets.c, enemy_sense.c,
-│   │   │   │         enemy_path.c, enemy_move.c, enemy_patrol.c}  # 巡回/索敵/追跡 AI
-│   │   │   └── render/weapon_fps.c   # 素手/武器(ピストル・ライト)のオーバーレイ描画
+│   │   ├── fps/                      # FPS モード固有の実装（core/enemy/render の3層）
+│   │   │   ├── core/{fps_shoot.c, fps_item.c, fps_respawn.c, fps_mode.c, fps_assets.c}
+│   │   │   ├── enemy/{fps_enemy_ai.c, fps_enemy_assets.c, fps_enemy_sense.c}  # 索敵/追跡 AI・敵テクスチャ
+│   │   │   └── render/fps_weapon.c   # 素手/武器(ピストル・ライト)のオーバーレイ描画
 │   │   │
-│   │   └── rsp/                      # RSP モード固有の実装（フラット。§4）
-│   │       ├── rsp_rule.c            # 純粋ルール（勝敗 rsp_outcome / 手変更 rsp_rehand）
-│   │       ├── rsp_assets.c          # ハンドテクスチャ読込 init_hand_textures
-│   │       ├── rsp_setup.c           # 戦闘員（プレイヤー＋NPC）配置 setup_rsp_combatants
-│   │       ├── rsp_combat.c          # 毎フレームの接触勝敗解決 resolve_rsp_combat
-│   │       ├── rsp_ai.c              # NPC AI update_rsp_enemy
-│   │       └── weapon_rsp.c          # じゃんけんの手のオーバーレイ描画 render_rsp_hand
+│   │   └── rsp/                      # RSP モード固有の実装（core/enemy/render の3層。§4）
+│   │       ├── core/{rsp_mode.c, rsp_setup.c, rsp_assets.c, rsp_rule.c, rsp_combat.c}
+│   │       ├── enemy/rsp_enemy_ai.c  # NPC AI update_rsp_enemy
+│   │       └── render/rsp_weapon.c   # じゃんけんの手のオーバーレイ描画 render_rsp_hand
 │   │
 │   ├── minilibx-linux/               # ベンダー: MiniLibX
 │   └── PythonCodes/                  # clint（独自 C コーディングルール linter）と移行スクリプト
@@ -107,7 +103,7 @@ samatsum-cub3D/
 
 ## 3. 敵 AI（巡回・索敵・追跡）— FPS モード
 
-敵 AI は **「毎フレーム索敵 → 状態に応じて巡回 or 追跡 → 移動 → テクスチャ更新」** という一本の流れで動きます。統括（mode 振り分け）は両モード共通の `enemy.c::update_enemies` で、FPS 時は各敵に `enemy_ai.c::update_fps_enemy`、RSP 時は `rsp_ai.c::update_rsp_enemy` を適用します。
+敵 AI は **「毎フレーム索敵 → 状態に応じて巡回 or 追跡 → 移動 → テクスチャ更新」** という一本の流れで動きます。統括（mode 振り分け）は両モード共通の `enemy.c::update_enemies` で、FPS 時は各敵に `fps_enemy_ai.c::update_fps_enemy`、RSP 時は `rsp_enemy_ai.c::update_rsp_enemy` を適用します。
 
 ### 3.1 状態と振り分け
 
@@ -129,7 +125,7 @@ else                   { patrol_enemy(); }
 
 検知すると `track_timer` が `enemy_track_seconds`（既定 5 秒・`.cub` の `ET`）にリセットされ、見失っても残時間が尽きるまでは追跡を継続します。
 
-### 3.2 索敵（`enemy_sense.c::enemy_sees_player`）
+### 3.2 索敵（`fps_enemy_sense.c::enemy_sees_player`）
 
 距離・視野角・視線の **3 条件 AND** で判定します。
 
@@ -147,7 +143,7 @@ else                   { patrol_enemy(); }
 - **現在地が `P` 外**：`bfs_to_nearest_patrol`（BFS）で最近接 `P` への次の 1 マスを求めて復帰。`P` が見つからなければ `ENEMY_STATE_IDLE`。
 - **回頭（`face_angle`）**：目標方向との角度差を旋回速度上限 `ENEMY_TURN_DEG_PER_SEC(=90°/秒)` で詰め、**向きが揃うまでは前進せずその場で旋回**。揃ったフレームだけ `step_enemy` で前進します。
 
-### 3.4 追跡（`enemy_ai.c::track_player` / 経路 `enemy_path.c`）
+### 3.4 追跡（`fps_enemy_ai.c::track_player` / 経路 `enemy_path.c`）
 
 - `ensure_path`：プレイヤーの**セルが変わったか経路を使い切ったときだけ** `bfs_fill_path` を再計算（キャッシュは `t_enemy.path[PATH_MAX]`）。
 - `advance_path_index`：既に到達したセルを読み飛ばして次の添字へ。
@@ -184,8 +180,8 @@ else                   { patrol_enemy(); }
 | `rsp_assets.c` | `init_hand_textures`：`team * HAND_COUNT + hand` の並びでハンド画像 6 枚を読込 |
 | `rsp_setup.c` | `setup_rsp_combatants`：N/W から 2 地点・S/E から 2 地点を重複なく選び、4 人のうち 1 人をプレイヤー・残りを NPC として配置 |
 | `rsp_combat.c` | `resolve_rsp_combat`：毎フレーム全異チームペアの接触を勝敗解決。負けた側を即リスポーン。自陣スポーンへの踏み込みで手を変える `rsp_home_rehand` も担当 |
-| `rsp_ai.c` | `update_rsp_enemy`：最寄りの異チーム戦闘員を見て、勝てる手なら追跡・負ける手なら逃走・あいこや相手不在は徘徊。見た目は team×手のハンドテクスチャを毎フレーム反映 |
-| `weapon_rsp.c` | `render_rsp_hand`：自分のチーム×手のハンドテクスチャを画面下部中央へ描画（共通の `draw_weapon` から RSP 時に振り分けられる） |
+| `rsp_enemy_ai.c` | `update_rsp_enemy`：最寄りの異チーム戦闘員を見て、勝てる手なら追跡・負ける手なら逃走・あいこや相手不在は徘徊。見た目は team×手のハンドテクスチャを毎フレーム反映 |
+| `rsp_weapon.c` | `render_rsp_hand`：自分のチーム×手のハンドテクスチャを画面下部中央へ描画（共通の `draw_weapon` から RSP 時に振り分けられる） |
 
 各 NPC のチーム・手・初期リスポーン地点・生存は `t_enemy.rsp`（`t_rsp_state`）に埋め込み、プレイヤーは `t_game.player_rsp` が保持します。乱数状態は `t_game.rsp_seed`、自陣踏み込み検出は `t_game.rsp_on_home` を使います。
 
@@ -224,7 +220,7 @@ else                   { patrol_enemy(); }
 - マップ文字ブロック：通行不可 `a`〜`e`（`IMP_FIRST='a'`）、通行可 `f`〜`j`（`PAS_FIRST='f'`）、収集 `k`〜`o`（`COL_FIRST='k'`）。`OBJ_PER_CATEGORY = 5`。
 - 分類は `IS_IMPASSABLE` / `IS_PASSABLE` / `IS_COLLECTIBLE`、当たり判定は `IS_BLOCKING`（`'1'`・閉じた扉 `'D'`・通行不可）で行います。
 - マップ文字 → テクスチャスロットは `OBJ_SLOT(c)` が連番の `t_texture_id`（`TEX_IMP_1..5` / `TEX_PAS_1..5` / `TEX_COL_1..5`）を算術で引きます。
-- 扉 `'D'`（`DOOR_CHAR`）は収集完了まで `IS_BLOCKING` で壁扱い。`item.c::open_doors` が完了時に `'D'`→`'0'` へ書き換えて開放します。
+- 扉 `'D'`（`DOOR_CHAR`）は収集完了まで `IS_BLOCKING` で壁扱い。`fps_item.c::open_doors` が完了時に `'D'`→`'0'` へ書き換えて開放します。
 - 有効マップ文字集合は `VALID_MAP_CHARACTERS = " 01abcdefghijklmnoEWNSMPD"`（`M`=敵、`P`=巡回路、`D`=扉。`2`/`3`/`4` は **含まれない**）。
 
 ## 6. フレームのデータフロー
@@ -291,7 +287,7 @@ key_press / key_release ──► t_input
 | `DEFAULT_ENEMY_SPEED` | 0.1 | `ES` |
 | `DEFAULT_ENEMY_HP` | 5.0 | `EH`（撃破に要するヒット数。整数として扱う） |
 
-### `enemy_sense.c` 内の知覚定数（同ファイル完結）
+### `fps_enemy_sense.c` 内の知覚定数（同ファイル完結）
 
 `ENEMY_FOV_HALF(=π/8)` / `ENEMY_SIGHT_RANGE(=100.0)` / `ENEMY_LOS_STEP(=0.05)`。視野角は 8 方向スプライトの「正面」表示と同じ画角に揃えています。`M_PI` は `enemy_utils.h` で定義し、知覚・テクスチャ算出で共有します。
 
