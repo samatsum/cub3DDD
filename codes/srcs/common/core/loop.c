@@ -31,7 +31,6 @@ int
 	if (delta_time < 0.0) {
 		return (0);// FPS上限未達：許可関数に sleep が無いため待機せず即戻る（ビジーウェイト）
 	}
-	PROFILE_START(IroIro);
 	if (is_player_dead(game)) {
 		update_death(game, delta_time);
 		update_enemies(game, delta_time);
@@ -47,7 +46,6 @@ int
 		update_enemies(game, delta_time);
 		game->mode_ops.combat(game);
 	}
-	PROFILE_END(IroIro);
 	PROFILE_START(render_frame);
 	render_frame(game);
 	PROFILE_END(render_frame);
