@@ -1,11 +1,9 @@
 #include "core/core.h"
 #include "engine/render/render.h"
 #include "rsp/rsp.h"
+#include "tuning.h"
 
 /* ************************************************************************** */
-// じゃんけんの手の表示サイズ（画面高に対する比率。FPSの銃/ライトと同じ縮小率）
-#define WEAPON_SCALE_SMALL	0.4
-
 void
 	render_rsp_hand(t_game* game);
 

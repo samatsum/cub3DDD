@@ -2,6 +2,7 @@
 #include "core/core.h"
 #include "engine/render/render.h"
 #include "engine/texture/texture.h"
+#include "tuning.h"
 
 /* ************************************************************************** */
 #define SHOOT_INTERVAL		100
@@ -9,8 +10,6 @@
 #define BOB_PERIOD			2000.0
 #define BOB_POWER			3.0
 #define WEAPON_SCALE		0.6
-// 銃/ライトの表示サイズ。3キーの走行用の手(WEAPON_SCALE)より小さく、その約2/3に縮小する
-#define WEAPON_SCALE_SMALL	0.4
 #define HAND_MOVE_RATIO		0.8
 
 void
