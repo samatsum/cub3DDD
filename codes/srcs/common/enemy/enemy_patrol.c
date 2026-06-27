@@ -8,7 +8,7 @@
 
 /* ************************************************************************** */
 void
-	patrol_enemy(t_enemy* cur, t_game* game, double delta_time);
+	patrol_enemy(t_enemy* cur, t_game* game, double delta_time, double speed_scale);
 double
 	wrap_pi(double angle);
 static int
@@ -26,7 +26,7 @@ static void
 // 非追跡時の徘徊。P上なら時計回り巡回、P外なら最近接Pへ復帰、不可なら待機する。
 // 曲がり角では face_angle で向きを揃えてから前進する（向きが合うまでは静止して回頭）
 void
-	patrol_enemy(t_enemy* cur, t_game* game, double delta_time)
+	patrol_enemy(t_enemy* cur, t_game* game, double delta_time, double speed_scale)
 {
 	t_pos	next;
 	int		cx;
@@ -44,7 +44,7 @@ void
 		}
 		cur->state = ENEMY_STATE_PATROL;
 		if (face_angle(cur, atan2((next.y + 0.5) - cur->sprite->pos.y, (next.x + 0.5) - cur->sprite->pos.x), delta_time)) {
-			step_enemy(cur, game, delta_time, ENEMY_PATROL_SPEED_MULT);
+			step_enemy(cur, game, delta_time, ENEMY_PATROL_SPEED_MULT * speed_scale);
 		}
 		return ;
 	}
@@ -62,7 +62,7 @@ void
 		tcy = cur->patrol_target.y + 0.5;
 	}
 	if (face_angle(cur, atan2(tcy - cur->sprite->pos.y, tcx - cur->sprite->pos.x), delta_time)) {
-		step_enemy(cur, game, delta_time, ENEMY_PATROL_SPEED_MULT);
+		step_enemy(cur, game, delta_time, ENEMY_PATROL_SPEED_MULT * speed_scale);
 	}
 }
 

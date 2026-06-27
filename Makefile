@@ -39,12 +39,12 @@ COMMON_SRCS     = main.c \
                   core/collision.c core/bmp.c \
                   core/loop.c core/init.c core/exit.c core/respawn.c \
                   enemy/enemy.c \
+                  enemy/enemy_path.c enemy/enemy_move.c enemy/enemy_patrol.c \
                   ui/font.c ui/ui.c ui/crosshair.c
 
 FPS_SRCS        = core/shoot.c core/item.c core/respawn.c core/mode_fps.c core/assets.c \
                   enemy/enemy_ai.c enemy/enemy_assets.c \
-                  enemy/enemy_sense.c enemy/enemy_path.c enemy/enemy_move.c \
-                  enemy/enemy_patrol.c \
+                  enemy/enemy_sense.c \
                   render/weapon_fps.c
 
 RSP_SRCS        = rsp_rule.c rsp_assets.c rsp_combat.c rsp_setup.c rsp_ai.c \

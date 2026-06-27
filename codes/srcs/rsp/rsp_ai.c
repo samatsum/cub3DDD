@@ -29,15 +29,15 @@ void
 		cur->state = ENEMY_STATE_WALK;
 		if (res == RSP_WIN) {
 			cur->dir_angle = atan2(target.y - cur->sprite->pos.y, target.x - cur->sprite->pos.x);
-			step_enemy(cur, game, delta_time, ENEMY_TRACK_SPEED_MULT);
+			step_enemy(cur, game, delta_time, ENEMY_TRACK_SPEED_MULT * RSP_ENEMY_SPEED_MULT);
 		} else if (res == RSP_LOSE) {
 			cur->dir_angle = atan2(cur->sprite->pos.y - target.y, cur->sprite->pos.x - target.x);
-			step_enemy(cur, game, delta_time, ENEMY_TRACK_SPEED_MULT);
+			step_enemy(cur, game, delta_time, ENEMY_TRACK_SPEED_MULT * RSP_ENEMY_SPEED_MULT);
 		} else {
-			patrol_enemy(cur, game, delta_time);
+			patrol_enemy(cur, game, delta_time, RSP_ENEMY_SPEED_MULT);
 		}
 	} else {
-		patrol_enemy(cur, game, delta_time);
+		patrol_enemy(cur, game, delta_time, RSP_ENEMY_SPEED_MULT);
 	}
 	cur->sprite->tex = &game->assets.hand_tex[HAND_SLOT(cur->rsp.team, cur->rsp.hand)];
 }

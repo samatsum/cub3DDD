@@ -52,7 +52,7 @@ static void
 		track_player(cur, game, delta_time);
 		return ;
 	}
-	patrol_enemy(cur, game, delta_time);
+	patrol_enemy(cur, game, delta_time, 1.0);
 }
 
 /* ************************************************************************** */
