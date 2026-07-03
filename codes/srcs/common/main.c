@@ -22,6 +22,8 @@ static bool
 static bool
 	validate_map_path(char const* path, int mode, t_game* game);
 static bool
+	validate_mode_ops(t_game* game);
+static bool
 	validate_map_file(char const* path, t_game* game);
 static bool
 	path_contains(char const* path, char const* needle);
@@ -75,6 +77,9 @@ static bool
 		exit_error(game, "Error:\n invalid mode. use FPS or RSP.\n");
 		return (false);
 	}
+	if (!validate_mode_ops(game)) {
+		return (false);
+	}
 	if (!validate_map_path(argv[CUB_ARG_MAP], game->mode, game)) {
 		return (false);
 	}
@@ -89,6 +94,22 @@ static bool
 	return (true);
 }
 
+
+/* ************************************************************************** */
+// モード操作テーブルに必須関数が揃っているかを検証する
+static bool
+	validate_mode_ops(t_game* game)
+{
+	if (!game->mode_ops.init_assets || !game->mode_ops.init_world
+		|| !game->mode_ops.combat || !game->mode_ops.respawn
+		|| !game->mode_ops.update_enemy || !game->mode_ops.draw_weapon
+		|| !game->mode_ops.build_status_text
+		|| !game->mode_ops.build_result_text) {
+		exit_error(game, "Error:\n invalid mode operations.\n");
+		return (false);
+	}
+	return (true);
+}
 
 /* ************************************************************************** */
 // モードとマップ格納ディレクトリの対応を検証する

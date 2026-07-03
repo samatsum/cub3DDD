@@ -119,7 +119,7 @@ static int
 t_mode_ops
 	fps_mode_ops(void)
 {
-	t_mode_ops	ops;
+	t_mode_ops	ops = {0};
 
 	ops.init_assets = fps_init_noop;
 	ops.init_world = fps_init_noop;

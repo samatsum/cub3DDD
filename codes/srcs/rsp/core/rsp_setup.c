@@ -90,6 +90,7 @@ static int
 	}
 	enemy = add_enemy(&game->world.enemies, sprite, (int)game->config.enemy_hp);
 	if (!enemy) {
+		delete_sprite_node(&game->world.sprites, sprite);
 		return (0);
 	}
 	enemy->rsp.team = team;

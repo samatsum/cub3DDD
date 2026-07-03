@@ -92,7 +92,7 @@ static void
 t_mode_ops
 	rsp_mode_ops(void)
 {
-	t_mode_ops	ops;
+	t_mode_ops	ops = {0};
 
 	ops.init_assets = init_hand_textures;
 	ops.init_world = setup_rsp_combatants;

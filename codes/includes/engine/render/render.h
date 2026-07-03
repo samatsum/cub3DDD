@@ -123,6 +123,8 @@ t_sprite*
 void
 	delete_sprite(t_sprite** sprites, t_pos* pos);
 void
+	delete_sprite_node(t_sprite** sprites, t_sprite* target);
+void
 	draw_sprites(t_render* rnd, t_sprite* sprites);
 void
 	clear_sprites(t_sprite** sprites);

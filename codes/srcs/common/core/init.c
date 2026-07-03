@@ -252,7 +252,10 @@ static int
 	if (!new_sprite) {
 		return (0);
 	}
-	add_enemy(&game->world.enemies, new_sprite, (int)game->config.enemy_hp);
+	if (!add_enemy(&game->world.enemies, new_sprite, (int)game->config.enemy_hp)) {
+		delete_sprite_node(&game->world.sprites, new_sprite);
+		return (0);
+	}
 	return (1);
 }
 

@@ -10,6 +10,8 @@ t_sprite*
 void
 	delete_sprite(t_sprite** sprites, t_pos* pos);
 void
+	delete_sprite_node(t_sprite** sprites, t_sprite* target);
+void
 	clear_sprites(t_sprite** sprites);
 void
 	sprite_transform(t_camera* camera, double inv_det, t_pos world, t_pos* out);
@@ -116,6 +118,31 @@ void
 		*sprites = (*sprites)->next;
 	}
 	*sprites = first;
+}
+
+/* ************************************************************************** */
+// target と同じポインタのスプライトを next リストから削除して解放する
+void
+	delete_sprite_node(t_sprite** sprites, t_sprite* target)
+{
+	t_sprite*	cur;
+	t_sprite*	prev;
+
+	cur = *sprites;
+	prev = NULL;
+	while (cur) {
+		if (cur == target) {
+			if (!prev) {
+				*sprites = cur->next;
+			} else {
+				prev->next = cur->next;
+			}
+			free(cur);
+			return ;
+		}
+		prev = cur;
+		cur = cur->next;
+	}
 }
 
 /* ************************************************************************** */
