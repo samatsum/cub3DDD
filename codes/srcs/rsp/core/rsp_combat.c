@@ -62,12 +62,12 @@ static void
 	int	on_home;
 
 	c = MAP(game->camera.pos, game->config);
-	on_home = ((game->player_rsp.team == TEAM_RED && IS_RED_SPAWN(c))
-			|| (game->player_rsp.team == TEAM_BLUE && IS_BLUE_SPAWN(c)));
-	if (on_home && !game->rsp_on_home) {
-		game->player_rsp.hand = rsp_rehand(game->player_rsp.hand, &game->rsp_seed);
+	on_home = ((game->rsp.player.team == TEAM_RED && IS_RED_SPAWN(c))
+			|| (game->rsp.player.team == TEAM_BLUE && IS_BLUE_SPAWN(c)));
+	if (on_home && !game->rsp.on_home) {
+		game->rsp.player.hand = rsp_rehand(game->rsp.player.hand, &game->rsp.seed);
 	}
-	game->rsp_on_home = on_home;
+	game->rsp.on_home = on_home;
 }
 
 /* ************************************************************************** */
@@ -79,15 +79,15 @@ static void
 {
 	t_rsp_result	res;
 
-	if (npc->rsp.team == game->player_rsp.team) {
+	if (npc->rsp.team == game->rsp.player.team) {
 		return ;
 	}
 	if (!in_contact(&game->camera.pos, &npc->sprite->pos)) {
 		return ;
 	}
-	res = rsp_outcome(game->player_rsp.hand, npc->rsp.hand);
+	res = rsp_outcome(game->rsp.player.hand, npc->rsp.hand);
 	if (res == RSP_WIN) {
-		award_rsp_point(game, game->player_rsp.team);
+		award_rsp_point(game, game->rsp.player.team);
 		if (!game->cleared) {
 			respawn_npc(game, npc);
 		}
@@ -141,12 +141,12 @@ static void
 	if (npc->rsp.team == TEAM_BLUE) {
 		allowed = RSP_BLUE_DIRS;
 	}
-	idx = pick_spawn_index(&game->config, allowed, &game->rsp_seed);
+	idx = pick_spawn_index(&game->config, allowed, &game->rsp.seed);
 	if (idx >= 0) {
 		copy_pos(&npc->sprite->pos, &game->config.spawns[idx].pos);
 		copy_pos(&npc->rsp.spawn, &game->config.spawns[idx].pos);
 	}
-	npc->rsp.hand = rsp_rehand(npc->rsp.hand, &game->rsp_seed);
+	npc->rsp.hand = rsp_rehand(npc->rsp.hand, &game->rsp.seed);
 	npc->path_valid = 0;
 	npc->state = ENEMY_STATE_IDLE;
 }
@@ -160,9 +160,9 @@ static void
 	if (game->cleared) {
 		return ;
 	}
-	game->rsp_score[team]++;
-	if (game->rsp_score[team] >= RSP_SCORE_LIMIT) {
-		game->rsp_winner = (int)team;
+	game->rsp.score[team]++;
+	if (game->rsp.score[team] >= RSP_SCORE_LIMIT) {
+		game->rsp.winner = (int)team;
 		game->cleared = 1;
 	}
 }

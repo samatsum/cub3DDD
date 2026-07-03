@@ -9,7 +9,7 @@ int
 static int
 	place_combatants(t_game* game, int* pts, int player);
 static void
-	set_player_rsp(t_game* game, t_spawn_point* sp, t_team team, int hand);
+	set_rsp_player(t_game* game, t_spawn_point* sp, t_team team, int hand);
 static int
 	spawn_rsp_npc(t_game* game, t_spawn_point* sp, t_team team, int hand);
 
@@ -25,18 +25,18 @@ int
 	int	n;
 	int	player;
 
-	n = pick_spawn_indices(&game->config, RSP_RED_DIRS, &game->rsp_seed, pts, RSP_TEAM_SPAWNS);
-	n += pick_spawn_indices(&game->config, RSP_BLUE_DIRS, &game->rsp_seed, pts + n, RSP_TEAM_SPAWNS);
+	n = pick_spawn_indices(&game->config, RSP_RED_DIRS, &game->rsp.seed, pts, RSP_TEAM_SPAWNS);
+	n += pick_spawn_indices(&game->config, RSP_BLUE_DIRS, &game->rsp.seed, pts + n, RSP_TEAM_SPAWNS);
 	if (n < RSP_COMBATANTS) {
 		return (0);
 	}
-	player = (int)((unsigned int)ft_rand(&game->rsp_seed) % RSP_COMBATANTS);
+	player = (int)((unsigned int)ft_rand(&game->rsp.seed) % RSP_COMBATANTS);
 	return (place_combatants(game, pts, player));
 }
 
 /* ************************************************************************** */
 // 4地点を順に処理する。前半 RSP_TEAM_SPAWNS 個が赤、後半が青。各員の初期手は
-// ランダム。player 番だけプレイヤー（カメラ＋player_rsp）、他は NPC を生成する
+// ランダム。player 番だけプレイヤー（カメラ＋rsp.player）、他は NPC を生成する
 static int
 	place_combatants(t_game* game, int* pts, int player)
 {
@@ -50,9 +50,9 @@ static int
 		if (i >= RSP_TEAM_SPAWNS) {
 			team = TEAM_BLUE;
 		}
-		hand = (int)((unsigned int)ft_rand(&game->rsp_seed) % HAND_COUNT);
+		hand = (int)((unsigned int)ft_rand(&game->rsp.seed) % HAND_COUNT);
 		if (i == player) {
-			set_player_rsp(game, &game->config.spawns[pts[i]], team, hand);
+			set_rsp_player(game, &game->config.spawns[pts[i]], team, hand);
 		} else if (!spawn_rsp_npc(game, &game->config.spawns[pts[i]], team, hand)) {
 			return (0);
 		}
@@ -64,13 +64,13 @@ static int
 /* ************************************************************************** */
 // プレイヤーを指定スポーンへ配置し、チーム・手・初期リスポーン地点・生存を記録する
 static void
-	set_player_rsp(t_game* game, t_spawn_point* sp, t_team team, int hand)
+	set_rsp_player(t_game* game, t_spawn_point* sp, t_team team, int hand)
 {
 	apply_spawn(&game->config, &game->camera, sp);
-	game->player_rsp.team = team;
-	game->player_rsp.hand = (t_hand)hand;
-	copy_pos(&game->player_rsp.spawn, &sp->pos);
-	game->player_rsp.alive = 1;
+	game->rsp.player.team = team;
+	game->rsp.player.hand = (t_hand)hand;
+	copy_pos(&game->rsp.player.spawn, &sp->pos);
+	game->rsp.player.alive = 1;
 }
 
 /* ************************************************************************** */

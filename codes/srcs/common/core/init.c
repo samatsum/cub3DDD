@@ -90,18 +90,18 @@ void
 	game->world.lights = NULL;
 	game->world.light_count = 0;
 	game->death_timer = 0.0;
-	game->rsp_score[TEAM_RED] = 0;
-	game->rsp_score[TEAM_BLUE] = 0;
-	game->rsp_winner = -1;
+	game->rsp.score[TEAM_RED] = 0;
+	game->rsp.score[TEAM_BLUE] = 0;
+	game->rsp.winner = -1;
 	game->start_time_ms = 0;
-	game->clear_time_ms = 0;
+	game->fps.clear_time_ms = 0;
 	game->cleared = 0;
 	game->assets.death_tex.tex = NULL;
 	game->assets.death_tex.path = NULL;
-	game->assets.goal_tex.tex = NULL;
-	game->assets.goal_tex.path = NULL;
+	game->fps.goal_tex.tex = NULL;
+	game->fps.goal_tex.path = NULL;
 	gettimeofday(&tv, NULL);
-	game->rsp_seed = (unsigned int)(tv.tv_sec ^ tv.tv_usec);
+	game->rsp.seed = (unsigned int)(tv.tv_sec ^ tv.tv_usec);
 	i = 0;
 	while (i < TEXTURES) {
 		game->assets.tex[i++].tex = NULL;
@@ -267,7 +267,7 @@ static int
 	t_tex*		tex;
 	t_sprite*	new_sprite;
 
-	tex = &game->assets.goal_tex;
+	tex = &game->fps.goal_tex;
 	if (!tex->tex) {
 		return (0);
 	}

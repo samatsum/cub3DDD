@@ -36,9 +36,9 @@ static void
 	if (game->cleared) {
 		return ;
 	}
-	game->clear_time_ms = get_current_time_ms() - game->start_time_ms;
-	if (game->clear_time_ms < 0) {
-		game->clear_time_ms = 0;
+	game->fps.clear_time_ms = get_current_time_ms() - game->start_time_ms;
+	if (game->fps.clear_time_ms < 0) {
+		game->fps.clear_time_ms = 0;
 	}
 	game->cleared = 1;
 }

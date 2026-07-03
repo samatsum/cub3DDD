@@ -70,6 +70,10 @@ int
 int
 	ft_write_str(char* buf, char* str, int start);
 int
+	ft_write_int_n(char* buf, int size, int val, int start);
+int
+	ft_write_str_n(char* buf, int size, char* str, int start);
+int
 	ft_endswith(char const* str, char const* end);
 
 #endif

@@ -18,7 +18,7 @@ void
 {
 	int	idx;
 
-	idx = pick_spawn_index(&game->config, allowed, &game->rsp_seed);
+	idx = pick_spawn_index(&game->config, allowed, &game->rsp.seed);
 	if (idx < 0) {
 		return ;
 	}

@@ -13,13 +13,13 @@ static void
 static void
 	fps_respawn(t_game* game);
 static void
-	fps_build_status_text(t_game* game, char* buf);
+	fps_build_status_text(t_game* game, char* buf, int size);
 static void
-	fps_build_result_text(t_game* game, char* title, char* detail);
+	fps_build_result_text(t_game* game, char* title, int title_size, char* detail, int detail_size);
 static void
-	fps_clear_text_buffer(char* buf);
+	fps_clear_text_buffer(char* buf, int size);
 static int
-	write_two_digits(char* buf, int val, int start);
+	write_two_digits(char* buf, int size, int val, int start);
 t_mode_ops
 	fps_mode_ops(void);
 
@@ -52,53 +52,53 @@ static void
 /* ************************************************************************** */
 // FPSのHUDに表示する収集状況テキストを組み立てる
 static void
-	fps_build_status_text(t_game* game, char* buf)
+	fps_build_status_text(t_game* game, char* buf, int size)
 {
 	int	i;
 
-	fps_clear_text_buffer(buf);
+	fps_clear_text_buffer(buf, size);
 	if (game->world.to_collect > 0 && game->world.to_collect == game->world.collected) {
-		ft_write_str(buf, "ALL COLLECTED!", 0);
+		ft_write_str_n(buf, size, "ALL COLLECTED!", 0);
 	} else if (game->world.to_collect > 0) {
-		i = ft_write_str(buf, "Collect: ", 0);
-		i = ft_write_str(buf, " / ", ft_write_int(buf, game->world.collected, i));
-		ft_write_int(buf, game->world.to_collect, i);
+		i = ft_write_str_n(buf, size, "Collect: ", 0);
+		i = ft_write_str_n(buf, size, " / ", ft_write_int_n(buf, size, game->world.collected, i));
+		ft_write_int_n(buf, size, game->world.to_collect, i);
 	} else {
-		ft_write_str(buf, "Nothing to collect !", 0);
+		ft_write_str_n(buf, size, "Nothing to collect !", 0);
 	}
 }
 
 /* ************************************************************************** */
 // FPSのクリア画面に表示する経過時間テキストを組み立てる
 static void
-	fps_build_result_text(t_game* game, char* title, char* detail)
+	fps_build_result_text(t_game* game, char* title, int title_size, char* detail, int detail_size)
 {
 	int	i;
 	int	total_seconds;
 	int	minutes;
 	int	seconds;
 
-	fps_clear_text_buffer(title);
-	fps_clear_text_buffer(detail);
-	total_seconds = (int)(game->clear_time_ms / 1000);
+	fps_clear_text_buffer(title, title_size);
+	fps_clear_text_buffer(detail, detail_size);
+	total_seconds = (int)(game->fps.clear_time_ms / 1000);
 	minutes = total_seconds / 60;
 	seconds = total_seconds % 60;
-	i = ft_write_str(title, "CLEAR TIME ", 0);
-	i = ft_write_int(title, minutes, i);
-	i = ft_write_str(title, "m ", i);
-	i = write_two_digits(title, seconds, i);
-	ft_write_str(title, "s", i);
+	i = ft_write_str_n(title, title_size, "CLEAR TIME ", 0);
+	i = ft_write_int_n(title, title_size, minutes, i);
+	i = ft_write_str_n(title, title_size, "m ", i);
+	i = write_two_digits(title, title_size, seconds, i);
+	ft_write_str_n(title, title_size, "s", i);
 }
 
 /* ************************************************************************** */
 // UI用の固定長バッファをゼロクリアする
 static void
-	fps_clear_text_buffer(char* buf)
+	fps_clear_text_buffer(char* buf, int size)
 {
 	int	i;
 
 	i = 0;
-	while (i < UI_BUF_SIZE) {
+	while (i < size) {
 		buf[i++] = 0;
 	}
 }
@@ -106,11 +106,21 @@ static void
 /* ************************************************************************** */
 // 0〜99 の値を2桁表記でバッファへ書き込む
 static int
-	write_two_digits(char* buf, int val, int start)
+	write_two_digits(char* buf, int size, int val, int start)
 {
-	buf[start++] = '0' + ((val / 10) % 10);
-	buf[start++] = '0' + (val % 10);
-	buf[start] = 0;
+	if (size > 0 && start < size - 1) {
+		buf[start] = '0' + ((val / 10) % 10);
+	}
+	start++;
+	if (size > 0 && start < size - 1) {
+		buf[start] = '0' + (val % 10);
+	}
+	start++;
+	if (size > 0 && start < size) {
+		buf[start] = 0;
+	} else if (size > 0) {
+		buf[size - 1] = 0;
+	}
 	return (start);
 }
 

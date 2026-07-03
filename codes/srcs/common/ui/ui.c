@@ -56,7 +56,7 @@ void
 	int			box_bot;
 
 	w = &game->window;
-	game->mode_ops.build_status_text(game, buf);
+	game->mode_ops.build_status_text(game, buf, UI_BUF_SIZE);
 	scale = scale_ui_px(UI_TEXT_SCALE, w->size.y);
 	box_top = w->size.y - scale_ui_px(UI_BG_Y, w->size.y);
 	box_bot = w->size.y - scale_ui_px(UI_BG_X, w->size.y);

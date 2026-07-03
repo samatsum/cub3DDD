@@ -10,13 +10,13 @@
 static void
 	rsp_respawn(t_game* game);
 static void
-	rsp_build_status_text(t_game* game, char* buf);
+	rsp_build_status_text(t_game* game, char* buf, int size);
 static void
-	rsp_build_result_text(t_game* game, char* title, char* detail);
+	rsp_build_result_text(t_game* game, char* title, int title_size, char* detail, int detail_size);
 static void
-	build_rsp_score_text(t_game* game, char* buf);
+	build_rsp_score_text(t_game* game, char* buf, int size);
 static void
-	rsp_clear_text_buffer(char* buf);
+	rsp_clear_text_buffer(char* buf, int size);
 t_mode_ops
 	rsp_mode_ops(void);
 
@@ -25,64 +25,64 @@ t_mode_ops
 static void
 	rsp_respawn(t_game* game)
 {
-	if (game->player_rsp.team == TEAM_BLUE) {
+	if (game->rsp.player.team == TEAM_BLUE) {
 		respawn_at(game, RSP_BLUE_DIRS);
 	} else {
 		respawn_at(game, RSP_RED_DIRS);
 	}
-	game->player_rsp.hand = rsp_rehand(game->player_rsp.hand, &game->rsp_seed);
+	game->rsp.player.hand = rsp_rehand(game->rsp.player.hand, &game->rsp.seed);
 }
 
 
 /* ************************************************************************** */
 // RSPのHUDに表示するスコアテキストを組み立てる
 static void
-	rsp_build_status_text(t_game* game, char* buf)
+	rsp_build_status_text(t_game* game, char* buf, int size)
 {
-	build_rsp_score_text(game, buf);
+	build_rsp_score_text(game, buf, size);
 }
 
 /* ************************************************************************** */
 // RSPの勝敗タイトルと最終スコアテキストを組み立てる
 static void
-	rsp_build_result_text(t_game* game, char* title, char* detail)
+	rsp_build_result_text(t_game* game, char* title, int title_size, char* detail, int detail_size)
 {
-	rsp_clear_text_buffer(title);
-	if (game->rsp_winner == (int)game->player_rsp.team) {
-		ft_write_str(title, "VICTORY", 0);
+	rsp_clear_text_buffer(title, title_size);
+	if (game->rsp.winner == (int)game->rsp.player.team) {
+		ft_write_str_n(title, title_size, "VICTORY", 0);
 	} else {
-		ft_write_str(title, "DEFEAT", 0);
+		ft_write_str_n(title, title_size, "DEFEAT", 0);
 	}
-	build_rsp_score_text(game, detail);
+	build_rsp_score_text(game, detail, detail_size);
 }
 
 /* ************************************************************************** */
 // RSPの赤青スコアを共通フォーマットでバッファへ書き込む
 static void
-	build_rsp_score_text(t_game* game, char* buf)
+	build_rsp_score_text(t_game* game, char* buf, int size)
 {
 	int	i;
 
-	rsp_clear_text_buffer(buf);
-	i = ft_write_str(buf, "Red ", 0);
-	i = ft_write_int(buf, game->rsp_score[TEAM_RED], i);
-	i = ft_write_str(buf, "/", i);
-	i = ft_write_int(buf, RSP_SCORE_LIMIT, i);
-	i = ft_write_str(buf, "  VS  Blue ", i);
-	i = ft_write_int(buf, game->rsp_score[TEAM_BLUE], i);
-	i = ft_write_str(buf, "/", i);
-	ft_write_int(buf, RSP_SCORE_LIMIT, i);
+	rsp_clear_text_buffer(buf, size);
+	i = ft_write_str_n(buf, size, "Red ", 0);
+	i = ft_write_int_n(buf, size, game->rsp.score[TEAM_RED], i);
+	i = ft_write_str_n(buf, size, "/", i);
+	i = ft_write_int_n(buf, size, RSP_SCORE_LIMIT, i);
+	i = ft_write_str_n(buf, size, "  VS  Blue ", i);
+	i = ft_write_int_n(buf, size, game->rsp.score[TEAM_BLUE], i);
+	i = ft_write_str_n(buf, size, "/", i);
+	ft_write_int_n(buf, size, RSP_SCORE_LIMIT, i);
 }
 
 /* ************************************************************************** */
 // UI用の固定長バッファをゼロクリアする
 static void
-	rsp_clear_text_buffer(char* buf)
+	rsp_clear_text_buffer(char* buf, int size)
 {
 	int	i;
 
 	i = 0;
-	while (i < UI_BUF_SIZE) {
+	while (i < size) {
 		buf[i++] = 0;
 	}
 }

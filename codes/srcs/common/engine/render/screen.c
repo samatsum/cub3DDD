@@ -146,7 +146,7 @@ static void
 	}
 	title[0] = 0;
 	detail[0] = 0;
-	game->mode_ops.build_result_text(game, title, detail);
+	game->mode_ops.build_result_text(game, title, UI_BUF_SIZE, detail, UI_BUF_SIZE);
 	if (detail[0]) {
 		draw_centered_text(w, title, (w->size.y / 2) - (FONT_H * scale), scale);
 		draw_centered_text(w, detail, (w->size.y / 2) + (FONT_H * scale), scale);

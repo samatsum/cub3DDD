@@ -96,7 +96,7 @@ static void
 	}
 	free_tex(&game->window, &game->assets.death_tex);
 	free_tex(&game->window, &game->assets.door_tex);
-	free_tex(&game->window, &game->assets.goal_tex);
+	free_tex(&game->window, &game->fps.goal_tex);
 }
 
 /* ************************************************************************** */

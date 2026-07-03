@@ -46,8 +46,8 @@ typedef struct s_mode_ops
 	void	(*respawn)(struct s_game* game);
 	void	(*update_enemy)(t_enemy* enemy, struct s_game* game, double dt);
 	void	(*draw_weapon)(struct s_game* game);
-	void	(*build_status_text)(struct s_game* game, char* buf);
-	void	(*build_result_text)(struct s_game* game, char* title, char* detail);
+	void	(*build_status_text)(struct s_game* game, char* buf, int size);
+	void	(*build_result_text)(struct s_game* game, char* title, int title_size, char* detail, int detail_size);
 	int		can_shoot;
 }				t_mode_ops;
 
@@ -95,7 +95,6 @@ typedef struct s_assets
 	t_tex			hand_tex[TEAM_COUNT * HAND_COUNT];
 	t_tex			door_tex;
 	t_tex			death_tex;
-	t_tex			goal_tex;
 }				t_assets;
 
 // 描画前計算のキャッシュ（カメラ平面比率・深度・床天井距離・回転三角関数）
@@ -110,15 +109,29 @@ typedef struct s_render_cache
 typedef struct s_timing
 {
 	long long		last_time;
-}				t_timing;
+}			t_timing;
+
+// FPSモード専用の進行状態とアセット
+typedef struct s_fps_data
+{
+	long long		clear_time_ms;
+	t_tex			goal_tex;
+}			t_fps_data;
+
+// RSPモード専用のプレイヤー状態、乱数、スコア、ホーム判定
+typedef struct s_rsp_data
+{
+	t_rsp_state		player;
+	unsigned int	seed;
+	int				score[TEAM_COUNT];
+	int				winner;
+	int				on_home;
+}			t_rsp_data;
 
 // 各サブシステムを集約するファサード構造体（spawn は初期スポーン状態のスナップショット、
 // death_timer は死亡演出の残り秒数で 0 超なら死亡中＝全画面の死亡画像を表示する。
-// player_rsp/rsp_seed は RSPモード専用。player_rsp はプレイヤーの team/hand/spawn/alive、
-// rsp_seed は rsp_rehand 用の乱数状態。FPSモードでは未使用。
-// mode は e_game_mode の値（MODE_FPS / MODE_RSP）で、argv[2] の有無で決まる。
-// rsp_on_home は前フレームでプレイヤーが自陣スポーンマスに乗っていたかで、
-// 自陣を踏み直した瞬間に手を変える検出に使う）
+// fps / rsp はモード専用データを束ね、関係ないモードの状態へ触れる範囲を狭める。
+// mode は e_game_mode の値（MODE_FPS / MODE_RSP）で、argv[2] の値で決まる）
 typedef struct s_game
 {
 	t_config		config;
@@ -130,19 +143,15 @@ typedef struct s_game
 	t_assets		assets;
 	t_render_cache	cache;
 	t_timing		timing;
-	t_rsp_state		player_rsp;
-	unsigned int	rsp_seed;
-	int				rsp_score[TEAM_COUNT];
-	int				rsp_winner;
+	t_fps_data		fps;
+	t_rsp_data		rsp;
 	long long		start_time_ms;
-	long long		clear_time_ms;
 	double			death_timer;
 	int				cleared;
 	int				options;
 	int				last_options;
 	int				mode;
 	t_mode_ops		mode_ops;
-	int				rsp_on_home;
 }				t_game;
 
 #endif

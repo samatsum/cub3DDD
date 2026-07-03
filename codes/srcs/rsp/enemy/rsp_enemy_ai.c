@@ -56,10 +56,10 @@ static int
 
 	found = 0;
 	best = 0.0;
-	if (game->player_rsp.team != cur->rsp.team) {
+	if (game->rsp.player.team != cur->rsp.team) {
 		best = dist_pos(&game->camera.pos, &cur->sprite->pos);
 		copy_pos(out_pos, &game->camera.pos);
-		*out_hand = game->player_rsp.hand;
+		*out_hand = game->rsp.player.hand;
 		found = 1;
 	}
 	e = game->world.enemies;

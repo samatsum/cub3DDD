@@ -30,7 +30,7 @@ void
 	}
 	load_one_tex(&game->window, &game->assets.death_tex, DEATH_TEX_PATH);
 	load_one_tex(&game->window, &game->assets.door_tex, DOOR_TEX_PATH);
-	load_one_tex(&game->window, &game->assets.goal_tex, GOAL_TEX_PATH);
+	load_one_tex(&game->window, &game->fps.goal_tex, GOAL_TEX_PATH);
 }
 
 /* ************************************************************************** */

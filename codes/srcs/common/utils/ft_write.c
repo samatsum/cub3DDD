@@ -5,6 +5,10 @@ int
 	ft_write_int(char* buf, int val, int start);
 int
 	ft_write_str(char* buf, char* str, int start);
+int
+	ft_write_int_n(char* buf, int size, int val, int start);
+int
+	ft_write_str_n(char* buf, int size, char* str, int start);
 
 /* ************************************************************************** */
 // バッファ buf の start 位置から整数 val を10進文字列として書き込み、書き込み後の終端位置を返す。
@@ -49,5 +53,64 @@ int
 		buf[start++] = str[i++];
 	}
 	buf[start] = 0;
+	return (start);
+}
+
+/* ************************************************************************** */
+// バッファサイズ size を超えないように文字列 str を追記し、論理上の終端位置を返す
+int
+	ft_write_str_n(char* buf, int size, char* str, int start)
+{
+	int	i;
+
+	i = 0;
+	if (size <= 0) {
+		return (start);
+	}
+	while (str[i]) {
+		if (start < size - 1) {
+			buf[start] = str[i];
+		}
+		start++;
+		i++;
+	}
+	if (start < size) {
+		buf[start] = 0;
+	} else {
+		buf[size - 1] = 0;
+	}
+	return (start);
+}
+
+/* ************************************************************************** */
+// バッファサイズ size を超えないように非負整数 val を追記し、論理上の終端位置を返す
+int
+	ft_write_int_n(char* buf, int size, int val, int start)
+{
+	char	digits[11];
+	int		len;
+	int		i;
+
+	len = 0;
+	if (val == 0) {
+		digits[len++] = '0';
+	}
+	while (val > 0) {
+		digits[len++] = "0123456789"[val % 10];
+		val /= 10;
+	}
+	i = len - 1;
+	while (i >= 0) {
+		if (size > 0 && start < size - 1) {
+			buf[start] = digits[i];
+		}
+		start++;
+		i--;
+	}
+	if (size > 0 && start < size) {
+		buf[start] = 0;
+	} else if (size > 0) {
+		buf[size - 1] = 0;
+	}
 	return (start);
 }
