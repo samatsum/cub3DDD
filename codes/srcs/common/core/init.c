@@ -193,7 +193,7 @@ static int
 		j = 0;
 		while (j < game->config.map.columns) {
 			set_pos(&pos, j + .5, i + .5);
-			if (!add_map_sprite(game, &pos, MAP(pos, game->config))) {
+			if (!add_map_sprite(game, &pos, MAP_XY(j, i, game->config))) {
 				return (0);
 			}
 			j++;
