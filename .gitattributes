@@ -1,3 +1,1 @@
-# Windows(WSL) 併用環境での CRLF 混入を防ぎ、改行を LF に固定する。
-# text=auto によりバイナリ(.png/.xpm/.a/.gz 等)は自動判定で除外される。
 * text=auto eol=lf
