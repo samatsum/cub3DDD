@@ -9,7 +9,7 @@
 // マップ解析で使用する方向文字と有効なマップ文字の集合
 // （'a'〜'o' はオブジェクト3カテゴリ×5種）
 # define DIRECTIONS				"NSEW"
-# define VALID_MAP_CHARACTERS	" 01abcdefghijklmnoEWNSMPD"
+# define VALID_MAP_CHARACTERS	" 01abcdefghijklmnoEWNSMPDG"
 
 // ウィンドウ解像度の上限・下限（init時の既定要求サイズにも下限値を用いる）
 # define MAX_WIDTH				1920
@@ -50,6 +50,8 @@
 # define COL_FIRST				'k'
 // 扉のマップ文字。収集完了まで壁、完了後は床('0')へ書き換えて開放する
 # define DOOR_CHAR				'D'
+// FPSモードのゴール地点。通行可能で、踏むとクリア画面へ遷移する
+# define GOAL_CHAR				'G'
 
 /* ************************************************************************** */
 // マップ文字 → 分類判定（オブジェクトの「意味」の定義はここだけが知っている）
@@ -57,6 +59,7 @@
 # define IS_PASSABLE(c)		((c) >= PAS_FIRST && (c) < PAS_FIRST + OBJ_PER_CATEGORY)
 # define IS_COLLECTIBLE(c)	((c) >= COL_FIRST && (c) < COL_FIRST + OBJ_PER_CATEGORY)
 # define IS_DOOR(c)			((c) == DOOR_CHAR)
+# define IS_GOAL(c)			((c) == GOAL_CHAR)
 # define IS_OBJECT(c)		(IS_IMPASSABLE(c) || IS_PASSABLE(c) || IS_COLLECTIBLE(c))
 # define IS_BLOCKING(c)		((c) == '1' || (c) == DOOR_CHAR || IS_IMPASSABLE(c))
 

@@ -35,7 +35,8 @@ int
 	walk_axis(cam, config, world, mv);
 	set_pos(&mv, 0.0, cam->dir.y * actual_speed);
 	walk_axis(cam, config, world, mv);
-	if (!IS_COLLECTIBLE(MAP(cam->pos, *config)) && !ft_in_set(MAP(cam->pos, *config), DIRECTIONS)) {
+	if (!IS_COLLECTIBLE(MAP(cam->pos, *config)) && !IS_GOAL(MAP(cam->pos, *config))
+		&& !ft_in_set(MAP(cam->pos, *config), DIRECTIONS)) {
 		MAP(cam->pos, *config) = 'A';
 	}
 	return (1);
@@ -58,7 +59,8 @@ int
 	walk_axis(cam, config, world, mv);
 	set_pos(&mv, 0.0, cam->x_dir.y * actual_speed);
 	walk_axis(cam, config, world, mv);
-	if (!IS_COLLECTIBLE(MAP(cam->pos, *config)) && !ft_in_set(MAP(cam->pos, *config), DIRECTIONS)) {
+	if (!IS_COLLECTIBLE(MAP(cam->pos, *config)) && !IS_GOAL(MAP(cam->pos, *config))
+		&& !ft_in_set(MAP(cam->pos, *config), DIRECTIONS)) {
 		MAP(cam->pos, *config) = 'A';
 	}
 	return (1);

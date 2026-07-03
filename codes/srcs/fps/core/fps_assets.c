@@ -1,5 +1,5 @@
 #include "core/core.h"             /* t_game 定義・自身のプロトタイプ・load_tex_image のため */
-#include "tuning.h"                /* DEATH_TEX_PATH, DOOR_TEX_PATH 用 */
+#include "tuning.h"                /* DEATH_TEX_PATH, DOOR_TEX_PATH, GOAL_TEX_PATH 用 */
 
 /* ************************************************************************** */
 void
@@ -30,6 +30,7 @@ void
 	}
 	load_one_tex(&game->window, &game->assets.death_tex, DEATH_TEX_PATH);
 	load_one_tex(&game->window, &game->assets.door_tex, DOOR_TEX_PATH);
+	load_one_tex(&game->window, &game->assets.goal_tex, GOAL_TEX_PATH);
 }
 
 /* ************************************************************************** */
@@ -39,5 +40,8 @@ static void
 	load_one_tex(t_window* window, t_tex* tex, char const* path_src)
 {
 	tex->path = ft_strdup(path_src);
-	load_tex_image(window, tex);
+	if (load_tex_image(window, tex)) {
+		set_pos(&tex->start, 0, 0);
+		set_pos(&tex->end, tex->width, tex->height);
+	}
 }

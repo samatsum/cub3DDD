@@ -15,7 +15,7 @@ cub3D は MiniLibX（X11）上で動作する一人称 3D レンダラに、ゲ�
 ```
 main()
   └── validate_check() : 引数チェック + init_config + .cub のパース (parse_config)
-  │                      argv[2] == "RSP" のとき game->mode = MODE_RSP
+  │                      argv[2] == "FPS" / "RSP" で game->mode を決定
   └── setup_inits()    : init_game + finish_init
   │                      （ウィンドウ生成、テクスチャ読込、スプライト/敵リスト構築、
   │                        収集数カウント、セル属性フラグ層の構築、事前計算テーブル生成。
@@ -59,7 +59,7 @@ samatsum-cub3D/
 │   │
 │   ├── srcs/
 │   │   ├── common/                   # エンジン ＋ 司令塔/ディスパッチャ（両モード共通）
-│   │   │   ├── main.c                # エントリポイント（argv[2]=="RSP" で mode を決定）
+│   │   │   ├── main.c                # エントリポイント（argv[2] の FPS/RSP で mode を決定）
 │   │   │   ├── config/               # .cub のパースと検証
 │   │   │   │   ├── config.c          # init/clear、キー対応表 g_keys[]、parse 全体の制御
 │   │   │   │   ├── parse_map.c       # マップ本体 → int 配列、P セルの CELL_PATROL 付与
@@ -155,7 +155,7 @@ else                   { patrol_enemy(); }
 
 ## 4. RSP モード（じゃんけん鬼ごっこ）
 
-`argv[2]=="RSP"`（`fps/main.c::validate_check`）で `game->mode = MODE_RSP` となり、**同じレンダラ・入力・物理の上で** 動きます。FPS との差分はゲームロジックのみです。
+`argv[2]` が `FPS` / `RSP` のときだけ起動し、`RSP` では `game->mode = MODE_RSP` となり、**同じレンダラ・入力・物理の上で** 動きます。FPS との差分はゲームロジックのみです。
 
 - **初期化**：`finish_init`（`common/core/init.c`）が RSP 時に `init_hand_textures`（ハンド画像 6 枚）と `setup_rsp_combatants`（戦闘員配置）を呼びます。
 - **毎フレーム**：`update_enemies` が各敵に `update_rsp_enemy` を適用し、接触判定を `check_enemy_contact`（FPS）ではなく `resolve_rsp_combat`（RSP）で行います。射撃は `handle_action` が `mode != MODE_RSP` で無効化します。
@@ -364,12 +364,12 @@ cd samatsum-cub3D
 make
 
 # 通常起動（FPS / RSP）
-./cub3D maps/valid/1.cub
-./cub3D maps/valid/rsp.cub RSP
+./cub3D maps/fps_map/1.cub FPS
+./cub3D maps/rsp_map/rsp.cub RSP
 
 # AddressSanitizer 付きで起動（推奨）
 make debug
-./cub3D maps/valid/1.cub
+./cub3D maps/fps_map/1.cub FPS
 
 # コーディングルール検査
 make check        # = python3 codes/PythonCodes/lint.py

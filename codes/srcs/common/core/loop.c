@@ -31,10 +31,10 @@ int
 	if (delta_time < 0.0) {
 		return (0);// FPS上限未達：許可関数に sleep が無いため待機せず即戻る（ビジーウェイト）
 	}
-	if (is_player_dead(game)) {
+	if (!game->cleared && is_player_dead(game)) {
 		update_death(game, delta_time);
 		update_enemies(game, delta_time);
-	} else {
+	} else if (!game->cleared) {
 		update = apply_input(game, time_mult);
 		if (game->options != game->last_options) {
 			update = 1;
@@ -43,8 +43,10 @@ int
 		if (update) {
 			check_quest(game);
 		}
-		update_enemies(game, delta_time);
-		game->mode_ops.combat(game);
+		if (!game->cleared) {
+			update_enemies(game, delta_time);
+			game->mode_ops.combat(game);
+		}
 	}
 	PROFILE_START(render_frame);
 	render_frame(game);

@@ -14,6 +14,8 @@ static void
 	resolve_npc_pair(t_game* game, t_enemy* a, t_enemy* b);
 static void
 	respawn_npc(t_game* game, t_enemy* npc);
+static void
+	award_rsp_point(t_game* game, t_team team);
 static int
 	in_contact(t_pos* a, t_pos* b);
 
@@ -27,13 +29,22 @@ void
 	t_enemy*	a;
 	t_enemy*	b;
 
+	if (game->cleared) {
+		return ;
+	}
 	rsp_home_rehand(game);
 	a = game->world.enemies;
 	while (a) {
 		resolve_player_npc(game, a);
+		if (game->cleared) {
+			return ;
+		}
 		b = a->next;
 		while (b) {
 			resolve_npc_pair(game, a, b);
+			if (game->cleared) {
+				return ;
+			}
 			b = b->next;
 		}
 		a = a->next;
@@ -76,9 +87,15 @@ static void
 	}
 	res = rsp_outcome(game->player_rsp.hand, npc->rsp.hand);
 	if (res == RSP_WIN) {
-		respawn_npc(game, npc);
+		award_rsp_point(game, game->player_rsp.team);
+		if (!game->cleared) {
+			respawn_npc(game, npc);
+		}
 	} else if (res == RSP_LOSE) {
-		game->mode_ops.respawn(game);
+		award_rsp_point(game, npc->rsp.team);
+		if (!game->cleared) {
+			game->mode_ops.respawn(game);
+		}
 	}
 }
 
@@ -98,9 +115,15 @@ static void
 	}
 	res = rsp_outcome(a->rsp.hand, b->rsp.hand);
 	if (res == RSP_WIN) {
-		respawn_npc(game, b);
+		award_rsp_point(game, a->rsp.team);
+		if (!game->cleared) {
+			respawn_npc(game, b);
+		}
 	} else if (res == RSP_LOSE) {
-		respawn_npc(game, a);
+		award_rsp_point(game, b->rsp.team);
+		if (!game->cleared) {
+			respawn_npc(game, a);
+		}
 	}
 }
 
@@ -126,6 +149,22 @@ static void
 	npc->rsp.hand = rsp_rehand(npc->rsp.hand, &game->rsp_seed);
 	npc->path_valid = 0;
 	npc->state = ENEMY_STATE_IDLE;
+}
+
+/* ************************************************************************** */
+
+// 勝ったチームへ1点を加え、先取点に到達したら勝者を固定してゲームを終了する
+static void
+	award_rsp_point(t_game* game, t_team team)
+{
+	if (game->cleared) {
+		return ;
+	}
+	game->rsp_score[team]++;
+	if (game->rsp_score[team] >= RSP_SCORE_LIMIT) {
+		game->rsp_winner = (int)team;
+		game->cleared = 1;
+	}
 }
 
 /* ************************************************************************** */

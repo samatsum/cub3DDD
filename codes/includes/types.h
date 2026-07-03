@@ -93,6 +93,7 @@ typedef struct s_assets
 	t_tex			hand_tex[TEAM_COUNT * HAND_COUNT];
 	t_tex			door_tex;
 	t_tex			death_tex;
+	t_tex			goal_tex;
 }				t_assets;
 
 // 描画前計算のキャッシュ（カメラ平面比率・深度・床天井距離・回転三角関数）
@@ -129,7 +130,12 @@ typedef struct s_game
 	t_timing		timing;
 	t_rsp_state		player_rsp;
 	unsigned int	rsp_seed;
+	int				rsp_score[TEAM_COUNT];
+	int				rsp_winner;
+	long long		start_time_ms;
+	long long		clear_time_ms;
 	double			death_timer;
+	int				cleared;
 	int				options;
 	int				last_options;
 	int				mode;

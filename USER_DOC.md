@@ -8,17 +8,17 @@
 
 ```
 make
-./cub3D <path/to/map.cub>          # FPS モード（既定）
+./cub3D <path/to/map.cub> FPS      # FPS モード
 ./cub3D <path/to/map.cub> RSP      # RSP モード（じゃんけん鬼ごっこ）
 ```
 
-第 2 引数に `RSP` を付けると RSP モードで起動します（それ以外・省略時は FPS モード）。`maps/valid/` 配下に動作確認用のマップが用意されています。
+第 2 引数には `FPS` または `RSP` を必ず指定します。`FPS` で FPS モード、`RSP` で RSP モードを起動します。`maps/fps_map/` に FPS 用、`maps/rsp_map/` に RSP 用のマップが用意されています。
 
 ```
-./cub3D maps/valid/1.cub           # FPS
-./cub3D maps/valid/enemy_line.cub  # FPS（敵の挙動確認用）
-./cub3D maps/valid/door_test.cub   # FPS（扉の確認用）
-./cub3D maps/valid/rsp.cub RSP     # RSP（じゃんけん鬼ごっこ）
+./cub3D maps/fps_map/1.cub FPS       # FPS
+./cub3D maps/fps_map/enemy_line.cub FPS  # FPS（敵の挙動確認用）
+./cub3D maps/fps_map/door_test.cub FPS   # FPS（扉の確認用）
+./cub3D maps/rsp_map/rsp.cub RSP     # RSP（じゃんけん鬼ごっこ）
 ```
 
 ## 2. 操作
@@ -159,14 +159,21 @@ EH 5                                        # 敵のHP       (任意, 0 より�
 ### RSP マップの作り方
 
 - 赤チーム用の `N` または `W` のスポーンを **2 地点以上**、青チーム用の `S` または `E` のスポーンを **2 地点以上** 配置します（各チーム 2 地点に満たないと戦闘員を生成できず起動に失敗します）。
-- スポーンマスには任意でマーカー（スポットライト）が描画されます。通行可オブジェクトの `OP2` に赤チーム用、`OP3` に青チーム用のテクスチャを指定すると、各スポーンにその色のマーカーが表示されます（`maps/valid/rsp.cub` を参照）。
+- スポーンマスには任意でマーカー（スポットライト）が描画されます。通行可オブジェクトの `OP2` に赤チーム用、`OP3` に青チーム用のテクスチャを指定すると、各スポーンにその色のマーカーが表示されます（`maps/rsp_map/rsp.cub` を参照）。
 - ハンド画像（`textures/hand/Hand_<Red|Blue>_<Rock|Scissors|Paper>.xpm`）はエンジンが内蔵で読み込むため、`.cub` での指定は不要です。
 
 ## 6. うまく動かないとき
 
-- **`Error: invalid map.`** … `.cub` の構文か、マップの壁が閉じていない可能性があります。使用したオブジェクト文字に対応する `OI*`/`OP*`/`OC*` を定義し忘れていないか、サポート外の文字（`2`/`3`/`4` など）を使っていないかも確認してください。
-- **RSP モードで起動に失敗する** … `N`/`W`（赤）と `S`/`E`（青）のスポーンが、各チーム 2 地点以上あるか確認してください。
-- **`Error: failed to load texture(s).`** … テクスチャパスは `.cub` ファイルからの相対ではなく、**`cub3D` を起動するカレントディレクトリから** の相対で解決されます（例: リポジトリルートで `./cub3D maps/valid/1.cub` を実行する想定）。
+- **`Error: mode argument required. use FPS or RSP.`** … 第 2 引数に `FPS` または `RSP` を指定してください。
+- **`Error: invalid mode. use FPS or RSP.`** … 第 2 引数が `FPS` / `RSP` 以外になっています。
+- **`Error: FPS mode requires a map in maps/fps_map/.`** … `FPS` では `maps/fps_map/` 配下のマップを指定してください。
+- **`Error: RSP mode requires a map in maps/rsp_map/.`** … `RSP` では `maps/rsp_map/` 配下のマップを指定してください。
+- **`Error: too many arguments.`** … 引数は `./cub3D <map.cub> <FPS|RSP>` の 2 つだけ指定してください。
+- **`Error: map file must end with .cub.`** … マップファイルの拡張子が `.cub` ではありません。
+- **`Error: failed to open map file.`** … 指定したマップファイルが存在しない、または読み取り権限がありません。
+- **`Error: invalid map content. check syntax, walls, characters, and spawns.`** … `.cub` の構文、壁閉じ、使用文字、スポーン指定のいずれかが不正です。
+- **`Error: failed to create RSP combatants. need 2 red spawns (N/W) and 2 blue spawns (S/E).`** … RSP マップには赤 `N`/`W` を 2 地点以上、青 `S`/`E` を 2 地点以上置いてください。
+- **`Error: failed to load map texture(s). check the texture path printed above.`** … `.cub` のテクスチャパスが読めません。直前に表示される `Failed to load texture: ...` のパスを確認してください。
 - **画面が真っ黒** … テクスチャパスが間違っている、または XPM 以外の画像形式を指定している可能性があります。
 - **敵が巡回しない／その場で止まる** … マップに `P`（巡回路）が無い、または敵が `P` から離れすぎている可能性があります。`P` をループ状に配置し、敵をその近くに置いてください。
 

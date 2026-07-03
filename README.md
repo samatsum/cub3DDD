@@ -10,7 +10,7 @@ cub3D は、C 言語と MiniLibX（X11）を用いて構築された、レイキ
 
 ### 2 つのモード
 
-- **FPS モード**（既定）: `./cub3D <map.cub>` — 敵を避け／倒し、収集アイテムを集めて扉を開く一人称探索。
+- **FPS モード**: `./cub3D <map.cub> FPS` — 敵を避け／倒し、収集アイテムを集めて扉を開く一人称探索。
 - **RSP モード**: `./cub3D <map.cub> RSP` — プレイヤー（赤チーム）と NPC が赤・青に分かれ、接触時の **じゃんけん** で勝敗を決める鬼ごっこ。負けた側は即リスポーン。
 
 主な機能:
@@ -64,8 +64,8 @@ sudo apt-get install gcc make xorg libxext-dev libbsd-dev
 
 ```
 make
-./cub3D maps/valid/1.cub          # FPS モード
-./cub3D maps/valid/rsp.cub RSP    # RSP モード（じゃんけん鬼ごっこ）
+./cub3D maps/fps_map/1.cub FPS      # FPS モード
+./cub3D maps/rsp_map/rsp.cub RSP    # RSP モード（じゃんけん鬼ごっこ）
 ```
 
 ビルドは `-O3 -Wall -Wextra -Werror`（インクルードパスは `codes/includes`）で行われます。`make debug`（AddressSanitizer 付き）・`make check`（コーディングルール検査）・`make clean` / `make fclean` / `make re` も利用できます。

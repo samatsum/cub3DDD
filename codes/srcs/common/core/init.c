@@ -31,24 +31,31 @@ int
 	game->input.is_shooting = 0;
 	load_player_assets(game);
 	if (!init_enemy_textures(game)) {
-		return (exit_error(game, "Error:\nfailed to load enemy textures.\n"));
+		return (exit_error(game, "Error:\nfailed to load enemy textures. check textures/enemy/Enemy_*.xpm.\n"));
 	}
 	if (!game->mode_ops.init_assets(game)) {
+		if (game->mode == MODE_RSP) {
+			return (exit_error(game, "Error:\nfailed to load RSP hand textures. check textures/hand/.\n"));
+		}
 		return (exit_error(game, "Error:\nfailed to load mode assets.\n"));
 	}
 	collect_spawns(&game->config);
 	save_spawn(game);
 	if (!load_textures(&game->window, game->assets.tex, &game->config)) {
-		return (exit_error(game, "Error:\nfailed to load texture(s).\n"));
+		return (exit_error(game, "Error:\nfailed to load map texture(s). check the texture path printed above.\n"));
 	}
 	if (!find_sprites(game)) {
-		return (exit_error(game, "Error:\nfailed to malloc sprites.\n"));
+		if (game->mode == MODE_RSP) {
+			return (exit_error(game, "Error:\nfailed to create RSP combatants. need 2 red spawns (N/W) and 2 blue spawns (S/E).\n"));
+		}
+		return (exit_error(game, "Error:\nfailed to create sprites. check object/enemy placement or memory.\n"));
 	}
 	if (!build_lights(&game->world, &game->config)) {
-		return (exit_error(game, "Error:\nfailed to malloc lights.\n"));
+		return (exit_error(game, "Error:\nfailed to create lights. check light markers or memory.\n"));
 	}
 	count_items(game);
 	make_tables(game);
+	game->start_time_ms = get_current_time_ms();
 	return (1);
 }
 
@@ -71,8 +78,16 @@ void
 	game->world.lights = NULL;
 	game->world.light_count = 0;
 	game->death_timer = 0.0;
+	game->rsp_score[TEAM_RED] = 0;
+	game->rsp_score[TEAM_BLUE] = 0;
+	game->rsp_winner = -1;
+	game->start_time_ms = 0;
+	game->clear_time_ms = 0;
+	game->cleared = 0;
 	game->assets.death_tex.tex = NULL;
 	game->assets.death_tex.path = NULL;
+	game->assets.goal_tex.tex = NULL;
+	game->assets.goal_tex.path = NULL;
 	gettimeofday(&tv, NULL);
 	game->rsp_seed = (unsigned int)(tv.tv_sec ^ tv.tv_usec);
 	i = 0;
@@ -173,6 +188,15 @@ static int
 					return (0);
 				}
 				add_enemy(&game->world.enemies, new_sprite, (int)game->config.enemy_hp);
+			} else if (game->mode == MODE_FPS && IS_GOAL(c)) {
+				tex = &game->assets.goal_tex;
+				if (!tex->tex) {
+					return (0);
+				}
+				new_sprite = add_front_sprite(&game->world.sprites, 0., &pos, tex);
+				if (!new_sprite) {
+					return (0);
+				}
 			} else if (IS_SPAWN(c)) {
 				slot = spawn_marker_slot(c);
 				if (slot >= 0) {

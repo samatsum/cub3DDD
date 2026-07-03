@@ -11,6 +11,7 @@
 # define RSP_COMBATANTS		(TEAM_COUNT * RSP_TEAM_SPAWNS)
 # define RSP_RED_DIRS		"NW"
 # define RSP_BLUE_DIRS		"SE"
+# define RSP_SCORE_LIMIT	10
 
 /* ************************************************************************** */
 // 前方宣言（t_game* を引数に取るのみでメンバ参照しないためインクルード不要）。

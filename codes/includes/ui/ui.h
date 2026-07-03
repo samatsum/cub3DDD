@@ -16,7 +16,7 @@
 // UI_BG_SIZE は欄の右端x座標で、最長文字列が収まるよう設定する
 # define UI_BG_X				2
 # define UI_BG_Y				27
-# define UI_BG_SIZE				340
+# define UI_BG_SIZE				470
 # define UI_BUF_SIZE			100
 
 // UIテキストの基準スケール（フォント8x8の倍率）と左内側パディング（px / 基準時）
@@ -53,7 +53,7 @@
 void
 	update_ui(t_render* rnd);
 void
-	write_ui_text(t_window* w, int collected, int to_collect);
+	write_ui_text(t_game* game);
 void
 	display_crosshair(t_window* w);
 
