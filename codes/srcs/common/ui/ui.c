@@ -4,15 +4,12 @@
 #include "engine/render/render.h"
 #include "utils/utils.h"
 #include "tuning.h"
-#include "rsp/rsp_game.h"
 
 /* ************************************************************************** */
 void
 	update_ui(t_render* rnd);
 void
 	write_ui_text(t_game* game);
-static void
-	build_status_text(char* buf, t_game* game);
 static void
 	draw_minimap(t_render* rnd, t_pos* start, t_pos* end);
 static void
@@ -59,44 +56,13 @@ void
 	int			box_bot;
 
 	w = &game->window;
-	build_status_text(buf, game);
+	game->mode_ops.build_status_text(game, buf);
 	scale = scale_ui_px(UI_TEXT_SCALE, w->size.y);
 	box_top = w->size.y - scale_ui_px(UI_BG_Y, w->size.y);
 	box_bot = w->size.y - scale_ui_px(UI_BG_X, w->size.y);
 	set_pos(&start, scale_ui_px(UI_BG_X + UI_TEXT_PAD, w->size.y),
 		box_top + (box_bot - box_top - FONT_H * scale) / 2);
 	draw_text_scaled(w, &start, buf, scale, COLOR_UI_FONT);
-}
-
-/* ************************************************************************** */
-// 収集状況を表す文字列を buf に組み立てる
-static void
-	build_status_text(char* buf, t_game* game)
-{
-	int	i;
-
-	i = 0;
-	while (i < UI_BUF_SIZE) {
-		buf[i++] = 0;
-	}
-	if (game->mode == MODE_RSP) {
-		i = ft_write_str(buf, "Red ", 0);
-		i = ft_write_int(buf, game->rsp_score[TEAM_RED], i);
-		i = ft_write_str(buf, "/", i);
-		i = ft_write_int(buf, RSP_SCORE_LIMIT, i);
-		i = ft_write_str(buf, "  VS  Blue ", i);
-		i = ft_write_int(buf, game->rsp_score[TEAM_BLUE], i);
-		i = ft_write_str(buf, "/", i);
-		ft_write_int(buf, RSP_SCORE_LIMIT, i);
-	} else if (game->world.to_collect > 0 && game->world.to_collect == game->world.collected) {
-		ft_write_str(buf, "ALL COLLECTED!", 0);
-	} else if (game->world.to_collect > 0) {
-		i = ft_write_str(buf, "Collect: ", 0);
-		i = ft_write_str(buf, " / ", ft_write_int(buf, game->world.collected, i));
-		ft_write_int(buf, game->world.to_collect, i);
-	} else {
-		ft_write_str(buf, "Nothing to collect !", 0);
-	}
 }
 
 /* ************************************************************************** */

@@ -18,6 +18,18 @@ static int
 	init_image(t_window* window, t_image* img);
 static int
 	find_sprites(t_game* game);
+static int
+	scan_map_sprites(t_game* game);
+static int
+	add_map_sprite(t_game* game, t_pos* pos, char c);
+static int
+	add_object_sprite(t_game* game, t_pos* pos, char c);
+static int
+	add_enemy_sprite(t_game* game, t_pos* pos);
+static int
+	add_goal_sprite(t_game* game, t_pos* pos);
+static int
+	add_spawn_marker_sprite(t_game* game, t_pos* pos, char c);
 
 /* ************************************************************************** */
 // ゲームの初期化処理を完了させ、必要なリソースを準備する
@@ -152,69 +164,131 @@ static int
 }
 
 /* ************************************************************************** */
-// マップ上のスプライトを検索し、オブジェクト(通行不可/通行可/収集)と敵(M)を登録する。
-// N/S/E/W のスポーンマスには、チーム色のマーカー(光る装飾)を自動配置する(案Q-1)。
+// マップ上のスプライトを検索し、種類ごとの登録処理へ振り分ける。
 // RSPモードでは最後に setup_rsp_combatants でチーム/手とプレイヤー/NPCを確定する
 static int
 	find_sprites(t_game* game)
 {
-	t_pos		pos;
-	t_tex*		tex;
-	int			i;
-	int			j;
-	int			slot;
-	char		c;
-	t_sprite*	new_sprite;
-
 	game->world.sprites = NULL;
-	i = 0;
-	while (i < game->config.map.rows) {
-		j = 0;
-		while (j < game->config.map.columns) {
-			set_pos(&pos, j + .5, i + .5);
-			c = MAP(pos, game->config);
-			if (IS_OBJECT(c)) {
-				tex = &game->assets.tex[OBJ_SLOT(c)];
-				if (tex->tex) {
-					new_sprite = add_front_sprite(&game->world.sprites, 0., &pos, tex);
-					if (!new_sprite) {
-						return (0);
-					}
-				}
-			} else if (c == 'M') {
-				tex = &game->assets.enemy_tex[0];
-				new_sprite = add_front_sprite(&game->world.sprites, 0., &pos, tex);
-				if (!new_sprite) {
-					return (0);
-				}
-				add_enemy(&game->world.enemies, new_sprite, (int)game->config.enemy_hp);
-			} else if (game->mode == MODE_FPS && IS_GOAL(c)) {
-				tex = &game->assets.goal_tex;
-				if (!tex->tex) {
-					return (0);
-				}
-				new_sprite = add_front_sprite(&game->world.sprites, 0., &pos, tex);
-				if (!new_sprite) {
-					return (0);
-				}
-			} else if (IS_SPAWN(c)) {
-				slot = spawn_marker_slot(c);
-				if (slot >= 0) {
-					tex = &game->assets.tex[slot];
-					if (tex->tex) {
-						new_sprite = add_front_sprite(&game->world.sprites, 0., &pos, tex);
-						if (!new_sprite) {
-							return (0);
-						}
-					}
-				}
-			}
-			j++;
-		}
-		i++;
+	if (!scan_map_sprites(game)) {
+		return (0);
 	}
 	if (!game->mode_ops.init_world(game)) {
 		return (0);
 	}
 	return (1);
+}
+
+/* ************************************************************************** */
+// マップ全体を走査し、各セルの文字に応じたスプライト登録処理を呼び出す
+static int
+	scan_map_sprites(t_game* game)
+{
+	t_pos	pos;
+	int		i;
+	int		j;
+
+	i = 0;
+	while (i < game->config.map.rows) {
+		j = 0;
+		while (j < game->config.map.columns) {
+			set_pos(&pos, j + .5, i + .5);
+			if (!add_map_sprite(game, &pos, MAP(pos, game->config))) {
+				return (0);
+			}
+			j++;
+		}
+		i++;
+	}
+	return (1);
+}
+
+/* ************************************************************************** */
+// 1マスぶんの文字を判定し、オブジェクト・敵・ゴール・スポーン装飾へ振り分ける
+static int
+	add_map_sprite(t_game* game, t_pos* pos, char c)
+{
+	if (IS_OBJECT(c)) {
+		return (add_object_sprite(game, pos, c));
+	}
+	if (c == 'M') {
+		return (add_enemy_sprite(game, pos));
+	}
+	if (game->mode == MODE_FPS && IS_GOAL(c)) {
+		return (add_goal_sprite(game, pos));
+	}
+	if (IS_SPAWN(c)) {
+		return (add_spawn_marker_sprite(game, pos, c));
+	}
+	return (1);
+}
+
+/* ************************************************************************** */
+// 通常オブジェクト用のテクスチャがあれば、描画スプライトとして登録する
+static int
+	add_object_sprite(t_game* game, t_pos* pos, char c)
+{
+	t_tex*		tex;
+	t_sprite*	new_sprite;
+
+	tex = &game->assets.tex[OBJ_SLOT(c)];
+	if (!tex->tex) {
+		return (1);
+	}
+	new_sprite = add_front_sprite(&game->world.sprites, 0., pos, tex);
+	return (new_sprite != NULL);
+}
+
+/* ************************************************************************** */
+// FPS用の敵マーカーをスプライト化し、敵リストにも紐づける
+static int
+	add_enemy_sprite(t_game* game, t_pos* pos)
+{
+	t_tex*		tex;
+	t_sprite*	new_sprite;
+
+	tex = &game->assets.enemy_tex[0];
+	new_sprite = add_front_sprite(&game->world.sprites, 0., pos, tex);
+	if (!new_sprite) {
+		return (0);
+	}
+	add_enemy(&game->world.enemies, new_sprite, (int)game->config.enemy_hp);
+	return (1);
+}
+
+/* ************************************************************************** */
+// FPSゴール用のテクスチャを必須扱いでスプライト登録する
+static int
+	add_goal_sprite(t_game* game, t_pos* pos)
+{
+	t_tex*		tex;
+	t_sprite*	new_sprite;
+
+	tex = &game->assets.goal_tex;
+	if (!tex->tex) {
+		return (0);
+	}
+	new_sprite = add_front_sprite(&game->world.sprites, 0., pos, tex);
+	return (new_sprite != NULL);
+}
+
+/* ************************************************************************** */
+// スポーン地点の装飾テクスチャがあれば、補助スプライトとして登録する
+static int
+	add_spawn_marker_sprite(t_game* game, t_pos* pos, char c)
+{
+	t_tex*		tex;
+	t_sprite*	new_sprite;
+	int		slot;
+
+	slot = spawn_marker_slot(c);
+	if (slot < 0) {
+		return (1);
+	}
+	tex = &game->assets.tex[slot];
+	if (!tex->tex) {
+		return (1);
+	}
+	new_sprite = add_front_sprite(&game->world.sprites, 0., pos, tex);
+	return (new_sprite != NULL);
 }
