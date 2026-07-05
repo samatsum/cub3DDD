@@ -2,7 +2,7 @@
 
 /* ************************************************************************** */
 t_str*
-	ft_split(char const* org, char sep);
+	ft_split(const char* org, char sep);
 
 /* ************************************************************************** */
 // 文字列 org を区切り文字 sep で分割し、各トークンを t_str 連結リストにして返す。区切りの
@@ -10,7 +10,7 @@ t_str*
 // よう i-start>0 のときだけ足す。途中で確保に失敗したら、それまでのリストを str_clear で
 // 解放して NULL を返す（PTR_CAST は str_clear の戻り値 0 を void*=NULL へ整形する）
 t_str*
-	ft_split(char const* org, char sep)
+	ft_split(const char* org, char sep)
 {
 	t_str*	str;
 	int		i;

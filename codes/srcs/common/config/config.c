@@ -8,7 +8,7 @@
 // 行頭キー文字列と種別の対応表。新しいキーはここに1行追加するだけでよい
 typedef struct s_key_def
 {
-	char const*	tag;
+	const char*	tag;
 	int			key;
 }				t_key_def;
 
@@ -54,13 +54,13 @@ void
 int
 	clear_config(t_config* config);
 int
-	parse_config(t_config* config, char const* conf_path);
+	parse_config(t_config* config, const char* conf_path);
 static int
-	parse_line(t_config* config, char const* line, t_str** map_buffer, int* empty_map, int* cont_after);
+	parse_line(t_config* config, const char* line, t_str** map_buffer, int* empty_map, int* cont_after);
 static int
-	config_key(char const* line);
+	config_key(const char* line);
 static int
-	tag_matches(char const* line, char const* tag);
+	tag_matches(const char* line, const char* tag);
 static void
 	strip_comment(char* line);
 
@@ -138,7 +138,7 @@ int
 // マップ後の空行を跨いで設定やマップ行が再出現する不正配置を検出するための状態。
 // どの失敗経路でも map_buffer を str_clear で必ず解放してから抜ける
 int
-	parse_config(t_config* config, char const* conf_path)
+	parse_config(t_config* config, const char* conf_path)
 {
 	int		c_fd;
 	int		ret;
@@ -189,7 +189,7 @@ int
 // 委譲し、それ以外（マップ本体）は ft_strdup して map_buffer 末尾に追加し後段の parse_map へ
 // 渡す。最後の !! は str_add_back の戻り値ポインタを 0/1 の真偽値に正規化している
 static int
-	parse_line(t_config* config, char const* line, t_str** map_buffer, int* empty_map, int* cont_after)
+	parse_line(t_config* config, const char* line, t_str** map_buffer, int* empty_map, int* cont_after)
 {
 	int	length;
 	int	key;
@@ -228,7 +228,7 @@ static int
 // 行頭トークンを g_keys の各タグと照合し、一致したキー種別を返す。どのタグにも一致
 // しなければ C_MAP（＝マップ本体の行）とみなす。キー数は固定少数なので線形探索で十分
 static int
-	config_key(char const* line)
+	config_key(const char* line)
 {
 	size_t	i;
 
@@ -246,7 +246,7 @@ static int
 // 行頭が tag と前方一致し、かつ tag の直後がトークン境界（空白か行末）かを判定する。
 // この境界チェックにより "N"(北スポーン) と "NO"(北テクスチャ) のような接頭辞の誤一致を防ぐ
 static int
-	tag_matches(char const* line, char const* tag)
+	tag_matches(const char* line, const char* tag)
 {
 	int	i;
 

@@ -8,7 +8,7 @@
 
 /* ************************************************************************** */
 int
-	exit_error(t_game* game, char const* str);
+	exit_error(t_game* game, const char* str);
 int
 	exit_game(t_game* game, int code);
 static void
@@ -21,7 +21,7 @@ static int
 /* ************************************************************************** */
 // エラーメッセージを出力し、ゲームを異常終了させる
 int
-	exit_error(t_game* game, char const* str)
+	exit_error(t_game* game, const char* str)
 {
 	int	unused;
 

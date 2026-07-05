@@ -2,7 +2,7 @@
 
 /* ************************************************************************** */
 static int
-	count_check_columns(char const* line);
+	count_check_columns(const char* line);
 int
 	check_top_bottom_borders(t_str* map_buffer);
 int
@@ -14,7 +14,7 @@ int
 // 枠行（上端・下端）に含まれる '1' の個数を数えて返す。'1' と空白以外の文字が混じって
 // いれば 0 を返して不正とする（枠行は壁 '1' と空白のみで構成されるべきだから）
 static int
-	count_check_columns(char const* line)
+	count_check_columns(const char* line)
 {
 	int	i;
 	int	j;

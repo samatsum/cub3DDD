@@ -36,19 +36,19 @@ typedef struct s_str
 
 /* ************************************************************************** */
 int
-	ft_strlen(char const* str);
+	ft_strlen(const char* str);
 int
-	ft_in_set(char c, char const* set);
+	ft_in_set(char c, const char* set);
 char*
-	ft_substr(char const* s, int start, int len);
+	ft_substr(const char* s, int start, int len);
 char*
-	ft_strdup(char const* s1);
+	ft_strdup(const char* s1);
 int
-	ft_atoi(char const* str);
+	ft_atoi(const char* str);
 unsigned int
 	ft_rand(unsigned int* seed);
 t_str*
-	ft_split(char const* org, char sep);
+	ft_split(const char* org, char sep);
 int
 	str_length(t_str* str);
 t_str*
@@ -74,6 +74,6 @@ int
 int
 	ft_write_str_n(char* buf, int size, char* str, int start);
 int
-	ft_endswith(char const* str, char const* end);
+	ft_endswith(const char* str, const char* end);
 
 #endif

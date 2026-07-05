@@ -2,16 +2,16 @@
 
 /* ************************************************************************** */
 int
-	parse_texture(t_config* config, int key, char const* line);
+	parse_texture(t_config* config, int key, const char* line);
 static int
 	texture_index(int key);
 static char*
-	path_from_line(char const* line);
+	path_from_line(const char* line);
 
 /* ************************************************************************** */
 // テクスチャ設定を解析し、パスを保存する
 int
-	parse_texture(t_config* config, int key, char const* line)
+	parse_texture(t_config* config, int key, const char* line)
 {
 	char*	path;
 	int		index;
@@ -59,7 +59,7 @@ static int
 /* ************************************************************************** */
 // 行から先頭キー(タグ)を読み飛ばし、テクスチャのパス部分を抽出する
 static char*
-	path_from_line(char const* line)
+	path_from_line(const char* line)
 {
 	int		start;
 	int		end;

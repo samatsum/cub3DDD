@@ -2,13 +2,13 @@
 
 /* ************************************************************************** */
 int
-	ft_endswith(char const* str, char const* end);
+	ft_endswith(const char* str, const char* end);
 
 /* ************************************************************************** */
 // str が接尾辞 end で終わるなら 1、そうでなければ 0 を返す。end が str より長ければ即 0。
 // str の末尾 end_length 文字を ft_strcmp で照合する（".cub" 拡張子チェックなどに使う）
 int
-	ft_endswith(char const* str, char const* end)
+	ft_endswith(const char* str, const char* end)
 {
 	int	length;
 	int	end_length;

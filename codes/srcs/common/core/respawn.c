@@ -3,7 +3,7 @@
 
 /* ************************************************************************** */
 void
-	respawn_at(t_game* game, char const* allowed);
+	respawn_at(t_game* game, const char* allowed);
 void
 	save_spawn(t_game* game);
 int
@@ -14,7 +14,7 @@ void
 /* ************************************************************************** */
 // 指定された向きのスポーン候補から1つ選び、カメラをその地点へ戻す
 void
-	respawn_at(t_game* game, char const* allowed)
+	respawn_at(t_game* game, const char* allowed)
 {
 	int	idx;
 

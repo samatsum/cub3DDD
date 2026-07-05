@@ -7,7 +7,7 @@
 // スポーン状態の保存・復元、死亡演出（タイマー）の進行、敵との接触判定を提供する。
 // スポーン地点プールは t_config.spawns[]、死亡中フラグは t_game.death_timer(>0)
 void
-	respawn_at(t_game* game, char const* allowed);
+	respawn_at(t_game* game, const char* allowed);
 void
 	save_spawn(t_game* game);
 int

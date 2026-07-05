@@ -2,14 +2,14 @@
 
 /* ************************************************************************** */
 char*
-	ft_substr(char const* s, int start, int len);
+	ft_substr(const char* s, int start, int len);
 
 /* ************************************************************************** */
 // 文字列 s の start 文字目から最大 len 文字を切り出した新しい文字列を返す（malloc 失敗時 NULL）。
 // s を先頭から走査し、添字が [start, start+len) に入る文字だけを詰める。常に len+1 バイト確保して
 // 末尾を '\0' 終端するので、start が文字列長を超える場合は空文字列になる
 char*
-	ft_substr(char const* s, int start, int len)
+	ft_substr(const char* s, int start, int len)
 {
 	char*	str;
 	int		i;

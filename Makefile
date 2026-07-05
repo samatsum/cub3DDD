@@ -15,6 +15,7 @@ RSP_DIR         = codes/srcs/rsp
 # コンパイルフラグ（ヘッダは codes/includes に集約。rsp 系も codes/includes/rsp 配下）
 # ------------------------------------------------------------------------------
 CFLAGS          = -O2 -Wall -Wextra -Werror -pthread -I $(INC_DIR)
+CHECKS          = no-42-header,includes,style,pointer,signatures,separators,header-guard,static-leak,missing-static,layering,duplicates,unused,return-parens
 
 # ==============================================================================
 # ソース定義
@@ -94,6 +95,9 @@ debug:          CFLAGS += -O0 -g3 -fsanitize=address -static-libasan
 debug:          re
 
 check:
+	@python3 codes/PythonCodes/lint.py --select $(CHECKS) --strict
+
+audit:
 	@python3 codes/PythonCodes/lint.py
 
 clean:
@@ -105,4 +109,4 @@ fclean:         clean
 
 re:             fclean all
 
-.PHONY:         all clean fclean re check debug
+.PHONY:         all clean fclean re check audit debug

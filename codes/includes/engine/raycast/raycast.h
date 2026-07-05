@@ -42,9 +42,9 @@ void
 void
 	apply_spawn(t_config* config, t_camera* camera, t_spawn_point* sp);
 int
-	pick_spawn_index(t_config* config, char const* allowed, unsigned int* seed);
+	pick_spawn_index(t_config* config, const char* allowed, unsigned int* seed);
 int
-	pick_spawn_indices(t_config* config, char const* allowed, unsigned int* seed, int* out, int want);
+	pick_spawn_indices(t_config* config, const char* allowed, unsigned int* seed, int* out, int want);
 int
 	move_camera(t_camera* cam, struct s_config* config, struct s_world* world, int direction, double time_mult);
 int

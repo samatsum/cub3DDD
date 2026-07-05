@@ -207,7 +207,7 @@ static void
 static void
 	respawn_npc(t_game* game, t_enemy* npc)
 {
-	char const*	allowed;
+	const char*	allowed;
 	int			idx;
 
 	allowed = RSP_RED_DIRS;

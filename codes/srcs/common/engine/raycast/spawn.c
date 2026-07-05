@@ -7,9 +7,9 @@ void
 void
 	apply_spawn(t_config* config, t_camera* camera, t_spawn_point* sp);
 int
-	pick_spawn_index(t_config* config, char const* allowed, unsigned int* seed);
+	pick_spawn_index(t_config* config, const char* allowed, unsigned int* seed);
 int
-	pick_spawn_indices(t_config* config, char const* allowed, unsigned int* seed, int* out, int want);
+	pick_spawn_indices(t_config* config, const char* allowed, unsigned int* seed, int* out, int want);
 
 /* ************************************************************************** */
 // マップ全体を1度走査し、N/S/E/W のセルを位置と向き文字つきで spawns[] へ全収集する。
@@ -67,7 +67,7 @@ void
 // (自作 ft_rand で seed を更新する再入可能な擬似乱数)で選んで添字を返す。allowed=DIRECTIONS なら
 // 全スポーンが対象(FPSの初期配置)。候補が無ければ -1 を返し、呼び出し側で配置失敗を扱う
 int
-	pick_spawn_index(t_config* config, char const* allowed, unsigned int* seed)
+	pick_spawn_index(t_config* config, const char* allowed, unsigned int* seed)
 {
 	int	candidates[MAX_SPAWNS];
 	int	count;
@@ -92,7 +92,7 @@ int
 // 返す。選んだ候補を末尾要素と入れ替えてから候補数を1減らすことで、同じ地点の二重選出を
 // O(1)で防ぐ（フィッシャー＝イェーツの部分抽出）。RSPのチーム別2地点選出(赤"NW"/青"SE")に使う
 int
-	pick_spawn_indices(t_config* config, char const* allowed, unsigned int* seed, int* out, int want)
+	pick_spawn_indices(t_config* config, const char* allowed, unsigned int* seed, int* out, int want)
 {
 	int	cand[MAX_SPAWNS];
 	int	count;

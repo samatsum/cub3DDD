@@ -183,13 +183,13 @@ else                   { patrol_enemy(); }
 | `rsp_enemy_ai.c` | `update_rsp_enemy`：最寄りの異チーム戦闘員を見て、勝てる手なら追跡・負ける手なら逃走・あいこや相手不在は徘徊。見た目は team×手のハンドテクスチャを毎フレーム反映 |
 | `rsp_weapon.c` | `render_rsp_hand`：自分のチーム×手のハンドテクスチャを画面下部中央へ描画（共通の `draw_weapon` から RSP 時に振り分けられる） |
 
-各 NPC のチーム・手・初期リスポーン地点・生存は `t_enemy.rsp`（`t_rsp_state`）に埋め込み、プレイヤーは `t_game.player_rsp` が保持します。乱数状態は `t_game.rsp_seed`、自陣踏み込み検出は `t_game.rsp_on_home` を使います。
+各 NPC のチーム・手・初期リスポーン地点・生存は `t_enemy.rsp`（`t_rsp_state`）に埋め込み、プレイヤー状態・乱数状態・スコア・勝者・自陣踏み込み検出は `t_game.rsp` にまとめています。
 
 ## 5. 主要な型とデータ構造
 
 | 型 | 役割 | 定義場所 |
 |---|---|---|
-| `t_game` | すべてのサブシステムを束ねるファサード（`mode` / `player_rsp` / `rsp_seed` / `rsp_on_home` / `death_timer` / `options` を含む） | `types.h` |
+| `t_game` | すべてのサブシステムを束ねるファサード（`mode` / `fps` / `rsp` / `death_timer` / `options` を含む） | `types.h` |
 | `t_config` | 解像度・色・テクスチャパス・マップ配列・**セル属性フラグ層**・速度/FOV/敵追跡秒/敵速度/敵HP・スポーン地点配列 | `config/config.h` |
 | `t_window` | MiniLibX のポインタ、描画用バックバッファ | `render.h` |
 | `t_camera` | 位置・視線・カメラ平面・直交ベクトル | `raycast.h` |
@@ -294,9 +294,10 @@ key_press / key_release ──► t_input
 ## 8. ビルド
 
 ```
-make           # 通常ビルド（-O3 -Wall -Wextra -Werror -I codes/includes）
+make           # 通常ビルド（-O2 -Wall -Wextra -Werror -I codes/includes）
 make debug     # AddressSanitizer + デバッグシンボル（-O0 -g3 -fsanitize=address）で再ビルド
-make check     # 付属の lint（codes/PythonCodes/lint.py）を実行
+make check     # 失敗すべき lint ゲートを --strict で実行
+make audit     # magic number など助言系を含めた全 lint を実行
 make clean     # オブジェクト（codes/obj）の削除
 make fclean    # 実行ファイルも含めて削除
 make re        # fclean + all
@@ -304,23 +305,22 @@ make re        # fclean + all
 
 ビルドは 3 系統（`COMMON_SRCS` / `FPS_SRCS` / `RSP_SRCS`）をそれぞれ `codes/obj/{common,fps,rsp}/` へコンパイルしてリンクします。`$(MLX_TARGET)` ルールは `codes/minilibx-linux` をサブ make します。
 
-### コーディング規約（要点）
+### コーディング規約
 
-- 変数宣言は関数頭、`for` 不使用、ヘッダガード必須。1 行 1 変数で型・名前をタブで縦整列。
-- 命名: 関数・ファイルは `動詞_名詞`（`parse_map`, `draw_wall`）、構造体は `t_xxx` / `s_xxx`、列挙は `e_xxx`、マクロは `UPPER_SNAKE`。
-- ヘッダには **マクロ定数・型定義・プロトタイプのみ**。実装は `.c` に閉じる。
-- ポインタの `*` は型名側（`int* ptr;`）。`else` は `} else {`、`{}` は省略しない。関数定義はセパレータ + `//` の日本語コメントを伴う。
-- 許可関数の制約（42 cub3D ルール）に従う：`open/close/read/write/printf/malloc/free/perror/strerror/exit/gettimeofday`、math、MiniLibX、自作関数のみ。並列レンダラの `pthread` 系は意図的な例外。
+C コーディングルールの正本は [CODING_RULES.md](./CODING_RULES.md) です。`make check` の出力に表示される `CRxxx` は、この文書のルール ID に対応します。
+
+レビューではフォーマットだけでなく、粒度、高凝集・低結合、複雑度、リソース解放、未定義動作の危険性も確認します。42 cub3D の許可関数制約（`open/close/read/write/printf/malloc/free/perror/strerror/exit/gettimeofday`、math、MiniLibX、自作関数）も前提です。並列レンダラの `pthread` 系は意図的な例外です。
 
 ### 付属の lint ツール（`codes/PythonCodes/`）
 
 ```
-python3 codes/PythonCodes/lint.py            # 全検査を実行（make check と同じ）
+make check                                  # 失敗すべき lint ゲート（WARN も失敗）
+make audit                                  # 助言系を含む全検査
 python3 codes/PythonCodes/lint.py --list     # 利用可能な検査の一覧
 python3 codes/PythonCodes/lint.py --fix      # 不足セパレータ/コメント雛形を挿入
 ```
 
-include 順序・ポインタ表記・制御構文の空白・`else` 形・終端改行・シグネチャ・セパレータ・重複定義・マジックナンバー・未使用関数・`static` 漏洩などを検査します。
+`make check` は [CODING_RULES.md](./CODING_RULES.md) のうち機械判定しやすいゲート項目を検査します。`make audit` はそれに加えてマジックナンバーなど助言系も表示します。
 
 ## 9. 既知の課題と TODO
 
@@ -372,5 +372,6 @@ make debug
 ./cub3D maps/fps_map/1.cub FPS
 
 # コーディングルール検査
-make check        # = python3 codes/PythonCodes/lint.py
+make check        # 失敗すべき lint ゲート
+make audit        # 助言系を含む全 lint
 ```

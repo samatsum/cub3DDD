@@ -20,13 +20,13 @@ int
 static bool
 	validate_check(int argc, char** argv, t_game* game);
 static bool
-	validate_map_path(char const* path, int mode, t_game* game);
+	validate_map_path(const char* path, int mode, t_game* game);
 static bool
 	validate_mode_ops(t_game* game);
 static bool
-	validate_map_file(char const* path, t_game* game);
+	validate_map_file(const char* path, t_game* game);
 static bool
-	path_contains(char const* path, char const* needle);
+	path_contains(const char* path, const char* needle);
 static bool
 	setup_inits(t_game* game);
 static void
@@ -114,7 +114,7 @@ static bool
 /* ************************************************************************** */
 // モードとマップ格納ディレクトリの対応を検証する
 static bool
-	validate_map_path(char const* path, int mode, t_game* game)
+	validate_map_path(const char* path, int mode, t_game* game)
 {
 	if (mode == MODE_FPS && !path_contains(path, FPS_MAP_DIR)) {
 		exit_error(game, "Error:\n FPS mode requires a map in maps/fps_map/.\n");
@@ -131,7 +131,7 @@ static bool
 /* ************************************************************************** */
 // マップファイルそのものを検証する（拡張子と open 可否）
 static bool
-	validate_map_file(char const* path, t_game* game)
+	validate_map_file(const char* path, t_game* game)
 {
 	int	fd;
 
@@ -151,7 +151,7 @@ static bool
 /* ************************************************************************** */
 // path の中に needle が含まれるかを調べる小さな文字列検索
 static bool
-	path_contains(char const* path, char const* needle)
+	path_contains(const char* path, const char* needle)
 {
 	int	i;
 	int	j;

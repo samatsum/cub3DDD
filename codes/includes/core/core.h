@@ -20,7 +20,7 @@ void
 int
 	exit_game(t_game* game, int code);
 int
-	exit_error(t_game* game, char const* str);
+	exit_error(t_game* game, const char* str);
 int
 	screenshot(t_game* game);
 void

@@ -17,6 +17,7 @@ from __future__ import annotations
 
 import argparse
 import os
+import re
 import sys
 from pathlib import Path
 from typing import List
@@ -27,6 +28,15 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from checks import CHECKS, Check
 from cutils import Context, Finding, Severity, find_project_root, fix_separators
+
+_CR_RE = re.compile(r"CR(\d+)")
+
+
+def cr_key(chk: Check) -> tuple[int, str]:
+    m = _CR_RE.search(chk.summary)
+    if not m:
+        return (999, chk.name)
+    return (int(m.group(1)), chk.name)
 
 
 # 端末が色対応のときだけ ANSI を使う
@@ -83,14 +93,14 @@ def parse_args(argv: List[str]) -> argparse.Namespace:
 
 def select_checks(selector: str | None) -> List[Check]:
     if not selector:
-        return CHECKS
-    wanted = {name.strip() for name in selector.split(",") if name.strip()}
-    chosen = [c for c in CHECKS if c.name in wanted]
-    unknown = wanted - {c.name for c in chosen}
+        return sorted(CHECKS, key=cr_key)
+    registry = {c.name: c for c in CHECKS}
+    wanted = [name.strip() for name in selector.split(",") if name.strip()]
+    unknown = [name for name in wanted if name not in registry]
     if unknown:
-        names = ", ".join(sorted(unknown))
+        names = ", ".join(sorted(set(unknown)))
         raise SystemExit(f"不明な検査名: {names}\n--list で一覧を確認してください。")
-    return chosen
+    return [registry[name] for name in wanted]
 
 
 # --------------------------------------------------------------------------- #
@@ -115,7 +125,7 @@ def main(argv: List[str]) -> int:
 
     if args.list:
         print("利用可能な検査:")
-        for chk in CHECKS:
+        for chk in sorted(CHECKS, key=cr_key):
             print(f"  {chk.name:<14} {chk.summary}")
         return 0
 

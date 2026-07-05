@@ -187,15 +187,15 @@ void
 int
 	clear_config(t_config* config);
 int
-	parse_dimensions(t_config* config, char const* line);
+	parse_dimensions(t_config* config, const char* line);
 int
-	parse_texture(t_config* config, int key, char const* line);
+	parse_texture(t_config* config, int key, const char* line);
 int
-	parse_color(t_config* config, int key, char const* line);
+	parse_color(t_config* config, int key, const char* line);
 int
-	parse_scalar(t_config* config, int key, char const* line);
+	parse_scalar(t_config* config, int key, const char* line);
 int
-	parse_config(t_config* config, char const* conf_path);
+	parse_config(t_config* config, const char* conf_path);
 int
 	check_top_bottom_borders(t_str* map_buffer);
 int

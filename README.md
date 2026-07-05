@@ -68,7 +68,7 @@ make
 ./cub3D maps/rsp_map/rsp.cub RSP    # RSP モード（じゃんけん鬼ごっこ）
 ```
 
-ビルドは `-O3 -Wall -Wextra -Werror`（インクルードパスは `codes/includes`）で行われます。`make debug`（AddressSanitizer 付き）・`make check`（コーディングルール検査）・`make clean` / `make fclean` / `make re` も利用できます。
+ビルドは `-O2 -Wall -Wextra -Werror`（インクルードパスは `codes/includes`）で行われます。`make debug`（AddressSanitizer 付き）・`make check`（失敗すべき lint ゲート）・`make audit`（助言系を含む全 lint）・`make clean` / `make fclean` / `make re` も利用できます。
 
 ## 操作 (Controls)
 
@@ -94,6 +94,7 @@ cub3D は `.cub` ファイルで解像度・テクスチャ・色・各種パラ
 
 - 👉 **[USER_DOC.md](./USER_DOC.md)** — プレイヤー／評価者向け。起動方法、操作、RSP モードの遊び方、`.cub` の記述ルール（敵・巡回路・扉・各種パラメータを含む）。
 - 👉 **[DEV_DOC.md](./DEV_DOC.md)** — 開発者向け。モジュール構造（common / fps / rsp の 3 系統）、敵 AI と RSP AI の詳細、データフロー、チューニング値、既知の課題、付属の lint ツール。
+- 👉 **[CODING_RULES.md](./CODING_RULES.md)** — C コーディングルールの正本。`make check` の `CRxxx` 表示はここに対応。
 
 ## 参考資料 (Resources)
 

@@ -26,17 +26,17 @@ static const t_scalar_def	g_scalars[] = {
 
 /* ************************************************************************** */
 int
-	parse_dimensions(t_config* config, char const* line);
+	parse_dimensions(t_config* config, const char* line);
 int
-	parse_color(t_config* config, int key, char const* line);
+	parse_color(t_config* config, int key, const char* line);
 int
-	parse_scalar(t_config* config, int key, char const* line);
+	parse_scalar(t_config* config, int key, const char* line);
 static int
 	str_to_color(t_str* str);
 static const t_scalar_def*
 	find_scalar(int key);
 static double
-	parse_double(char const* s, int* ok);
+	parse_double(const char* s, int* ok);
 
 /* ************************************************************************** */
 // 解像度設定 "R 幅 高さ" を解析する。まず 'R' の次以降が空白か数字だけで構成されるかを
@@ -44,7 +44,7 @@ static double
 // 確認し、幅・高さを ft_atoi で取得。1 以下は無効値として弾く。t_str リストはどの経路でも
 // str_clear で解放する（解放漏れ防止のため各 return 前に明示的に呼ぶ）
 int
-	parse_dimensions(t_config* config, char const* line)
+	parse_dimensions(t_config* config, const char* line)
 {
 	int		i;
 	int		tmp;
@@ -89,7 +89,7 @@ int
 // str_to_color で 0xRRGGBB に合成。範囲外(<0)は失敗。key が C_F なら床色、それ以外(C_C)は
 // 天井色へ格納。str_arr[0]=空白分割, str_arr[1]=カンマ分割で、全経路で両方を str_clear する
 int
-	parse_color(t_config* config, int key, char const* line)
+	parse_color(t_config* config, int key, const char* line)
 {
 	int				i;
 	unsigned int	color;
@@ -138,7 +138,7 @@ int
 // (ok==0)失敗、範囲外(min_exclusive 以下／max_inclusive 超)も失敗。書き込みは config 先頭から
 // field_off バイトずらした位置へ double として代入する（フィールドごとの分岐を不要にする方式）
 int
-	parse_scalar(t_config* config, int key, char const* line)
+	parse_scalar(t_config* config, int key, const char* line)
 {
 	const t_scalar_def*	def;
 	double				value;
@@ -219,7 +219,7 @@ static const t_scalar_def*
 // 済みのため不要）。数字を1つも消費しなければ *ok=0（＝変換失敗、strtod の endptr 不進に相当）、
 // 1つでも消費すれば *ok=1 とし、解析した数値を返す
 static double
-	parse_double(char const* s, int* ok)
+	parse_double(const char* s, int* ok)
 {
 	double	result;
 	double	scale;

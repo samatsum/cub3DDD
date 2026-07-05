@@ -5,7 +5,7 @@
 void
 	load_player_assets(t_game* game);
 static void
-	load_one_tex(t_window* window, t_tex* tex, char const* path_src);
+	load_one_tex(t_window* window, t_tex* tex, const char* path_src);
 
 /* ************************************************************************** */
 // プレイヤー視点のアセット（武器/手・死亡画面・扉）のテクスチャをまとめて読み込む。1枚ぶんの
@@ -37,7 +37,7 @@ void
 // テクスチャ1枚を読み込む。パスを strdup して tex->path に控え、共通の load_tex_image へ委譲する
 // (load_tex_image が NULL パスを弾くので strdup 失敗時も安全＝非致命)。3系統(武器/死亡/扉)で共有
 static void
-	load_one_tex(t_window* window, t_tex* tex, char const* path_src)
+	load_one_tex(t_window* window, t_tex* tex, const char* path_src)
 {
 	tex->path = ft_strdup(path_src);
 	if (load_tex_image(window, tex)) {
