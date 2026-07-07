@@ -9,8 +9,7 @@
 #include "../minilibx-linux/mlx.h"
 
 #define CUB_ARG_MAP 1
-#define CUB_ARG_MODE 2
-#define CUB_ARG_COUNT 3
+#define CUB_ARG_COUNT 2
 #define FPS_MAP_DIR "maps/fps_map/"
 #define RSP_MAP_DIR "maps/rsp_map/"
 
@@ -20,7 +19,7 @@ int
 static bool
 	validate_check(int argc, char** argv, t_game* game);
 static bool
-	validate_map_path(const char* path, int mode, t_game* game);
+	set_mode_from_path(const char* path, t_game* game);
 static bool
 	validate_mode_ops(t_game* game);
 static bool
@@ -51,7 +50,7 @@ int
 }
 
 /* ************************************************************************** */
-// 引数とマップファイルの検証を行う。argv[CUB_ARG_MODE] で FPS/RSP モードを明示的に選ぶ
+// 引数とマップファイルを検証し、マップの配置ディレクトリから FPS/RSP モードを決める
 static bool
 	validate_check(int argc, char** argv, t_game* game)
 {
@@ -59,28 +58,11 @@ static bool
 		exit_error(game, "Error:\n no map specified.\n");
 		return (false);
 	}
-	if (argc < CUB_ARG_COUNT) {
-		exit_error(game, "Error:\n mode argument required. use FPS or RSP.\n");
-		return (false);
-	}
 	if (argc > CUB_ARG_COUNT) {
 		exit_error(game, "Error:\n too many arguments.\n");
 		return (false);
 	}
-	if (ft_strcmp(argv[CUB_ARG_MODE], "RSP") == 0) {
-		game->mode = MODE_RSP;
-		game->mode_ops = rsp_mode_ops();
-	} else if (ft_strcmp(argv[CUB_ARG_MODE], "FPS") == 0) {
-		game->mode = MODE_FPS;
-		game->mode_ops = fps_mode_ops();
-	} else {
-		exit_error(game, "Error:\n invalid mode. use FPS or RSP.\n");
-		return (false);
-	}
-	if (!validate_mode_ops(game)) {
-		return (false);
-	}
-	if (!validate_map_path(argv[CUB_ARG_MAP], game->mode, game)) {
+	if (!set_mode_from_path(argv[CUB_ARG_MAP], game) || !validate_mode_ops(game)) {
 		return (false);
 	}
 	if (!validate_map_file(argv[CUB_ARG_MAP], game)) {
@@ -112,19 +94,22 @@ static bool
 }
 
 /* ************************************************************************** */
-// モードとマップ格納ディレクトリの対応を検証する
+// マップ格納ディレクトリから起動モードとモード操作テーブルを決定する
 static bool
-	validate_map_path(const char* path, int mode, t_game* game)
+	set_mode_from_path(const char* path, t_game* game)
 {
-	if (mode == MODE_FPS && !path_contains(path, FPS_MAP_DIR)) {
-		exit_error(game, "Error:\n FPS mode requires a map in maps/fps_map/.\n");
-		return (false);
+	if (path_contains(path, FPS_MAP_DIR)) {
+		game->mode = MODE_FPS;
+		game->mode_ops = fps_mode_ops();
+		return (true);
 	}
-	if (mode == MODE_RSP && !path_contains(path, RSP_MAP_DIR)) {
-		exit_error(game, "Error:\n RSP mode requires a map in maps/rsp_map/.\n");
-		return (false);
+	if (path_contains(path, RSP_MAP_DIR)) {
+		game->mode = MODE_RSP;
+		game->mode_ops = rsp_mode_ops();
+		return (true);
 	}
-	return (true);
+	exit_error(game, "Error:\n map must be in maps/fps_map/ or maps/rsp_map/.\n");
+	return (false);
 }
 
 

@@ -29,6 +29,10 @@ void
 {
 	if (game->cleared) {
 		draw_clear_screen(game);
+		if (!game->result_screenshot_saved) {
+			game->result_screenshot_saved = 1;
+			save_result_screenshot(game);
+		}
 		mlx_put_image_to_window(game->window.ptr, game->window.win, game->window.screen.img, 0, 0);
 		return ;
 	}

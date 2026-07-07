@@ -121,18 +121,20 @@ static int
 }
 
 /* ************************************************************************** */
-// 押下時の単発アクション（武器切り替え・射撃）を処理する
+// 押下時のFPS専用アクション（武器切り替え・射撃）を処理する
 static void
 	handle_action(int keycode, t_game* game)
 {
+	if (!game->mode_ops.can_shoot) {
+		return ;
+	}
 	if (keycode == KEY_NUM_1) {
 		game->input.current_weapon = WEP_PISTOL;
 	} else if (keycode == KEY_NUM_2) {
 		game->input.current_weapon = WEP_FLASHLIGHT;
 	} else if (keycode == KEY_NUM_3) {
 		game->input.current_weapon = WEP_HANDS;
-	} else if (keycode == KEY_SPACE && game->input.current_weapon == WEP_PISTOL
-		&& game->mode_ops.can_shoot) {
+	} else if (keycode == KEY_SPACE && game->input.current_weapon == WEP_PISTOL) {
 		if (game->input.is_shooting == 0) {
 			game->input.is_shooting = SHOOT_COOLDOWN;
 			shoot_target(game);

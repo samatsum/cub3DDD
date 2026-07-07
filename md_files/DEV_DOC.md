@@ -1,12 +1,12 @@
 # DEV_DOC — 開発者向けアーキテクチャ仕様書
 
-このドキュメントは、cub3D エンジンを保守・拡張する開発者向けの技術資料です。記述内容は **実際のソースコードと一致するもののみ** を扱っています（推測や将来構想は §9 / §10 にまとめています）。
+このドキュメントは、cub3D エンジンを保守・拡張する開発者向けの技術資料です。記述内容は **実際のソースコードと一致するもののみ** を扱います。
 
 ---
 
 ## 1. 全体像
 
-cub3D は MiniLibX（X11）上で動作する一人称 3D レンダラに、ゲームロジック（収集アイテム・扉・**巡回／追跡する敵 AI**・武器切替）を載せたものです。同じエンジン上で、第 2 引数 `RSP` により **じゃんけん鬼ごっこ（RSP モード）** が動きます。
+cub3D は MiniLibX（X11）上で動作する一人称 3D レンダラに、ゲームロジック（収集アイテム・扉・**巡回／追跡する敵 AI**・武器切替）を載せたものです。同じエンジン上で、`maps/rsp_map/` 配下のマップを指定すると **じゃんけん鬼ごっこ（RSP モード）** が動きます。
 
 レンダリングはレイキャスティング（DDA）と、画面を縦 1 列ずつ走査して壁・床・天井・スプライトを描く古典的な手法を用います。
 
@@ -14,8 +14,8 @@ cub3D は MiniLibX（X11）上で動作する一人称 3D レンダラに、ゲ�
 
 ```
 main()
-  └── validate_check() : 引数チェック + init_config + .cub のパース (parse_config)
-  │                      argv[2] == "FPS" / "RSP" で game->mode を決定
+  └── validate_check() : 引数チェック + マップパスから mode 決定 + init_config + .cub のパース (parse_config)
+  │                      maps/fps_map/ / maps/rsp_map/ で game->mode を決定
   └── setup_inits()    : init_game + finish_init
   │                      （ウィンドウ生成、テクスチャ読込、スプライト/敵リスト構築、
   │                        収集数カウント、セル属性フラグ層の構築、事前計算テーブル生成。
@@ -39,7 +39,7 @@ main()
 ```
 samatsum-cub3D/
 ├── Makefile                          # COMMON_SRCS / FPS_SRCS / RSP_SRCS の 3 系統をビルド
-├── README.md / USER_DOC.md / DEV_DOC.md
+├── README.md / md_files/{USER_DOC.md, DEV_DOC.md, CODING_RULES.md}
 ├── codes/
 │   ├── includes/                     # 公開ヘッダ
 │   │   ├── types.h                   # t_game ファサード、描画フラグ、入力/世界/資産/キャッシュ型
@@ -59,7 +59,7 @@ samatsum-cub3D/
 │   │
 │   ├── srcs/
 │   │   ├── common/                   # エンジン ＋ 司令塔/ディスパッチャ（両モード共通）
-│   │   │   ├── main.c                # エントリポイント（argv[2] の FPS/RSP で mode を決定）
+│   │   │   ├── main.c                # エントリポイント（マップパスから FPS/RSP mode を決定）
 │   │   │   ├── config/               # .cub のパースと検証
 │   │   │   │   ├── config.c          # init/clear、キー対応表 g_keys[]、parse 全体の制御
 │   │   │   │   ├── parse_map.c       # マップ本体 → int 配列、P セルの CELL_PATROL 付与
@@ -72,7 +72,7 @@ samatsum-cub3D/
 │   │   │   │   ├── exit.c            # 全リソース解放
 │   │   │   │   └── collision.c, bmp.c
 │   │   │   ├── engine/
-│   │   │   │   ├── input/input.c     # X11 キーフック（WASD + 矢印 + 1/2/3 + Space + I/L/O/Esc）
+│   │   │   │   ├── input/input.c     # X11 キーフック（WASD + 矢印 + FPS専用の1/2/3/Space + I/L/O/Esc）
 │   │   │   │   ├── raycast/{raycast.c, camera.c, spawn.c, spawn_marker.c}
 │   │   │   │   ├── render/{screen.c, draw.c, draw_wall.c, draw_sky_floor.c, sprite.c,
 │   │   │   │   │           sprite_utils.c, cast_columns.c, light.c, tables.c,
@@ -95,7 +95,8 @@ samatsum-cub3D/
 │   │
 │   ├── minilibx-linux/               # ベンダー: MiniLibX
 │   └── PythonCodes/                  # clint（独自 C コーディングルール linter）と移行スクリプト
-├── maps/                             # テスト用マップ（valid/ に 1.cub, rsp.cub, door_test.cub 等）
+├── maps/                             # テスト用マップ（fps_map/ と rsp_map/）
+├── screenshot/                       # 結果画面の BMP 保存先（fps_screen/ と rsp_screen/）
 └── textures/                         # XPM アセット（wall/object/enemy/hand/arm/interact/full…）
 ```
 
@@ -133,7 +134,7 @@ else                   { patrol_enemy(); }
 2. **視野角（FOV）**：`track_timer <= 0.0`（＝未追跡）のときのみ厳密チェック。プレイヤー方向 `target_angle` と敵の向き `dir_angle` の差を `wrap_pi` で `(-π, π]` に正規化し、`|diff| > ENEMY_FOV_HALF(=π/8=±22.5°)` なら不可視。**追跡中は視野角ゲートを外す**（背後に回り込まれても一定時間は追える）。
 3. **視線（LOS）**：`has_line_of_sight` が始点→終点を `ENEMY_LOS_STEP(=0.05 マス)` 刻みでサンプリングし、`IS_BLOCKING` セルが間にあれば遮蔽として不可視。
 
-> **索敵タイミング:** `update_fps_enemy` はループ先頭で **状態に関係なく** `enemy_sees_player` を呼び、その後 `move_enemy → patrol_enemy → face_angle`（回頭）に進みます。FOV 判定の基準 `dir_angle` は `face_angle` が毎フレーム旋回させるため、検知コーン（±22.5°）は回頭に追従してスイープします（最大 1 フレームの位相遅れ。§9(d)）。
+> **索敵タイミング:** `update_fps_enemy` はループ先頭で **状態に関係なく** `enemy_sees_player` を呼び、その後 `move_enemy → patrol_enemy → face_angle`（回頭）に進みます。FOV 判定の基準 `dir_angle` は `face_angle` が毎フレーム旋回させるため、検知コーン（±22.5°）は回頭に追従してスイープします（最大 1 フレームの位相遅れ）。
 
 ### 3.3 巡回（`enemy_patrol.c::patrol_enemy`）
 
@@ -155,10 +156,10 @@ else                   { patrol_enemy(); }
 
 ## 4. RSP モード（じゃんけん鬼ごっこ）
 
-`argv[2]` が `FPS` / `RSP` のときだけ起動し、`RSP` では `game->mode = MODE_RSP` となり、**同じレンダラ・入力・物理の上で** 動きます。FPS との差分はゲームロジックのみです。
+マップパスが `maps/fps_map/` / `maps/rsp_map/` のときだけ起動し、`maps/rsp_map/` では `game->mode = MODE_RSP` となり、**同じレンダラ・入力・物理の上で** 動きます。FPS との差分はゲームロジックのみです。
 
 - **初期化**：`finish_init`（`common/core/init.c`）が RSP 時に `init_hand_textures`（ハンド画像 6 枚）と `setup_rsp_combatants`（戦闘員配置）を呼びます。
-- **毎フレーム**：`update_enemies` が各敵に `update_rsp_enemy` を適用し、接触判定を `check_enemy_contact`（FPS）ではなく `resolve_rsp_combat`（RSP）で行います。射撃は `handle_action` が `mode != MODE_RSP` で無効化します。
+- **毎フレーム**：`update_enemies` が各敵に `update_rsp_enemy` を適用し、接触判定を `check_enemy_contact`（FPS）ではなく `resolve_rsp_combat`（RSP）で行います。`handle_action` は `mode_ops.can_shoot == 0` のモードで即 return し、RSP では `1`/`2`/`3` の武器切り替えと射撃を無効化します。
 
 ### 4.1 型と純粋ルール（`includes/rsp/`）
 
@@ -241,6 +242,7 @@ key_press / key_release ──► t_input
                             ├── draw_weapon
                             ├── display_crosshair (FLAG_CROSSHAIR)
                             └── update_ui       (FLAG_UI)
+                       ├── cleared 時は結果画面を描画し、初回だけ save_result_screenshot
                        └── mlx_put_image_to_window + write_ui_text
 ```
 
@@ -251,8 +253,8 @@ key_press / key_release ──► t_input
 | `FLAG_UI` | ON | `I` キー |
 | `FLAG_SHADOWS` | ON | `L` キー |
 | `FLAG_CROSSHAIR` | ON | `O` キー |
-| `FLAG_FLASHLIGHT` | 描画時に武器状態から `rnd.options` へ設定（`screen.c`）。`light.c` / `color.c` が参照 | フラッシュライト装備（`2` キー）に連動 |
-| `FLAG_SAVE` | 未使用（§9(b)） | — |
+| `FLAG_FLASHLIGHT` | 描画時に武器状態から `rnd.options` へ設定（`screen.c`）。`light.c` / `color.c` が参照 | FPS のフラッシュライト装備（`2` キー）に連動 |
+
 
 ## 7. チューニング値・既定値の所在
 
@@ -263,7 +265,7 @@ key_press / key_release ──► t_input
 | 区分 | 定数 | 値 | 用途 |
 |---|---|---|---|
 | 時間 | `TARGET_FPS` / `MAX_TIME_MULT` | 60.0 / 3.0 | FPS 非依存スケール係数の基準と上限 |
-| プレイヤー速度 | `PLAYER_RUN_BOOST` / `PLAYER_WALK_SPEED_MULT` / `PLAYER_RUN_SPEED_MULT` | 1.5 / 1.0 / (WALK×BOOST) | 素手＝走行モードの倍率（走行は歩行の `RUN_BOOST` 倍） |
+| プレイヤー速度 | `PLAYER_RUN_BOOST` / `PLAYER_WALK_SPEED_MULT` / `PLAYER_RUN_SPEED_MULT` | 1.5 / 1.0 / (WALK×BOOST) | FPS の素手＝走行モードの倍率（走行は歩行の `RUN_BOOST` 倍） |
 | 当たり半径 | `PLAYER_RADIUS` / `ENEMY_RADIUS` | 0.5 / 0.8 | プレイヤー／敵の当たり半径 |
 | 壁マージン | `WALL_MARGIN` | 0.4 | 壁へ食い込まないための中心停止マージン |
 | 接触 | `RESPAWN_CONTACT_DIST` | 0.9 | 敵接触（FPS）／じゃんけん接触（RSP）とみなす中心間距離 |
@@ -322,41 +324,18 @@ python3 codes/PythonCodes/lint.py --fix      # 不足セパレータ/コメン�
 
 `make check` は [CODING_RULES.md](./CODING_RULES.md) のうち機械判定しやすいゲート項目を検査します。`make audit` はそれに加えてマジックナンバーなど助言系も表示します。
 
-## 9. 既知の課題と TODO
+## 9. 結果スクリーンショット
 
-### (a) パーサのデバッグ出力（解決済み）
+クリア/勝敗が確定した結果画面は、`common/core/bmp.c::save_result_screenshot` で自動保存します。保存は結果画面を描画した最初のフレームで 1 回だけ行います。
 
-以前 `config/` 各所にあった `printf("DEBUG: ...")` は全て除去済みです（現在ソースに `DEBUG` 出力はありません）。
+| モード | 保存先 |
+|---|---|
+| FPS | `./screenshot/fps_screen/fps_YYYYMMDD_HHMMSS_usec.bmp` |
+| RSP | `./screenshot/rsp_screen/rsp_YYYYMMDD_HHMMSS_usec.bmp` |
 
-### (b) `screenshot()` がエントリから呼ばれていない
+ファイル名は `localtime()` でローカル日時に変換し、末尾にマイクロ秒を付けて同一秒内の上書きを避けます。手動保存用の関数・フラグ・キーバインドは持たず、結果記録に用途を絞ります。
 
-`common/core/bmp.c` の `screenshot()` は実装済みですが、`main.c` / `input.c` のどこからも呼ばれていません（`FLAG_SAVE` も定義のみで未使用）。BMP 機能を生かすなら、コマンドライン引数（例: `-save`）かキーバインドで呼び出す導線を引いてください。書き込み先は日時付きパス `./bmp/screenshot_<秒>_<マイクロ秒>.bmp` に統合済みです（`./bmp/` ディレクトリは別途用意が必要）。
-
-### (c) ヘッダの include グラフが太い
-
-`types.h` が `config.h` / `raycast.h` / `render.h` / `enemy_types.h`（さらに `rsp.h`）を引くため、`input.c` などをビルドするだけでほぼ全ヘッダをパースします。各サブモジュールのヘッダを **公開関数の前方宣言** に絞り、構造体本体はそれを必要とする `.c` でのみ展開する整理の余地があります。
-
-### (d) 索敵 FOV の 1 フレーム位相遅れ（軽微）
-
-§3.2 のとおり、`update_fps_enemy` は `face_angle` による `dir_angle` 更新より前に索敵します。回頭中の検知コーンが実向きに対し最大 1 フレーム遅れますが挙動上は無害です。
-
-### (e) RSP の配置に関する設計メモ
-
-`t_enemy.rsp`（`t_rsp_state`）は common の共有モデルに直接埋め込んでいます（`enemy_types.h` のコメント参照。将来 common を rsp 型に依存させない方針へ移すなら、この 1 メンバを外部テーブルへ剥がす）。RSP 固有コードは `srcs/rsp/`（フラット）に集約済みで、`rsp.h`（純粋ルール・型、common 依存可）と `rsp_game.h`（`t_game` 作用、fps/rsp 側のみ）に責務分割しています。なお mode 振り分け（ディスパッチ）は `common`（`main_loop` / `update_enemies` / `draw_weapon` / `finish_init`）側にあり、`fps`/`rsp` は各モードの実装のみを持ちます。
-
-### (f) `mlx_*` 関数の戻り値 / ベンダーのバックアップ
-
-`codes/minilibx-linux/` 配下の一部関数は `int` 宣言なのに `return` を欠きます（`-Werror=return-type` を有効化すると落ちる）。ビルド成果物（`*.o` / `*.ok` / `libmlx.a` / `cub3D` / `bmp/`）は `.gitignore` で除外済みです。
-
-## 10. 拡張のしどころ（任意）
-
-- **巡回路（`P`）のマップ設計**: 右手法則で周回するため、閉じたループ状の `P` 配置が安定します。
-- **敵テクスチャの外部指定**: 敵は内蔵の 8 方向テクスチャを用います。`.cub` 側から指定可能にすると複数種の敵を導入できます。
-- **オブジェクトのバリエーション活用**: 各カテゴリ 5 種までのテクスチャ枠を使い分けると表現が広がります。
-- **RSP の拡張**: チーム数・戦闘員数は `rsp_game.h` の定数で定義されています。手動でじゃんけんを出す導線や、チームスコア表示などを追加できます。
-- **HUD の充実**: HP・所持武器・残弾数の表示は未実装です。`ui.c` / `font.c` を拡張して追加できます。
-
-## 11. 開発の始め方
+## 10. 開発の始め方
 
 ```
 git clone <repo>
@@ -364,12 +343,12 @@ cd samatsum-cub3D
 make
 
 # 通常起動（FPS / RSP）
-./cub3D maps/fps_map/1.cub FPS
-./cub3D maps/rsp_map/rsp.cub RSP
+./cub3D maps/fps_map/1.cub
+./cub3D maps/rsp_map/rsp.cub
 
 # AddressSanitizer 付きで起動（推奨）
 make debug
-./cub3D maps/fps_map/1.cub FPS
+./cub3D maps/fps_map/1.cub
 
 # コーディングルール検査
 make check        # 失敗すべき lint ゲート

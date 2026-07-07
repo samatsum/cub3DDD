@@ -1,18 +1,28 @@
 #include <sys/time.h> /* gettimeofday, struct timeval 用 */
-#include <stdlib.h>   /* EXIT_SUCCESS 用 */
+#include <time.h>     /* time_t, localtime, struct tm 用 */
 #include <fcntl.h>    /* open, O_CREAT 等 用 */
 #include <unistd.h>   /* write, close 用 */
 #include "core/core.h"
 #include "utils/utils.h" /* ft_write_str, ft_write_int 用 */
 #include "tuning.h"
 
+#define SCREENSHOT_FILE_MODE 0644
+#define FPS_SCREENSHOT_PREFIX "./screenshot/fps_screen/fps_"
+#define RSP_SCREENSHOT_PREFIX "./screenshot/rsp_screen/rsp_"
+
 /* ************************************************************************** */
 int
-	screenshot(t_game* game);
+	save_result_screenshot(t_game* game);
+static int
+	save_screenshot_file(t_game* game);
 static int
 	save_bmp(t_game* game, int fd);
 static void
-	get_screenshot_path(char* buffer);
+	get_screenshot_path(t_game* game, char* buffer);
+static const char*
+	screenshot_prefix(t_game* game);
+static int
+	write_padded_int(char* buffer, int value, int start, int width);
 static int
 	write_bmp_header(int fd, int filesize, t_game* game);
 static void
@@ -23,35 +33,36 @@ static int
 	get_color(t_window* w, int x, int y);
 
 /* ************************************************************************** */
-// スクリーンショットを撮ってファイルに保存し、ゲームを終了する。日時付きパスを作って開き、
-// その fd を save_bmp に渡して最新フレームを書き出す。撮影は1回限りで、成功・失敗どちらの
-// 経路でも fd を close してから exit_game / exit_error で終了する（書き込み先を日時付きパスに
-// 一本化し、以前の二重オープンと fd リークを解消済み）
+// FPS/RSP の結果画面を、モード別の screenshot サブディレクトリへ保存する
 int
-	screenshot(t_game* game)
+	save_result_screenshot(t_game* game)
+{
+	return (save_screenshot_file(game));
+}
+
+/* ************************************************************************** */
+// 現在の画面バッファを、モードに応じた日時付きBMPファイルとして保存する
+static int
+	save_screenshot_file(t_game* game)
 {
 	int		fd;
 	char	filepath[256];
 
-	get_screenshot_path(filepath);
-	fd = open(filepath, O_CREAT | O_WRONLY | O_TRUNC, 0644);
+	get_screenshot_path(game, filepath);
+	fd = open(filepath, O_CREAT | O_WRONLY | O_TRUNC, SCREENSHOT_FILE_MODE);
 	if (fd < 0) {
-		return (exit_error(game, "Error:\nFailed to create screenshot file in ~/bmp/.\n"));
+		return (0);
 	}
-	render_frame(game);
 	if (!save_bmp(game, fd)) {
 		close(fd);
-		exit_error(game, "Error:\nfailed to save screenshot.\n");
+		return (0);
 	}
 	close(fd);
-	return (exit_game(game, EXIT_SUCCESS));
+	return (1);
 }
 
 /* ************************************************************************** */
-// 呼び出し側 screenshot が開いた fd（日時付きパス）へ画面ピクセルを24bit BMP として書き出す。
-// 1行を4バイト境界に揃えるパディング pad を計算し、ヘッダ54バイト＋(幅+pad)*高さ*3 を
-// ファイルサイズに。ヘッダ→データの順に書き、いずれか失敗で 0 を返す。fd の open/close は
-// 呼び出し側が一元管理するため、ここでは行わない（以前はここで別名を再オープンしていた）
+// 呼び出し側が開いた fd へ画面ピクセルを24bit BMP として書き出す
 static int
 	save_bmp(t_game* game, int fd)
 {
@@ -72,28 +83,74 @@ static int
 }
 
 /* ************************************************************************** */
-// 撮影時刻から "./bmp/screenshot_<秒>_<マイクロ秒>.bmp" 形式の一意なパスを buffer に生成する。
-// 許可関数のみで構成するため time/localtime/snprintf をやめ、gettimeofday の経過秒・マイクロ秒を
-// 自作の ft_write_str / ft_write_int で連結する。秒とマイクロ秒の組で実用上ファイル名は一意になる。
-// 生成長は固定的に短く（"./bmp/screenshot_"17 + 数字 + ".bmp"4 ≈ 40字）、呼び出し側の 256B に収まる
+// 撮影時刻をローカル日時へ変換し、目で読めるファイル名を作る。
+// 例: ./screenshot/fps_screen/fps_20260707_213045_123456.bmp
+// 末尾のマイクロ秒は、同じ秒に複数回保存した場合の上書き防止に使う
 static void
-	get_screenshot_path(char* buffer)
+	get_screenshot_path(t_game* game, char* buffer)
 {
 	struct timeval	tv;
+	time_t			seconds;
+	struct tm*		now;
 	int				i;
 
 	gettimeofday(&tv, NULL);
-	i = ft_write_str(buffer, "./bmp/screenshot_", 0);
-	i = ft_write_int(buffer, (int)tv.tv_sec, i);
+	seconds = (time_t)tv.tv_sec;
+	now = localtime(&seconds);
+	i = ft_write_str(buffer, (char*)screenshot_prefix(game), 0);
+	if (!now) {
+		i = ft_write_str(buffer, "unix_", i);
+		i = ft_write_int(buffer, (int)tv.tv_sec, i);
+		i = ft_write_str(buffer, "_", i);
+		i = write_padded_int(buffer, (int)tv.tv_usec, i, 6);
+		ft_write_str(buffer, ".bmp", i);
+		return ;
+	}
+	i = write_padded_int(buffer, now->tm_year + 1900, i, 4);
+	i = write_padded_int(buffer, now->tm_mon + 1, i, 2);
+	i = write_padded_int(buffer, now->tm_mday, i, 2);
 	i = ft_write_str(buffer, "_", i);
-	i = ft_write_int(buffer, (int)tv.tv_usec, i);
+	i = write_padded_int(buffer, now->tm_hour, i, 2);
+	i = write_padded_int(buffer, now->tm_min, i, 2);
+	i = write_padded_int(buffer, now->tm_sec, i, 2);
+	i = ft_write_str(buffer, "_", i);
+	i = write_padded_int(buffer, (int)tv.tv_usec, i, 6);
 	ft_write_str(buffer, ".bmp", i);
 }
 
 /* ************************************************************************** */
-// BMP の54バイトヘッダ（14バイトのファイルヘッダ＋40バイトの情報ヘッダ）を組み立てて書く。
-// 先頭を 'B''M'、オフセット2にファイルサイズ、10にデータ開始位置(54)、14に情報ヘッダサイズ
-// (40)、18/22に幅・高さ、27に面数(1)、28にビット深度(24)を設定。write 失敗時は 0 を返す
+// 実行モードに応じて保存先ディレクトリのprefixを返す
+static const char*
+	screenshot_prefix(t_game* game)
+{
+	if (game->mode == MODE_RSP) {
+		return (RSP_SCREENSHOT_PREFIX);
+	}
+	return (FPS_SCREENSHOT_PREFIX);
+}
+
+/* ************************************************************************** */
+// 数値を指定幅まで 0 埋めして追記する。日時の桁数を固定し、ファイル一覧で時系列に並べやすくする
+static int
+	write_padded_int(char* buffer, int value, int start, int width)
+{
+	int	div;
+
+	div = 1;
+	while (width > 1) {
+		div *= 10;
+		width--;
+	}
+	while (div > 0) {
+		buffer[start++] = '0' + (value / div) % 10;
+		div /= 10;
+	}
+	buffer[start] = 0;
+	return (start);
+}
+
+/* ************************************************************************** */
+// BMP の54バイトヘッダを組み立てて書く
 static int
 	write_bmp_header(int fd, int filesize, t_game* game)
 {
@@ -120,8 +177,7 @@ static int
 }
 
 /* ************************************************************************** */
-// 32bit 整数を start から4バイトにリトルエンディアン（下位バイトが先頭）で書き込む。
-// BMP ヘッダの数値フィールドはリトルエンディアン規定のため、この順で格納する
+// 32bit 整数を start から4バイトにリトルエンディアンで書き込む
 static void
 	set_int_in_char(unsigned char* start, int value)
 {
@@ -132,8 +188,7 @@ static void
 }
 
 /* ************************************************************************** */
-// 画面ピクセルを BMP のデータ領域として1行ずつ書き出す。BMP は1ピクセル3バイト(BGR)で、
-// 行末を4バイト境界に揃えるため pad バイトのゼロを書き足す。write 失敗時は 0 を返す
+// 画面ピクセルを BMP のデータ領域として1行ずつ書き出す
 static int
 	write_bmp_data(int file, t_window* w, int pad)
 {
@@ -161,8 +216,7 @@ static int
 }
 
 /* ************************************************************************** */
-// 画面バッファから (x, y) のピクセル色を取得する。BMP は最下行から上へ並ぶ「ボトムアップ」
-// 形式のため、行を (高さ-1-y) に反転して読む。返すのは下位24bit(0xRRGGBB)
+// 画面バッファから (x, y) のピクセル色を取得する
 static int
 	get_color(t_window* w, int x, int y)
 {

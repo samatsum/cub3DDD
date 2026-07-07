@@ -22,7 +22,7 @@ int
 int
 	exit_error(t_game* game, const char* str);
 int
-	screenshot(t_game* game);
+	save_result_screenshot(t_game* game);
 void
 	check_quest(t_game* game);
 void

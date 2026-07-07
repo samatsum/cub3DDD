@@ -8,11 +8,10 @@
 # include "enemy/enemy_types.h"
 
 /* ************************************************************************** */
-// 描画オプションの状態フラグ（UI・影・照準・スクリーンショット）
+// 描画オプションの状態フラグ（UI・影・照準・懐中電灯）
 # define FLAG_UI			0x00000010
 # define FLAG_SHADOWS		0x00000100
 # define FLAG_CROSSHAIR		0x00001000
-# define FLAG_SAVE			0x00000001
 # define FLAG_FLASHLIGHT	0x00010000
 
 /* ************************************************************************** */
@@ -148,6 +147,7 @@ typedef struct s_game
 	long long		start_time_ms;
 	double			death_timer;
 	int				cleared;
+	int				result_screenshot_saved;
 	int				options;
 	int				last_options;
 	int				mode;

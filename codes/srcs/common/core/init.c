@@ -96,6 +96,7 @@ void
 	game->start_time_ms = 0;
 	game->fps.clear_time_ms = 0;
 	game->cleared = 0;
+	game->result_screenshot_saved = 0;
 	game->assets.death_tex.tex = NULL;
 	game->assets.death_tex.path = NULL;
 	game->fps.goal_tex.tex = NULL;
